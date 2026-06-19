@@ -31,7 +31,8 @@ export async function processVideo(input: { url: string; childProfileId: string 
   const { data: video } = await supabase.from('videos')
     .insert({ user_id: user.id, youtube_url: input.url, youtube_id: youtubeId, status: 'processing' })
     .select('id').single()
-  const videoId = video!.id
+  if (!video) return { ok: false, reason: 'No pudimos iniciar el procesamiento del video. Probá de nuevo.' }
+  const videoId = video.id
 
   const reject = async (reason: string) => {
     await supabase.from('videos').update({ status: 'rejected', reject_reason: reason }).eq('id', videoId)
