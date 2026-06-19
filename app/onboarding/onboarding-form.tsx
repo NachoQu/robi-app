@@ -214,7 +214,7 @@ export default function OnboardingForm() {
 
                   <motion.div whileTap={{ scale: 0.97 }} className="w-full">
                     <Button
-                      onClick={() => router.push('/videos/new')}
+                      onClick={() => router.push('/parent/add-video')}
                       className="w-full text-base font-bold rounded-2xl transition-all duration-200 hover:opacity-90 active:scale-95"
                       style={{
                         background: 'var(--robi-success)',
