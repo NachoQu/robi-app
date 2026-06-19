@@ -1,0 +1,4 @@
+-- Catálogo base (se inserta por usuario en signup, no global):
+-- '30 min más de pantalla' (50), 'Elegir la cena' (80), 'Noche de pijamas en el living' (120),
+-- 'Una hora de juego con mamá/papá' (150), 'Elegir la película del viernes' (100),
+-- 'Traer un amigo a dormir' (200)
