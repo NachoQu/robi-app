@@ -18,21 +18,15 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
   const [digits, setDigits] = useState(['', '', '', ''])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const inputRefs = [
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-  ]
+  const inputsRef = useRef<HTMLInputElement[]>([])
 
   useEffect(() => {
     if (open) {
       setDigits(['', '', '', ''])
       setError(null)
       setLoading(false)
-      setTimeout(() => inputRefs[0].current?.focus(), 100)
+      setTimeout(() => inputsRef.current[0]?.focus(), 100)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   function handleDigitChange(index: number, value: string) {
@@ -42,7 +36,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
     setDigits(newDigits)
     setError(null)
     if (cleaned && index < 3) {
-      inputRefs[index + 1].current?.focus()
+      inputsRef.current[index + 1]?.focus()
     }
     // Auto-submit when last digit entered
     if (cleaned && index === 3) {
@@ -53,7 +47,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
 
   function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Backspace' && !digits[index] && index > 0) {
-      inputRefs[index - 1].current?.focus()
+      inputsRef.current[index - 1]?.focus()
     }
   }
 
@@ -73,7 +67,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
       setError('PIN incorrecto. Intentá de nuevo.')
       setDigits(['', '', '', ''])
       setLoading(false)
-      setTimeout(() => inputRefs[0].current?.focus(), 50)
+      setTimeout(() => inputsRef.current[0]?.focus(), 50)
     }
   }
 
@@ -103,7 +97,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
             {digits.map((digit, i) => (
               <input
                 key={i}
-                ref={inputRefs[i]}
+                ref={(el) => { if (el) inputsRef.current[i] = el }}
                 type="tel"
                 inputMode="numeric"
                 maxLength={1}
