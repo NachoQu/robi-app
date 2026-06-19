@@ -76,6 +76,7 @@ export default async function ParentPage() {
 
   let assignmentsByProfile: Record<string, VideoAssignment[]> = {}
   let completedCountByProfile: Record<string, number> = {}
+  const completedVideosByProfile: Record<string, Set<string>> = {}
 
   if (profileIds.length > 0) {
     const { data: assignments } = await supabase
@@ -97,24 +98,15 @@ export default async function ParentPage() {
       .in('child_profile_id', profileIds)
 
     if (activities) {
-      for (const act of activities) {
-        const pid = (act as { child_profile_id: string; video_id: string }).child_profile_id
-        completedCountByProfile[pid] = (completedCountByProfile[pid] ?? 0) + 1
-      }
-    }
-
-    // Build set of completed video_ids per profile for "visto" badge
-    var completedVideosByProfile: Record<string, Set<string>> = {}
-    if (activities) {
       for (const act of activities as { child_profile_id: string; video_id: string }[]) {
-        if (!completedVideosByProfile[act.child_profile_id]) {
-          completedVideosByProfile[act.child_profile_id] = new Set()
+        const pid = act.child_profile_id
+        completedCountByProfile[pid] = (completedCountByProfile[pid] ?? 0) + 1
+        if (!completedVideosByProfile[pid]) {
+          completedVideosByProfile[pid] = new Set()
         }
-        completedVideosByProfile[act.child_profile_id].add(act.video_id)
+        completedVideosByProfile[pid].add(act.video_id)
       }
     }
-  } else {
-    var completedVideosByProfile: Record<string, Set<string>> = {}
   }
 
   return (
@@ -176,7 +168,7 @@ export default async function ParentPage() {
       {childProfiles.map((profile) => {
         const videos = assignmentsByProfile[profile.id] ?? []
         const completedCount = completedCountByProfile[profile.id] ?? 0
-        const completedSet = completedVideosByProfile?.[profile.id] ?? new Set<string>()
+        const completedSet = completedVideosByProfile[profile.id] ?? new Set<string>()
 
         return (
           <Card
