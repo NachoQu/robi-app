@@ -1,21 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk'
-import type { AIProvider, QuizQuestion } from './types'
+import type { AIProvider } from './types'
 import { FILTER_SYSTEM, QUIZ_SYSTEM } from './prompts'
+import { extractJson, parseQuizResponse } from './json'
+
+// Re-export so existing tests importing from this module stay green
+export { parseQuizResponse } from './json'
 
 const MODEL = 'claude-sonnet-4-6'
-
-function extractJson(text: string): any {
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-  const body = fenced ? fenced[1] : text
-  const start = body.indexOf('{')
-  const end = body.lastIndexOf('}')
-  return JSON.parse(body.slice(start, end + 1))
-}
-
-export function parseQuizResponse(text: string): QuizQuestion[] {
-  const data = extractJson(text)
-  return (data.questions ?? []) as QuizQuestion[]
-}
 
 export class ClaudeProvider implements AIProvider {
   private client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
