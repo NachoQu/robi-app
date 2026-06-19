@@ -1,7 +1,7 @@
 create or replace function complete_activity(
   p_child uuid, p_video uuid, p_correct int, p_answers jsonb
 ) returns table(base_points int, bonus_points int, total_points int)
-language plpgsql security invoker as $$
+language plpgsql security invoker set search_path = public as $$
 declare v_base int := 10; v_bonus int; v_total int;
 begin
   if not exists (select 1 from child_profiles where id = p_child and user_id = auth.uid()) then
