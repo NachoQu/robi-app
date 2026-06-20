@@ -69,7 +69,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                     <span className="text-base font-extrabold text-center leading-tight text-foreground">
                       {profile.name}
                     </span>
-                    <span className="flex items-center gap-1 text-sm font-bold rounded-full px-3 py-1 bg-[var(--robi-accent)]/20 text-[#8A6A00]">
+                    <span className="flex items-center gap-1 text-sm font-bold rounded-full px-3 py-1 bg-[var(--robi-accent)]/20 text-[var(--robi-accent-ink)]">
                       ⭐ {profile.total_points.toLocaleString('es-AR')}
                     </span>
                   </CardContent>
@@ -140,7 +140,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
             <p className="text-base text-muted-foreground font-medium">
               La versión gratuita incluye 1 perfil. Con <strong className="text-primary">Robi Premium</strong> podés agregar hasta 5 perfiles para toda la familia. 👨‍👩‍👧‍👦
             </p>
-            <div className="rounded-2xl px-4 py-3 text-sm font-semibold bg-[var(--robi-accent)]/20 text-[#8A6A00] border border-[var(--robi-accent)]/40">
+            <div className="rounded-2xl px-4 py-3 text-sm font-semibold bg-[var(--robi-accent)]/20 text-[var(--robi-accent-ink)] border border-[var(--robi-accent)]/40">
               ⭐ Próximamente disponible
             </div>
             <Button

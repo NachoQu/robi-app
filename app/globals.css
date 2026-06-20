@@ -77,6 +77,10 @@
   --robi-coral-foreground: #FFFFFF;
   --robi-blue: #4CA3F7;
   --robi-blue-foreground: #FFFFFF;
+  /* Ink: texto oscuro legible sobre fondos tintados claros (chips, pills) */
+  --robi-accent-ink: #8A6A00;
+  --robi-blue-ink: #1E5FA8;
+  --robi-success-ink: #1B7A66;
 
   /* shadcn base — mapeado a la paleta Robi */
   --background: #FAF7F2;
@@ -156,6 +160,10 @@
   --robi-coral-foreground: #2A0E06;
   --robi-blue: #4CA3F7;
   --robi-blue-foreground: #07223D;
+  /* Ink: variantes claras para texto sobre tintes en modo oscuro */
+  --robi-accent-ink: #F0C868;
+  --robi-blue-ink: #9CC9F5;
+  --robi-success-ink: #7FD8C4;
 }
 
 @layer base {
