@@ -8,7 +8,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 
-export type RobiMood = 'idle' | 'thinking' | 'celebrate' | 'talking'
+export type RobiMood = 'idle' | 'thinking' | 'celebrate' | 'talking' | 'encourage'
 
 interface RobiProps {
   mood?: RobiMood
@@ -26,7 +26,7 @@ function Eye({ cx, cy, blink }: { cx: number; cy: number; blink: boolean }) {
       cy={cy}
       rx={5.5}
       ry={blink ? 0.5 : 5.5}
-      fill="var(--robi-primary)"
+      fill="var(--robi-secondary)"
       animate={blink ? { ry: [5.5, 0.5, 5.5] } : { ry: 5.5 }}
       transition={
         blink
@@ -140,6 +140,12 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
           y: [0, -2, 0],
           transition: { duration: 0.8, ease: 'easeInOut', repeat: Infinity },
         },
+    encourage: reduced
+      ? {}
+      : {
+          rotate: [0, -4, 4, -4, 0],
+          transition: { duration: 1.2, ease: 'easeInOut', repeat: Infinity },
+        },
   }
 
   // ── Screen/mouth expression ────────────────────────────────────────────────
@@ -175,7 +181,7 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
       animate={bodyVariants[mood] as Parameters<typeof motion.svg>[0]['animate']}
     >
       {/* ── Antenna stem ───────────────────────────────────────────────────── */}
-      <rect x={97} y={28} width={6} height={20} rx={3} fill="oklch(0.72 0.12 262)" />
+      <rect x={97} y={28} width={6} height={20} rx={3} fill="#7FCBBA" />
 
       {/* ── Antenna top: gear in thinking, glowing ball otherwise ─────────── */}
       {showGear ? (
@@ -204,14 +210,14 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
         width={104}
         height={86}
         rx={22}
-        fill="oklch(0.94 0.05 262)"
-        stroke="oklch(0.72 0.15 262)"
+        fill="oklch(0.96 0.01 95)"
+        stroke="#1F8B76"
         strokeWidth={3}
       />
 
       {/* ── Ear nubs (left & right) ─────────────────────────────────────────── */}
-      <rect x={36} y={68} width={14} height={22} rx={6} fill="oklch(0.80 0.12 262)" stroke="oklch(0.62 0.15 262)" strokeWidth={2} />
-      <rect x={150} y={68} width={14} height={22} rx={6} fill="oklch(0.80 0.12 262)" stroke="oklch(0.62 0.15 262)" strokeWidth={2} />
+      <rect x={36} y={68} width={14} height={22} rx={6} fill="#9BE3D2" stroke="#1F8B76" strokeWidth={2} />
+      <rect x={150} y={68} width={14} height={22} rx={6} fill="#9BE3D2" stroke="#1F8B76" strokeWidth={2} />
 
       {/* ── Inner screen panel ──────────────────────────────────────────────── */}
       <rect
@@ -220,8 +226,8 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
         width={80}
         height={60}
         rx={14}
-        fill="oklch(0.20 0.08 262)"
-        stroke="oklch(0.50 0.15 262)"
+        fill="#0F2E28"
+        stroke="#1F8B76"
         strokeWidth={2}
       />
 
@@ -280,6 +286,10 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
         />
       )}
 
+      {mood === 'encourage' && (
+        <path d="M 84 100 Q 100 104 116 100" stroke="var(--robi-secondary)" strokeWidth={3} strokeLinecap="round" fill="none" />
+      )}
+
       {/* ── Thinking dots below screen ──────────────────────────────────────── */}
       {mood === 'thinking' && <ThinkingDots reduced={reduced} />}
 
@@ -290,42 +300,22 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
         width={80}
         height={46}
         rx={16}
-        fill="oklch(0.88 0.08 262)"
-        stroke="oklch(0.68 0.15 262)"
+        fill="oklch(0.97 0.01 95)"
+        stroke="#1F8B76"
         strokeWidth={3}
       />
 
-      {/* ── Chest badge / buttons ───────────────────────────────────────────── */}
-      <rect
-        x={74}
-        y={144}
-        width={52}
-        height={26}
-        rx={8}
-        fill="oklch(0.78 0.10 262)"
-        stroke="oklch(0.60 0.14 262)"
+      {/* ── Chest star badge ─────────────────────────────────────────────────── */}
+      <motion.path
+        d="M100 138 l5.3 10.7 11.8 1.7 -8.5 8.3 2 11.8 -10.6 -5.6 -10.6 5.6 2 -11.8 -8.5 -8.3 11.8 -1.7 Z"
+        fill="var(--robi-secondary)"
+        stroke="#1F8B76"
         strokeWidth={1.5}
+        strokeLinejoin="round"
+        animate={reduced ? {} : mood === 'celebrate' ? { scale: [1, 1.25, 1] } : { scale: [1, 1.06, 1] }}
+        transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ originX: '100px', originY: '155px' }}
       />
-      {/* Three small status lights */}
-      {[0, 1, 2].map((i) => (
-        <motion.circle
-          key={i}
-          cx={84 + i * 16}
-          cy={157}
-          r={4}
-          fill={i === 0 ? 'var(--robi-accent)' : i === 1 ? 'var(--robi-success)' : 'var(--robi-coral)'}
-          animate={
-            reduced
-              ? {}
-              : mood === 'thinking'
-              ? { opacity: [0.4, 1, 0.4] }
-              : mood === 'celebrate'
-              ? { scale: [1, 1.3, 1] }
-              : { opacity: [0.7, 1, 0.7] }
-          }
-          transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.25, ease: 'easeInOut' }}
-        />
-      ))}
 
       {/* ── Arms ────────────────────────────────────────────────────────────── */}
       <motion.rect
@@ -334,8 +324,8 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
         width={32}
         height={14}
         rx={7}
-        fill="oklch(0.80 0.12 262)"
-        stroke="oklch(0.62 0.15 262)"
+        fill="#9BE3D2"
+        stroke="#1F8B76"
         strokeWidth={2}
         animate={
           reduced
@@ -355,8 +345,8 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
         width={32}
         height={14}
         rx={7}
-        fill="oklch(0.80 0.12 262)"
-        stroke="oklch(0.62 0.15 262)"
+        fill="#9BE3D2"
+        stroke="#1F8B76"
         strokeWidth={2}
         animate={
           reduced
@@ -372,8 +362,8 @@ export function Robi({ mood = 'idle', size = 80, className }: RobiProps) {
       />
 
       {/* ── Legs ────────────────────────────────────────────────────────────── */}
-      <rect x={72} y={180} width={18} height={16} rx={6} fill="oklch(0.75 0.14 262)" stroke="oklch(0.58 0.16 262)" strokeWidth={2} />
-      <rect x={110} y={180} width={18} height={16} rx={6} fill="oklch(0.75 0.14 262)" stroke="oklch(0.58 0.16 262)" strokeWidth={2} />
+      <rect x={72} y={180} width={18} height={16} rx={6} fill="#7FCBBA" stroke="#1F8B76" strokeWidth={2} />
+      <rect x={110} y={180} width={18} height={16} rx={6} fill="#7FCBBA" stroke="#1F8B76" strokeWidth={2} />
 
       {/* ── Celebrate sparkles ──────────────────────────────────────────────── */}
       {mood === 'celebrate' && (
