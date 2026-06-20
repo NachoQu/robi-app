@@ -51,7 +51,6 @@ export default async function ParentPage() {
 
   let assignmentsByProfile: Record<string, VideoAssignment[]> = {}
   let completedCountByProfile: Record<string, number> = {}
-  const completedVideosByProfile: Record<string, Set<string>> = {}
 
   if (profileIds.length > 0) {
     const { data: assignments } = await supabase
@@ -76,10 +75,6 @@ export default async function ParentPage() {
       for (const act of activities as { child_profile_id: string; video_id: string }[]) {
         const pid = act.child_profile_id
         completedCountByProfile[pid] = (completedCountByProfile[pid] ?? 0) + 1
-        if (!completedVideosByProfile[pid]) {
-          completedVideosByProfile[pid] = new Set()
-        }
-        completedVideosByProfile[pid].add(act.video_id)
       }
     }
   }
@@ -157,9 +152,6 @@ export default async function ParentPage() {
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className="text-base font-bold text-foreground truncate">
                         {profile.name}
-                      </span>
-                      <span className="text-xs font-semibold text-muted-foreground shrink-0">
-                        Nivel 1
                       </span>
                     </div>
 

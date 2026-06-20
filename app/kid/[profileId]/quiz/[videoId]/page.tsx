@@ -231,8 +231,8 @@ export default function QuizPage() {
               onClick={handleToggleTts}
               className="flex flex-col items-center gap-0.5 rounded-2xl px-3 py-2 text-xs font-extrabold transition-all active:scale-95 shrink-0"
               style={{
-                background: ttsEnabled ? 'var(--robi-primary)' : 'hsl(var(--muted))',
-                color: ttsEnabled ? 'white' : 'hsl(var(--muted-foreground))',
+                background: ttsEnabled ? 'var(--robi-primary)' : 'var(--muted)',
+                color: ttsEnabled ? 'white' : 'var(--muted-foreground)',
                 boxShadow: ttsEnabled ? '0 2px 10px color-mix(in oklch, var(--robi-primary) 30%, transparent)' : 'none',
               }}
               aria-label={ttsEnabled ? 'Apagar lectura en voz alta' : 'Activar lectura en voz alta'}
@@ -321,8 +321,8 @@ export default function QuizPage() {
                   badgeBg = 'rgba(255,255,255,0.25)'
                   badgeColor = isCorrect ? 'var(--secondary-foreground)' : 'white'
                 } else {
-                  badgeBg = 'hsl(var(--muted))'
-                  badgeColor = 'hsl(var(--muted-foreground))'
+                  badgeBg = 'var(--muted)'
+                  badgeColor = 'var(--muted-foreground)'
                 }
               } else {
                 badgeBg = 'var(--robi-primary)'
