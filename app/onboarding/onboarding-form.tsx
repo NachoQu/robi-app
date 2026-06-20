@@ -203,7 +203,7 @@ export default function OnboardingForm() {
                     onClick={() => router.push('/')}
                     className="text-sm font-semibold text-muted-foreground hover:underline transition-all"
                   >
-                    Saltear por ahora →
+                    Saltar por ahora →
                   </button>
                 </CardContent>
               </Card>
