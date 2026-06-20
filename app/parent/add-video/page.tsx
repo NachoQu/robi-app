@@ -120,10 +120,7 @@ export default function AddVideoPage() {
               <RobiPlaceholder size={96} mood="thinking" />
             </motion.div>
             <div>
-              <h2
-                className="text-2xl font-extrabold mb-2"
-                style={{ color: 'var(--robi-primary)' }}
-              >
+              <h2 className="text-2xl font-extrabold mb-2 text-robi-primary">
                 Robi está preparando la actividad{loadingDots}
               </h2>
               <p className="text-base text-muted-foreground font-medium">
@@ -136,8 +133,7 @@ export default function AddVideoPage() {
               {[0, 1, 2].map((i) => (
                 <motion.span
                   key={i}
-                  className="inline-block w-3 h-3 rounded-full"
-                  style={{ background: 'var(--robi-primary)' }}
+                  className="inline-block w-3 h-3 rounded-full bg-robi-primary"
                   animate={{ opacity: [0.3, 1, 0.3] }}
                   transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.3 }}
                 />
@@ -164,10 +160,7 @@ export default function AddVideoPage() {
                 <RobiPlaceholder size={80} />
               </motion.div>
               <div className="text-4xl">🎉</div>
-              <h2
-                className="text-2xl font-extrabold"
-                style={{ color: 'var(--robi-primary)' }}
-              >
+              <h2 className="text-2xl font-extrabold text-robi-primary">
                 ¡Video cargado con éxito!
               </h2>
               <p className="text-base text-muted-foreground font-medium">
@@ -177,12 +170,9 @@ export default function AddVideoPage() {
 
             {/* Optional questions preview */}
             {questions.length > 0 && (
-              <Card
-                className="rounded-3xl border-0 shadow-lg"
-                style={{ boxShadow: '0 4px 24px oklch(0.58 0.22 262 / 0.10)' }}
-              >
+              <Card className="rounded-3xl border border-border shadow-sm">
                 <CardHeader className="px-6 pt-5 pb-2">
-                  <h3 className="text-base font-bold" style={{ color: 'var(--foreground)' }}>
+                  <h3 className="text-base font-bold text-foreground">
                     Vista previa de las preguntas ({questions.length})
                   </h3>
                   <p className="text-xs text-muted-foreground font-medium">
@@ -192,18 +182,14 @@ export default function AddVideoPage() {
                 <CardContent className="px-6 pb-6 flex flex-col gap-4">
                   {questions.map((q, idx) => (
                     <div key={idx} className="flex flex-col gap-2">
-                      <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                      <p className="text-sm font-semibold text-foreground">
                         {idx + 1}. {q.question_text}
                       </p>
                       <div className="grid grid-cols-2 gap-1.5">
                         {(q.options as string[]).map((opt, oi) => (
                           <span
                             key={oi}
-                            className="text-xs rounded-xl px-3 py-2 font-medium"
-                            style={{
-                              background: 'oklch(0.95 0.03 262)',
-                              color: 'var(--foreground)',
-                            }}
+                            className="text-xs rounded-xl px-3 py-2 font-medium bg-muted text-foreground"
                           >
                             {String.fromCharCode(65 + oi)}. {opt}
                           </span>
@@ -217,14 +203,10 @@ export default function AddVideoPage() {
 
             <motion.div whileTap={{ scale: 0.97 }}>
               <Button
+                variant="primary"
+                size="lg"
                 onClick={() => router.push('/parent')}
-                className="w-full text-base font-bold rounded-2xl transition-all duration-200 hover:opacity-90 active:scale-95"
-                style={{
-                  background: 'var(--robi-success)',
-                  color: 'white',
-                  fontSize: '1.05rem',
-                  height: '3.25rem',
-                }}
+                className="w-full text-base font-bold"
               >
                 Listo →
               </Button>
@@ -245,10 +227,7 @@ export default function AddVideoPage() {
             {/* Header */}
             <div className="flex flex-col items-center gap-3 text-center pt-4">
               <RobiPlaceholder size={64} />
-              <h1
-                className="text-2xl font-extrabold tracking-tight"
-                style={{ color: 'var(--robi-primary)' }}
-              >
+              <h1 className="text-2xl font-extrabold tracking-tight text-robi-primary">
                 Cargar video educativo
               </h1>
               <p className="text-sm text-muted-foreground font-medium max-w-sm">
@@ -273,32 +252,21 @@ export default function AddVideoPage() {
               </motion.div>
             )}
 
-            <Card
-              className="rounded-3xl border-0 shadow-xl"
-              style={{ boxShadow: '0 8px 40px oklch(0.58 0.22 262 / 0.12)' }}
-            >
+            <Card className="rounded-3xl border border-border shadow-sm bg-card">
               <CardContent className="px-8 py-7">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                   {/* Profile selector */}
                   <div className="flex flex-col gap-1.5">
                     <label
                       htmlFor="profile"
-                      className="text-sm font-semibold"
-                      style={{ color: 'var(--foreground)' }}
+                      className="text-sm font-semibold text-foreground"
                     >
                       Perfil del niño/a
                     </label>
                     {profiles.length === 0 ? (
                       <p className="text-sm text-muted-foreground font-medium">Cargando perfiles…</p>
                     ) : profiles.length === 1 ? (
-                      <div
-                        className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-sm"
-                        style={{
-                          background: 'oklch(0.94 0.06 262 / 0.20)',
-                          border: '2px solid oklch(0.58 0.22 262 / 0.25)',
-                          color: 'var(--foreground)',
-                        }}
-                      >
+                      <div className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-sm bg-muted border border-border text-foreground">
                         <span className="text-2xl">{profiles[0].avatar}</span>
                         <span>{profiles[0].name}</span>
                       </div>
@@ -308,12 +276,7 @@ export default function AddVideoPage() {
                         value={selectedProfileId}
                         onChange={(e) => setSelectedProfileId(e.target.value)}
                         required
-                        className="h-12 rounded-xl text-sm font-semibold px-4 border-2 focus:outline-none focus:border-[oklch(0.58_0.22_262)]"
-                        style={{
-                          background: 'oklch(0.98 0.01 262)',
-                          borderColor: 'oklch(0.85 0.08 262)',
-                          color: 'var(--foreground)',
-                        }}
+                        className="h-12 rounded-xl text-sm font-semibold px-4 border-2 border-border bg-card text-foreground focus:outline-none focus:border-primary"
                       >
                         <option value="">Elegí un perfil…</option>
                         {profiles.map((p) => (
@@ -329,8 +292,7 @@ export default function AddVideoPage() {
                   <div className="flex flex-col gap-1.5">
                     <label
                       htmlFor="url"
-                      className="text-sm font-semibold"
-                      style={{ color: 'var(--foreground)' }}
+                      className="text-sm font-semibold text-foreground"
                     >
                       Link del video de YouTube
                     </label>
@@ -341,30 +303,35 @@ export default function AddVideoPage() {
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       required
-                      className="h-12 rounded-xl text-sm border-2 focus-visible:ring-0 focus-visible:border-[oklch(0.58_0.22_262)]"
+                      className="h-12 rounded-xl text-sm border-2 border-border focus-visible:ring-0 focus-visible:border-primary"
                       autoComplete="off"
                     />
                   </div>
 
                   {/* Mandatory checkbox */}
                   <label
-                    className="flex items-start gap-3 cursor-pointer select-none rounded-2xl px-4 py-3 transition-colors"
-                    style={{
-                      background: checked
-                        ? 'oklch(0.94 0.06 155 / 0.18)'
-                        : 'oklch(0.96 0.02 262)',
-                      border: checked
-                        ? '1.5px solid oklch(0.68 0.18 155 / 0.40)'
-                        : '1.5px solid oklch(0.85 0.06 262)',
-                    }}
+                    className={[
+                      'flex items-start gap-3 cursor-pointer select-none rounded-2xl px-4 py-3 transition-colors',
+                      checked
+                        ? 'border border-transparent'
+                        : 'bg-muted border border-border',
+                    ].join(' ')}
+                    style={
+                      checked
+                        ? {
+                            background: 'oklch(0.94 0.06 155 / 0.18)',
+                            border: '1.5px solid oklch(0.68 0.18 155 / 0.40)',
+                          }
+                        : undefined
+                    }
                   >
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={(e) => setChecked(e.target.checked)}
-                      className="mt-0.5 w-5 h-5 accent-[oklch(0.40_0.20_155)] shrink-0 cursor-pointer"
+                      className="mt-0.5 w-5 h-5 accent-robi-secondary shrink-0 cursor-pointer"
                     />
-                    <span className="text-sm font-semibold leading-snug" style={{ color: 'var(--foreground)' }}>
+                    <span className="text-sm font-semibold leading-snug text-foreground">
                       Revisé el video y es apto para mi hijo/a
                     </span>
                   </label>
@@ -372,16 +339,11 @@ export default function AddVideoPage() {
                   {/* Submit */}
                   <motion.div whileTap={{ scale: 0.97 }} className="mt-1">
                     <Button
+                      variant="primary"
+                      size="lg"
                       type="submit"
                       disabled={!canSubmit}
-                      className="w-full text-base font-bold rounded-2xl transition-all duration-200 hover:opacity-90 active:scale-95"
-                      style={{
-                        background: canSubmit ? 'var(--robi-primary)' : 'oklch(0.80 0.05 262)',
-                        color: 'white',
-                        fontSize: '1.05rem',
-                        height: '3.25rem',
-                        cursor: canSubmit ? 'pointer' : 'not-allowed',
-                      }}
+                      className="w-full text-base font-bold"
                     >
                       🎬 Cargar video
                     </Button>
