@@ -2,11 +2,10 @@
 
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Check, Play } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { Robi } from '@/components/robi/Robi'
 import { Button } from '@/components/ui/button'
-
-const OPTIONS = ['Lava', 'Agua', 'Aire', 'Hielo']
+import { PreviewVideo, PreviewQuiz } from './previews'
 
 export function LandingHero() {
   const reduced = useReducedMotion() ?? false
@@ -17,8 +16,8 @@ export function LandingHero() {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-20">
-        {/* Columna texto */}
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-12 md:py-20 lg:grid-cols-2">
+        {/* Texto */}
         <div className="flex flex-col gap-6">
           <motion.span
             {...rise(0)}
@@ -34,9 +33,9 @@ export function LandingHero() {
             </span>{' '}
             y diversión
           </motion.h1>
-          <motion.p {...rise(0.1)} className="max-w-md text-base font-medium text-muted-foreground">
-            Robi usa inteligencia artificial para crear actividades increíbles a partir de videos de YouTube.
-            Los chicos aprenden jugando y ganan premios reales.
+          <motion.p {...rise(0.1)} className="max-w-md text-base font-medium text-muted-foreground md:text-lg">
+            Robi usa inteligencia artificial para crear actividades a partir de videos de YouTube.
+            Tu hijo mira, juega y aprende de verdad — ganando premios reales.
           </motion.p>
           <motion.div {...rise(0.15)} className="flex flex-wrap items-center gap-3">
             <Link href="/signup">
@@ -51,36 +50,30 @@ export function LandingHero() {
           </motion.div>
         </div>
 
-        {/* Columna ilustración */}
+        {/* Ilustración: previews + Robi */}
         <motion.div
           {...(reduced ? {} : { initial: { opacity: 0, scale: 0.92 }, animate: { opacity: 1, scale: 1 }, transition: { duration: 0.6, delay: 0.1 } })}
-          className="relative flex items-center justify-center"
+          className="relative mx-auto w-full max-w-sm pb-10"
         >
           <div className="absolute inset-0 -z-10 rounded-[3rem] bg-secondary/20 blur-2xl" aria-hidden />
-          <motion.div animate={reduced ? {} : { y: [0, -10, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}>
-            <Robi size={180} mood="idle" />
-          </motion.div>
-
-          {/* Tarjeta de quiz mock */}
-          <div className="absolute -bottom-2 right-0 w-56 rounded-2xl border border-border bg-card p-4 shadow-lg md:right-2">
-            <p className="mb-2 text-sm font-bold text-foreground">¿Qué sale de un volcán?</p>
-            <div className="flex flex-col gap-1.5">
-              {OPTIONS.map((o, i) => (
-                <div
-                  key={o}
-                  className={[
-                    'flex items-center justify-between rounded-lg px-3 py-1.5 text-xs font-bold',
-                    i === 0 ? 'bg-secondary text-secondary-foreground' : 'bg-muted text-muted-foreground',
-                  ].join(' ')}
-                >
-                  <span>{String.fromCharCode(65 + i)}. {o}</span>
-                  {i === 0 && <Check size={14} />}
-                </div>
-              ))}
-            </div>
+          <PreviewVideo />
+          <div className="absolute -bottom-2 -right-3 w-40 sm:w-48">
+            <PreviewQuiz />
           </div>
+          <motion.div
+            animate={reduced ? {} : { y: [0, -8, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -left-4 -top-8"
+          >
+            <Robi size={80} mood="idle" />
+          </motion.div>
         </motion.div>
       </div>
+
+      {/* Colinas decorativas */}
+      <svg className="block w-full text-secondary/25" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden>
+        <path fill="currentColor" d="M0,64 C240,120 480,16 720,48 C960,80 1200,120 1440,72 L1440,120 L0,120 Z" />
+      </svg>
     </section>
   )
 }

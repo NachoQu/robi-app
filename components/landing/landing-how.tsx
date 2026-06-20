@@ -1,32 +1,35 @@
-import { Link2, Bot, Gamepad2, Star, Gift, type LucideIcon } from 'lucide-react'
+import { PreviewVideo, PreviewQuiz, PreviewResult } from './previews'
 
-const STEPS: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Link2, title: 'Elegí un video', desc: 'Los padres agregan la URL de YouTube que quieren que su hijo aprenda.' },
-  { icon: Bot, title: 'Robi crea la actividad', desc: 'Nuestra IA genera un quiz divertido y seguro basado en el contenido del video.' },
-  { icon: Gamepad2, title: 'Jugá y aprendé', desc: 'Los chicos ven el video, juegan el quiz y reciben retroalimentación al instante.' },
-  { icon: Star, title: 'Ganá puntos y badges', desc: 'Respondiendo bien, ganan puntos y badges coleccionables.' },
-  { icon: Gift, title: 'Canjeá premios', desc: 'Los puntos se canjean por experiencias en familia sin costo.' },
+const STEPS = [
+  { n: 1, title: 'Mirá', desc: 'Tu hijo mira un video que vos elegís — seguro y apto para su edad.', preview: 'video' as const },
+  { n: 2, title: 'Jugá', desc: 'Robi arma un quiz sobre el video. El chico responde y recibe ayuda al instante.', preview: 'quiz' as const },
+  { n: 3, title: 'Ganá', desc: 'Suma puntos y badges, y los canjea por premios en familia.', preview: 'result' as const },
 ]
+
+function Preview({ kind }: { kind: 'video' | 'quiz' | 'result' }) {
+  if (kind === 'video') return <PreviewVideo />
+  if (kind === 'quiz') return <PreviewQuiz />
+  return <PreviewResult />
+}
 
 export function LandingHow() {
   return (
-    <section id="como-funciona" className="scroll-mt-20 bg-card/40 py-16">
+    <section id="como-funciona" className="scroll-mt-20 py-16">
       <div className="mx-auto w-full max-w-6xl px-4">
-        <h2 className="mb-10 text-center text-3xl font-extrabold text-foreground">¿Cómo funciona?</h2>
-        <ol className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          {STEPS.map(({ icon: Icon, title, desc }, i) => (
-            <li key={title} className="flex flex-col items-center gap-3 text-center">
-              <div className="relative flex size-16 items-center justify-center rounded-2xl bg-primary/10">
-                <Icon size={28} className="text-primary" />
-                <span className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                  {i + 1}
-                </span>
-              </div>
-              <h3 className="text-base font-bold text-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground">{desc}</p>
-            </li>
+        <h2 className="mb-3 text-center text-3xl font-extrabold text-foreground md:text-4xl">Mirá, jugá y aprendé</h2>
+        <p className="mx-auto mb-12 max-w-xl text-center text-base text-muted-foreground">
+          Un ciclo simple que convierte cualquier video en aprendizaje real.
+        </p>
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+          {STEPS.map((s) => (
+            <div key={s.n} className="flex flex-col items-center gap-4 text-center">
+              <div className="w-full max-w-xs"><Preview kind={s.preview} /></div>
+              <span className="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">{s.n}</span>
+              <h3 className="text-xl font-bold text-foreground">{s.title}</h3>
+              <p className="max-w-xs text-sm text-muted-foreground">{s.desc}</p>
+            </div>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   )

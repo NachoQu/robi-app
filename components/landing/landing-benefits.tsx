@@ -10,7 +10,7 @@ export function LandingBenefits() {
   return (
     <section id="beneficios" className="scroll-mt-20 py-16">
       <div className="mx-auto w-full max-w-6xl px-4">
-        <h2 className="mb-10 text-center text-3xl font-extrabold text-foreground">Beneficios para toda la familia</h2>
+        <h2 className="mb-10 text-center text-3xl font-extrabold text-foreground md:text-4xl">Beneficios para toda la familia</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {BENEFITS.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
