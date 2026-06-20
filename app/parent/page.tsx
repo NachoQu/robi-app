@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { Users, Video, Star, Plus, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { StatCard } from '@/components/ui/stat-card'
+import { Progress } from '@/components/ui/progress'
 
 interface ChildProfile {
   id: string
@@ -19,33 +21,6 @@ interface VideoAssignment {
     status: 'processing' | 'ready' | 'rejected'
     reject_reason: string | null
   } | null
-}
-
-const STATUS_LABELS: Record<string, { label: string; emoji: string; color: string; bg: string }> = {
-  processing: {
-    label: 'Procesando',
-    emoji: '⏳',
-    color: 'oklch(0.45 0.15 60)',
-    bg: 'oklch(0.97 0.06 60 / 0.40)',
-  },
-  ready: {
-    label: 'Listo',
-    emoji: '✅',
-    color: 'oklch(0.35 0.14 155)',
-    bg: 'oklch(0.94 0.06 155 / 0.25)',
-  },
-  rejected: {
-    label: 'Rechazado',
-    emoji: '🚫',
-    color: 'oklch(0.45 0.20 27)',
-    bg: 'oklch(0.97 0.05 27 / 0.50)',
-  },
-  visto: {
-    label: 'Visto',
-    emoji: '🌟',
-    color: 'oklch(0.35 0.18 262)',
-    bg: 'oklch(0.94 0.06 262 / 0.20)',
-  },
 }
 
 export default async function ParentPage() {
@@ -109,199 +84,119 @@ export default async function ParentPage() {
     }
   }
 
+  // Derived stats for Resumen general
+  const totalAssigned = Object.values(assignmentsByProfile).reduce(
+    (sum, videos) => sum + videos.length,
+    0
+  )
+  const totalPoints = childProfiles.reduce((sum, p) => sum + (p.total_points ?? 0), 0)
+
   return (
     <div className="flex flex-col gap-8">
-      {/* Page title + quick actions */}
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--foreground)' }}>
-            Panel de adultos
-          </h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Panel</h1>
           <p className="text-sm text-muted-foreground font-medium mt-0.5">
             Supervisá el aprendizaje y cargá nuevos videos.
           </p>
         </div>
-
-        <div className="flex gap-3 flex-wrap">
-          <Link href="/parent/add-video">
-            <Button
-              className="rounded-2xl font-bold text-sm px-5 h-10 transition-all hover:opacity-90"
-              style={{ background: 'var(--robi-primary)', color: 'white' }}
-            >
-              🎬 Cargar video
-            </Button>
-          </Link>
-          <Link href="/parent/vouchers">
-            <Button
-              className="rounded-2xl font-bold text-sm px-5 h-10 transition-all hover:opacity-90"
-              style={{
-                background: 'oklch(0.97 0.05 60 / 0.60)',
-                color: 'oklch(0.40 0.18 60)',
-                border: '1.5px solid oklch(0.80 0.15 60 / 0.40)',
-              }}
-            >
-              🎁 Gestionar premios
-            </Button>
-          </Link>
-        </div>
+        <Link href="/parent/add-video">
+          <Button variant="primary" className="flex items-center gap-2">
+            <Plus size={18} />
+            Agregar video
+          </Button>
+        </Link>
       </div>
 
-      {/* No profiles state */}
-      {childProfiles.length === 0 && (
-        <Card
-          className="rounded-3xl border-0 shadow"
-          style={{ boxShadow: '0 4px 20px oklch(0.58 0.22 262 / 0.08)' }}
-        >
-          <CardContent className="px-8 py-10 flex flex-col items-center gap-4 text-center">
+      {/* Resumen general */}
+      <section>
+        <h2 className="mb-4 text-[22px] font-bold text-foreground">Resumen general</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard value={childProfiles.length} label="Hijos" icon={<Users size={22} />} />
+          <StatCard value={totalAssigned} label="Videos asignados" icon={<Video size={22} />} />
+          <StatCard value={totalPoints} label="Puntos totales" icon={<Star size={22} />} />
+        </div>
+      </section>
+
+      {/* Progreso por hijo */}
+      <section>
+        <h2 className="mb-4 text-[22px] font-bold text-foreground">Progreso por hijo</h2>
+
+        {childProfiles.length === 0 ? (
+          <div className="rounded-2xl bg-card border border-border px-8 py-10 flex flex-col items-center gap-4 text-center">
             <span className="text-5xl">👶</span>
-            <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>
-              Todavía no hay perfiles
-            </h2>
+            <h3 className="text-lg font-bold text-foreground">Todavía no hay perfiles</h3>
             <p className="text-sm text-muted-foreground font-medium max-w-xs">
               Creá el primer perfil para tu hijo/a desde el onboarding para empezar.
             </p>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {childProfiles.map((profile) => {
+              const videos = assignmentsByProfile[profile.id] ?? []
+              const completedCount = completedCountByProfile[profile.id] ?? 0
+              const assignedCount = videos.length
+              const progressValue = assignedCount > 0 ? Math.round((completedCount / assignedCount) * 100) : 0
 
-      {/* Profile cards */}
-      {childProfiles.map((profile) => {
-        const videos = assignmentsByProfile[profile.id] ?? []
-        const completedCount = completedCountByProfile[profile.id] ?? 0
-        const completedSet = completedVideosByProfile[profile.id] ?? new Set<string>()
-
-        return (
-          <Card
-            key={profile.id}
-            className="rounded-3xl border-0 shadow-lg"
-            style={{ boxShadow: '0 4px 28px oklch(0.58 0.22 262 / 0.10)' }}
-          >
-            {/* Profile header */}
-            <CardHeader className="px-6 pt-5 pb-3">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-4">
+              return (
+                <div
+                  key={profile.id}
+                  className="flex items-center gap-4 rounded-2xl bg-card border border-border px-5 py-4"
+                >
+                  {/* Avatar */}
                   <span
-                    className="flex items-center justify-center rounded-full text-3xl shrink-0"
-                    style={{
-                      width: 56,
-                      height: 56,
-                      background: 'var(--robi-accent)',
-                      boxShadow: '0 2px 10px oklch(0.75 0.18 90 / 0.30)',
-                    }}
+                    className="flex items-center justify-center rounded-full text-2xl shrink-0"
+                    style={{ width: 48, height: 48, background: 'var(--robi-accent)' }}
                   >
                     {profile.avatar}
                   </span>
-                  <div>
-                    <h2 className="text-lg font-extrabold" style={{ color: 'var(--foreground)' }}>
-                      {profile.name}
-                    </h2>
-                    <p className="text-xs font-semibold text-muted-foreground">
-                      {completedCount} actividad{completedCount !== 1 ? 'es' : ''} completada{completedCount !== 1 ? 's' : ''}
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className="flex items-center gap-2 rounded-2xl px-4 py-2 font-bold text-sm"
-                  style={{
-                    background: 'oklch(0.94 0.06 95 / 0.35)',
-                    color: 'oklch(0.38 0.16 90)',
-                    border: '1.5px solid oklch(0.75 0.18 90 / 0.35)',
-                  }}
-                >
-                  <span className="text-lg">⭐</span>
-                  <span>{profile.total_points ?? 0} puntos</span>
-                </div>
-              </div>
-            </CardHeader>
 
-            <CardContent className="px-6 pb-6">
-              {videos.length === 0 ? (
-                <div
-                  className="rounded-2xl px-5 py-4 text-center text-sm font-medium"
-                  style={{
-                    background: 'oklch(0.96 0.02 262)',
-                    color: 'var(--muted-foreground)',
-                    border: '1.5px dashed oklch(0.82 0.08 262)',
-                  }}
-                >
-                  Sin videos asignados todavía.{' '}
-                  <Link
-                    href="/parent/add-video"
-                    className="font-bold underline underline-offset-2 hover:opacity-70 transition-opacity"
-                    style={{ color: 'var(--robi-primary)' }}
-                  >
-                    Cargar uno →
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                    Videos asignados ({videos.length}/5)
-                  </p>
-                  {videos.map((assignment) => {
-                    const video = assignment.videos
-                    if (!video) return null
+                  {/* Name + progress */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-base font-bold text-foreground truncate">
+                        {profile.name}
+                      </span>
+                      <span className="text-xs font-semibold text-muted-foreground shrink-0">
+                        Nivel 1
+                      </span>
+                    </div>
 
-                    const isVisto = completedSet.has(video.id)
-                    const statusKey = isVisto ? 'visto' : video.status
-                    const badge = STATUS_LABELS[statusKey] ?? STATUS_LABELS.processing
-
-                    const youtubeId = video.youtube_url.match(
-                      /(?:v=|youtu\.be\/|embed\/|\/v\/|\/e\/|watch\?v=|&v=)([^#&?]*)/
-                    )?.[1]
-
-                    return (
-                      <div
-                        key={video.id}
-                        className="flex items-start gap-3 rounded-2xl px-4 py-3"
-                        style={{
-                          background: 'oklch(0.97 0.02 262)',
-                          border: '1.5px solid oklch(0.90 0.04 262)',
-                        }}
-                      >
-                        {/* Thumbnail */}
-                        {youtubeId && (
-                          <img
-                            src={`https://img.youtube.com/vi/${youtubeId}/default.jpg`}
-                            alt="Miniatura"
-                            className="w-16 h-12 rounded-xl object-cover shrink-0"
-                            style={{ border: '1.5px solid oklch(0.88 0.05 262)' }}
-                          />
-                        )}
-
-                        <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                          <p
-                            className="text-sm font-semibold leading-snug truncate"
-                            style={{ color: 'var(--foreground)' }}
-                          >
-                            {video.title ?? video.youtube_url}
-                          </p>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span
-                              className="text-xs font-bold px-2.5 py-0.5 rounded-full"
-                              style={{ background: badge.bg, color: badge.color }}
-                            >
-                              {badge.emoji} {badge.label}
-                            </span>
-                            {video.status === 'rejected' && video.reject_reason && (
-                              <span
-                                className="text-xs font-medium truncate max-w-[180px]"
-                                style={{ color: 'oklch(0.50 0.18 27)' }}
-                              >
-                                {video.reject_reason}
-                              </span>
-                            )}
-                          </div>
+                    {assignedCount === 0 ? (
+                      <p className="text-xs text-muted-foreground">
+                        Sin videos asignados.{' '}
+                        <Link
+                          href="/parent/add-video"
+                          className="font-bold underline underline-offset-2 text-primary hover:opacity-70 transition-opacity"
+                        >
+                          Cargar uno →
+                        </Link>
+                      </p>
+                    ) : (
+                      <>
+                        <Progress value={progressValue} className="mb-1" />
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            {completedCount}/{assignedCount} videos
+                          </span>
+                          <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+                            <Star size={12} className="text-primary" />
+                            {profile.total_points ?? 0} pts
+                          </span>
                         </div>
-                      </div>
-                    )
-                  })}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Chevron */}
+                  <ChevronRight size={18} className="text-muted-foreground shrink-0" />
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        )
-      })}
+              )
+            })}
+          </div>
+        )}
+      </section>
     </div>
   )
 }
