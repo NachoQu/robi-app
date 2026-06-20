@@ -2,7 +2,7 @@
 
 /**
  * Robi — the animated SVG mascot robot.
- * Moods: idle | thinking | celebrate | talking
+ * Moods: idle | thinking | celebrate | talking | encourage
  * Respects prefers-reduced-motion by toning down animations.
  */
 
