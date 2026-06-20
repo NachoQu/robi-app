@@ -42,6 +42,7 @@ export default function QuizPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [answerState, setAnswerState] = useState<AnswerState>('idle')
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(false)
   const [ttsEnabled, setTtsEnabled] = useState(false)
   const ttsSupported = useRef(false)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
@@ -135,6 +136,7 @@ export default function QuizPage() {
     } else {
       // Last question: submit
       setSubmitting(true)
+      setSubmitError(false)
       try {
         const result = await submitQuiz({
           childProfileId: profileId,
@@ -147,8 +149,10 @@ export default function QuizPage() {
           JSON.stringify(result)
         )
         router.push(`/kid/${profileId}/result`)
-      } catch {
+      } catch (err) {
+        console.error('submitQuiz failed', err)
         setSubmitting(false)
+        setSubmitError(true)
       }
     }
   }
@@ -410,8 +414,18 @@ export default function QuizPage() {
                   ? '¡Guardando resultado…'
                   : currentIndex < questions.length - 1
                   ? 'Siguiente pregunta →'
+                  : submitError
+                  ? 'Reintentar 🔄'
                   : '¡Ver mi resultado! 🎉'}
               </motion.button>
+              {submitError && (
+                <p
+                  className="mt-3 text-center text-base font-bold"
+                  style={{ color: 'var(--robi-coral)' }}
+                >
+                  Ups, no pudimos guardar tu resultado. ¡Tocá de nuevo!
+                </p>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
