@@ -75,7 +75,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="rounded-3xl border-0 shadow-2xl max-w-sm w-full"
-        style={{ boxShadow: '0 8px 40px oklch(0.58 0.22 262 / 0.18)' }}
+        style={{ boxShadow: '0 8px 40px color-mix(in oklch, var(--robi-primary) 18%, transparent)' }}
       >
         <DialogHeader className="pt-2 pb-0">
           <div className="flex flex-col items-center gap-2">
@@ -107,8 +107,8 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
                 disabled={loading}
                 className="w-14 h-14 text-center text-2xl font-extrabold rounded-2xl border-2 outline-none transition-all duration-150 select-none"
                 style={{
-                  borderColor: digit ? 'var(--robi-primary)' : 'oklch(0.85 0.05 262)',
-                  background: digit ? 'oklch(0.94 0.06 262)' : 'oklch(0.97 0.02 262)',
+                  borderColor: digit ? 'var(--robi-primary)' : 'var(--border)',
+                  background: digit ? 'color-mix(in oklch, var(--robi-primary) 10%, transparent)' : 'var(--muted)',
                   color: 'var(--robi-primary)',
                   caretColor: 'var(--robi-primary)',
                 }}
@@ -144,7 +144,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
               disabled={loading || digits.join('').length < 4}
               className="w-full text-base font-bold rounded-2xl transition-all duration-200 hover:opacity-90"
               style={{
-                background: loading ? 'oklch(0.75 0.10 262)' : 'var(--robi-primary)',
+                background: loading ? 'color-mix(in oklch, var(--robi-primary) 60%, white)' : 'var(--robi-primary)',
                 color: 'white',
                 height: '3rem',
                 opacity: digits.join('').length < 4 && !loading ? 0.55 : 1,

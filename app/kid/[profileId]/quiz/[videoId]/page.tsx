@@ -3,7 +3,9 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Check } from 'lucide-react'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
+import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { submitQuiz } from '@/actions/quiz'
 
@@ -159,17 +161,12 @@ export default function QuizPage() {
 
   if (loading) {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center gap-6"
-        style={{
-          background: 'linear-gradient(160deg, oklch(0.92 0.07 262) 0%, oklch(0.96 0.06 95) 60%, oklch(0.94 0.08 155 / 0.4) 100%)',
-        }}
-      >
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
         <motion.div
           animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.05, 1] }}
           transition={{ repeat: Infinity, duration: 1.4 }}
         >
-          <RobiPlaceholder size={80} />
+          <RobiPlaceholder size={80} mood="thinking" />
         </motion.div>
         <p className="text-xl font-extrabold" style={{ color: 'var(--robi-primary)' }}>
           Cargando preguntas…
@@ -189,13 +186,18 @@ export default function QuizPage() {
   const total = questions.length
   const progress = ((currentIndex) / total) * 100
 
+  // Derive Robi mood from answer state
+  const robiMood = answerState === 'correct' ? 'celebrate' : answerState === 'incorrect' ? 'encourage' : 'talking'
+
+  // Derive Robi bubble background from answer state
+  const robiBubbleBg = answerState === 'correct'
+    ? 'bg-secondary/20'
+    : answerState === 'incorrect'
+    ? 'bg-[var(--robi-coral)]/15'
+    : 'bg-primary/10'
+
   return (
-    <div
-      className="min-h-screen flex flex-col px-4 py-6"
-      style={{
-        background: 'linear-gradient(160deg, oklch(0.92 0.07 262) 0%, oklch(0.96 0.06 95) 60%, oklch(0.94 0.08 155 / 0.4) 100%)',
-      }}
-    >
+    <div className="min-h-screen bg-background flex flex-col px-4 py-6">
       <div className="w-full max-w-lg mx-auto flex flex-col gap-5">
 
         {/* Header row: progress + TTS toggle */}
@@ -212,14 +214,10 @@ export default function QuizPage() {
                 {currentIndex}/{total} respondidas
               </span>
             </div>
-            {/* Progress bar */}
-            <div
-              className="w-full h-3 rounded-full overflow-hidden"
-              style={{ background: 'oklch(0.88 0.06 262 / 0.5)' }}
-            >
+            {/* Progress bar using design-system primitive */}
+            <div className="w-full h-3 rounded-full overflow-hidden bg-muted">
               <motion.div
-                className="h-full rounded-full"
-                style={{ background: 'var(--robi-primary)' }}
+                className="h-full rounded-full bg-primary"
                 initial={false}
                 animate={{ width: `${progress}%` }}
                 transition={{ type: 'spring', stiffness: 180, damping: 22 }}
@@ -233,9 +231,9 @@ export default function QuizPage() {
               onClick={handleToggleTts}
               className="flex flex-col items-center gap-0.5 rounded-2xl px-3 py-2 text-xs font-extrabold transition-all active:scale-95 shrink-0"
               style={{
-                background: ttsEnabled ? 'var(--robi-primary)' : 'oklch(0.88 0.06 262 / 0.5)',
-                color: ttsEnabled ? 'white' : 'oklch(0.35 0.1 262)',
-                boxShadow: ttsEnabled ? '0 2px 10px oklch(0.58 0.22 262 / 0.3)' : 'none',
+                background: ttsEnabled ? 'var(--robi-primary)' : 'var(--muted)',
+                color: ttsEnabled ? 'white' : 'var(--muted-foreground)',
+                boxShadow: ttsEnabled ? '0 2px 10px color-mix(in oklch, var(--robi-primary) 30%, transparent)' : 'none',
               }}
               aria-label={ttsEnabled ? 'Apagar lectura en voz alta' : 'Activar lectura en voz alta'}
             >
@@ -250,14 +248,7 @@ export default function QuizPage() {
           key={`robi-${currentIndex}-${answerState}`}
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 rounded-3xl px-4 py-3"
-          style={{
-            background: answerState === 'correct'
-              ? 'oklch(0.92 0.12 155 / 0.7)'
-              : answerState === 'incorrect'
-              ? 'oklch(0.94 0.10 30 / 0.7)'
-              : 'oklch(0.94 0.06 262 / 0.6)',
-          }}
+          className={`flex items-center gap-3 rounded-3xl px-4 py-3 ${robiBubbleBg}`}
         >
           <motion.div
             animate={
@@ -269,9 +260,9 @@ export default function QuizPage() {
             }
             transition={{ duration: 0.5 }}
           >
-            <RobiPlaceholder size={44} mood="talking" />
+            <RobiPlaceholder size={44} mood={robiMood} />
           </motion.div>
-          <p className="text-sm font-bold" style={{ color: 'oklch(0.20 0.06 262)' }}>
+          <p className="text-sm font-bold text-foreground">
             {getRobiMsg(answerState, currentIndex)}
           </p>
         </motion.div>
@@ -284,22 +275,15 @@ export default function QuizPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
             transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-            className="rounded-3xl px-5 py-5 shadow-lg"
-            style={{
-              background: 'oklch(1 0 0 / 0.88)',
-              boxShadow: '0 6px 28px oklch(0.58 0.22 262 / 0.15)',
-            }}
+            className="bg-card shadow-sm border border-border rounded-3xl px-5 py-5"
           >
-            <p
-              className="text-lg font-extrabold leading-snug"
-              style={{ color: 'oklch(0.18 0.05 262)' }}
-            >
+            <p className="text-lg font-semibold leading-snug text-foreground">
               {currentQuestion.question_text}
             </p>
           </motion.div>
         </AnimatePresence>
 
-        {/* Options */}
+        {/* Options — 2×2 grid on lg+, single column on mobile */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`opts-${currentIndex}`}
@@ -307,34 +291,42 @@ export default function QuizPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ delay: 0.08 }}
-            className="flex flex-col gap-3"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-3"
           >
             {currentQuestion.options.map((option, idx) => {
               const isSelected = selectedOption === idx
               const isCorrect = idx === currentQuestion.correct_index
               const revealed = answerState !== 'idle'
 
-              let bg = 'oklch(1 0 0 / 0.75)'
-              let border = '2px solid oklch(0.82 0.08 262 / 0.4)'
-              let color = 'oklch(0.20 0.06 262)'
-              let shadow = '0 2px 10px oklch(0.58 0.22 262 / 0.08)'
+              // Build className-based styles where possible; fall back to inline for dynamic values
+              let optionClassName = 'w-full text-left rounded-2xl px-4 py-4 font-bold text-base transition-colors border-2'
 
               if (revealed) {
                 if (isCorrect) {
-                  bg = 'var(--robi-success)'
-                  border = '2px solid oklch(0.55 0.18 155)'
-                  color = 'white'
-                  shadow = '0 4px 16px oklch(0.55 0.18 155 / 0.4)'
+                  optionClassName += ' bg-secondary text-secondary-foreground border-secondary'
                 } else if (isSelected && !isCorrect) {
-                  bg = 'var(--robi-coral)'
-                  border = '2px solid oklch(0.55 0.18 30)'
-                  color = 'white'
-                  shadow = '0 4px 16px oklch(0.55 0.18 30 / 0.4)'
+                  optionClassName += ' bg-[var(--robi-coral)] text-white border-[var(--robi-coral)]'
                 } else {
-                  bg = 'oklch(0.94 0.02 262 / 0.5)'
-                  color = 'oklch(0.55 0.05 262)'
-                  border = '2px solid oklch(0.82 0.04 262 / 0.3)'
+                  optionClassName += ' bg-muted/50 text-muted-foreground border-border'
                 }
+              } else {
+                optionClassName += ' bg-card border-border hover:border-primary/50'
+              }
+
+              // Badge (A/B/C/D circle) colors
+              let badgeBg: string
+              let badgeColor: string
+              if (revealed) {
+                if (isCorrect || isSelected) {
+                  badgeBg = 'rgba(255,255,255,0.25)'
+                  badgeColor = isCorrect ? 'var(--secondary-foreground)' : 'white'
+                } else {
+                  badgeBg = 'var(--muted)'
+                  badgeColor = 'var(--muted-foreground)'
+                }
+              } else {
+                badgeBg = 'var(--robi-primary)'
+                badgeColor = 'white'
               }
 
               return (
@@ -347,18 +339,12 @@ export default function QuizPage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.07, type: 'spring', stiffness: 260, damping: 22 }}
-                  className="w-full text-left rounded-2xl px-4 py-4 font-bold text-base transition-colors"
-                  style={{ background: bg, border, color, boxShadow: shadow }}
+                  className={optionClassName}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className="inline-flex items-center justify-center w-8 h-8 rounded-full font-extrabold text-sm shrink-0"
-                      style={{
-                        background: revealed
-                          ? (isCorrect ? 'oklch(1 0 0 / 0.25)' : isSelected ? 'oklch(1 0 0 / 0.25)' : 'oklch(0.80 0.04 262 / 0.4)')
-                          : 'var(--robi-primary)',
-                        color: revealed ? (isCorrect || isSelected ? 'white' : 'oklch(0.55 0.05 262)') : 'white',
-                      }}
+                      style={{ background: badgeBg, color: badgeColor }}
                     >
                       {['A', 'B', 'C', 'D'][idx]}
                     </span>
@@ -369,7 +355,7 @@ export default function QuizPage() {
                         animate={{ scale: 1 }}
                         className="ml-auto"
                       >
-                        ✅
+                        <Check className="w-5 h-5" />
                       </motion.span>
                     )}
                     {revealed && isSelected && !isCorrect && (
@@ -398,17 +384,11 @@ export default function QuizPage() {
               exit={{ opacity: 0, y: 8 }}
               transition={{ type: 'spring', stiffness: 300, damping: 24 }}
             >
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
+              <Button
+                variant="primary"
+                className="w-full h-12 text-lg font-extrabold tracking-wide rounded-3xl"
                 onClick={handleNext}
                 disabled={submitting}
-                className="w-full rounded-3xl py-4 text-lg font-extrabold tracking-wide shadow-xl transition-colors"
-                style={{
-                  background: submitting ? 'oklch(0.75 0.10 155)' : 'var(--robi-success)',
-                  color: 'white',
-                  boxShadow: '0 6px 24px oklch(0.55 0.18 155 / 0.45)',
-                }}
               >
                 {submitting
                   ? '¡Guardando resultado…'
@@ -417,7 +397,7 @@ export default function QuizPage() {
                   : submitError
                   ? 'Reintentar 🔄'
                   : '¡Ver mi resultado! 🎉'}
-              </motion.button>
+              </Button>
               {submitError && (
                 <p
                   className="mt-3 text-center text-base font-bold"
