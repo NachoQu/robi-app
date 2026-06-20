@@ -26,10 +26,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
   const [upgradeOpen, setUpgradeOpen] = useState(false)
 
   return (
-    <div
-      className="min-h-screen flex flex-col px-4 py-8"
-      style={{ background: 'linear-gradient(145deg, oklch(0.94 0.06 262) 0%, oklch(0.96 0.05 95) 100%)' }}
-    >
+    <div className="min-h-screen flex flex-col px-4 py-8 bg-background">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
@@ -43,10 +40,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
         >
           <RobiPlaceholder size={72} />
         </motion.div>
-        <h1
-          className="text-3xl font-extrabold tracking-tight text-center"
-          style={{ color: 'var(--robi-primary)' }}
-        >
+        <h1 className="text-3xl font-extrabold tracking-tight text-center text-primary">
           ¡Hola! ¿Quién aprende hoy?
         </h1>
         <p className="text-sm text-muted-foreground text-center font-medium">
@@ -67,27 +61,15 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
               whileTap={{ scale: 0.96 }}
             >
               <Link href={`/kid/${profile.id}`} className="block">
-                <Card
-                  className="rounded-3xl border-0 shadow-lg cursor-pointer transition-shadow hover:shadow-xl"
-                  style={{ boxShadow: '0 4px 20px oklch(0.58 0.22 262 / 0.13)' }}
-                >
+                <Card className="rounded-3xl bg-card shadow-sm border border-border cursor-pointer transition-shadow hover:shadow-xl">
                   <CardContent className="flex flex-col items-center gap-2 py-6 px-4">
                     <span className="text-5xl select-none" role="img" aria-label={`Avatar de ${profile.name}`}>
                       {profile.avatar}
                     </span>
-                    <span
-                      className="text-base font-extrabold text-center leading-tight"
-                      style={{ color: 'var(--foreground)' }}
-                    >
+                    <span className="text-base font-extrabold text-center leading-tight text-foreground">
                       {profile.name}
                     </span>
-                    <span
-                      className="flex items-center gap-1 text-sm font-bold rounded-full px-3 py-1"
-                      style={{
-                        background: 'oklch(0.94 0.06 95)',
-                        color: 'oklch(0.45 0.15 80)',
-                      }}
-                    >
+                    <span className="flex items-center gap-1 text-sm font-bold rounded-full px-3 py-1 bg-[var(--robi-accent)]/20 text-[#8A6A00]">
                       ⭐ {profile.total_points.toLocaleString('es-AR')}
                     </span>
                   </CardContent>
@@ -112,19 +94,10 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
               }}
               className="w-full"
             >
-              <Card
-                className="rounded-3xl border-2 border-dashed cursor-pointer transition-all hover:shadow-md"
-                style={{
-                  borderColor: 'oklch(0.75 0.12 262)',
-                  background: 'oklch(0.97 0.03 262 / 0.6)',
-                }}
-              >
+              <Card className="rounded-3xl border-2 border-dashed border-primary/40 bg-primary/5 cursor-pointer transition-all hover:shadow-md">
                 <CardContent className="flex flex-col items-center gap-2 py-6 px-4">
                   <span className="text-4xl select-none">➕</span>
-                  <span
-                    className="text-sm font-bold text-center"
-                    style={{ color: 'var(--robi-primary)' }}
-                  >
+                  <span className="text-sm font-bold text-center text-primary">
                     Agregar perfil
                   </span>
                 </CardContent>
@@ -143,7 +116,6 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           <button
             onClick={() => setPinOpen(true)}
             className="text-sm font-semibold text-muted-foreground hover:underline transition-all flex items-center gap-1.5"
-            style={{ color: 'oklch(0.55 0.04 262)' }}
           >
             Panel de adultos 🔒
           </button>
@@ -155,39 +127,27 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
 
       {/* Upgrade CTA Dialog */}
       <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
-        <DialogContent
-          className="rounded-3xl border-0 shadow-2xl max-w-sm w-full"
-          style={{ boxShadow: '0 8px 40px oklch(0.58 0.22 262 / 0.18)' }}
-        >
+        <DialogContent className="rounded-3xl border border-border shadow-2xl max-w-sm w-full bg-card">
           <DialogHeader className="pt-2">
             <div className="flex flex-col items-center gap-3">
               <span className="text-5xl select-none">🚀</span>
-              <DialogTitle
-                className="text-xl font-extrabold text-center"
-                style={{ color: 'var(--robi-primary)' }}
-              >
+              <DialogTitle className="text-xl font-extrabold text-center text-primary">
                 ¡Más perfiles con Premium!
               </DialogTitle>
             </div>
           </DialogHeader>
           <div className="flex flex-col gap-4 pb-4 px-2 text-center">
             <p className="text-base text-muted-foreground font-medium">
-              La versión gratuita incluye 1 perfil. Con <strong style={{ color: 'var(--robi-primary)' }}>Robi Premium</strong> podés agregar hasta 5 perfiles para toda la familia. 👨‍👩‍👧‍👦
+              La versión gratuita incluye 1 perfil. Con <strong className="text-primary">Robi Premium</strong> podés agregar hasta 5 perfiles para toda la familia. 👨‍👩‍👧‍👦
             </p>
-            <div
-              className="rounded-2xl px-4 py-3 text-sm font-semibold"
-              style={{
-                background: 'oklch(0.94 0.06 95 / 0.5)',
-                color: 'oklch(0.45 0.15 80)',
-                border: '1.5px solid oklch(0.82 0.16 95)',
-              }}
-            >
+            <div className="rounded-2xl px-4 py-3 text-sm font-semibold bg-[var(--robi-accent)]/20 text-[#8A6A00] border border-[var(--robi-accent)]/40">
               ⭐ Próximamente disponible
             </div>
             <Button
+              variant="primary"
+              size="lg"
               onClick={() => setUpgradeOpen(false)}
-              className="rounded-2xl font-bold"
-              style={{ background: 'var(--robi-primary)', color: 'white', height: '3rem' }}
+              className="rounded-2xl font-bold h-12"
             >
               Entendido
             </Button>
