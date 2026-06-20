@@ -3,26 +3,8 @@
 // Minimal typing for the YouTube IFrame Player API
 declare global {
   interface Window {
-    YT: {
-      Player: new (
-        elementId: string,
-        options: {
-          videoId: string
-          playerVars?: Record<string, string | number>
-          events?: {
-            onReady?: (event: { target: { playVideo: () => void } }) => void
-            onStateChange?: (event: { data: number }) => void
-          }
-        }
-      ) => void
-      PlayerState: {
-        ENDED: number
-        PLAYING: number
-        PAUSED: number
-        BUFFERING: number
-        CUED: number
-      }
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    YT: any
     onYouTubeIframeAPIReady: () => void
   }
 }
@@ -45,13 +27,13 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
   const playerContainerId = 'yt-player-container'
   const [videoEnded, setVideoEnded] = useState(false)
   const [apiReady, setApiReady] = useState(false)
-  const playerRef = useRef<boolean>(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const playerRef = useRef<any>(null)
 
   const initPlayer = useCallback(() => {
     if (playerRef.current) return
-    playerRef.current = true
 
-    new window.YT.Player(playerContainerId, {
+    playerRef.current = new window.YT.Player(playerContainerId, {
       videoId: youtubeId,
       playerVars: {
         rel: 0,
@@ -59,7 +41,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
         playsinline: 1,
       },
       events: {
-        onStateChange: (event) => {
+        onStateChange: (event: { data: number }) => {
           // YT.PlayerState.ENDED === 0
           if (event.data === 0) {
             setVideoEnded(true)
@@ -87,7 +69,9 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
     }
 
     return () => {
-      // Clean up only our callback; do not remove the script (YT caches it globally)
+      // Clean up: destroy the player instance and reset the API-ready callback
+      playerRef.current?.destroy?.()
+      playerRef.current = null
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       window.onYouTubeIframeAPIReady = () => {}
     }

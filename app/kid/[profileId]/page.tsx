@@ -33,7 +33,10 @@ export default async function KidLibraryPage({ params }: PageProps) {
     videos: { id: string; youtube_id: string; title: string | null; status: string }
   }
 
-  const videos: AssignedVideo[] = (assignments ?? []) as unknown as AssignedVideo[]
+  const videos: AssignedVideo[] = ((assignments ?? []) as unknown as AssignedVideo[])
+    // Defensive JS-level guard: only render videos whose status is exactly 'ready'
+    // (belt-and-suspenders on top of the PostgREST embedded filter)
+    .filter((a) => a.videos?.status === 'ready')
 
   // Load completed activities for this profile to determine "visto" state
   const videoIds = videos.map((a) => a.video_id)
