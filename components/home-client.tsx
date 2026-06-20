@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { PinDialog } from '@/components/pin-dialog'
+import { signOut } from '@/actions/auth'
 
 interface ChildProfile {
   id: string
@@ -106,12 +107,12 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           </motion.div>
         </div>
 
-        {/* Parent panel button */}
+        {/* Acciones de adulto */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-4"
+          className="mt-4 flex items-center gap-3"
         >
           <button
             onClick={() => setPinOpen(true)}
@@ -119,6 +120,15 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           >
             Panel de adultos 🔒
           </button>
+          <span className="text-border" aria-hidden>·</span>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="text-sm font-semibold text-muted-foreground hover:underline transition-all"
+            >
+              Cerrar sesión
+            </button>
+          </form>
         </motion.div>
       </div>
 
