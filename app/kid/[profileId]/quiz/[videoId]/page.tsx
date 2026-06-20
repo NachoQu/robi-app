@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
 import { submitQuiz } from '@/actions/quiz'
 
@@ -234,7 +233,7 @@ export default function QuizPage() {
               style={{
                 background: ttsEnabled ? 'var(--robi-primary)' : 'hsl(var(--muted))',
                 color: ttsEnabled ? 'white' : 'hsl(var(--muted-foreground))',
-                boxShadow: ttsEnabled ? '0 2px 10px var(--robi-primary)/0.3' : 'none',
+                boxShadow: ttsEnabled ? '0 2px 10px color-mix(in oklch, var(--robi-primary) 30%, transparent)' : 'none',
               }}
               aria-label={ttsEnabled ? 'Apagar lectura en voz alta' : 'Activar lectura en voz alta'}
             >
@@ -301,7 +300,6 @@ export default function QuizPage() {
 
               // Build className-based styles where possible; fall back to inline for dynamic values
               let optionClassName = 'w-full text-left rounded-2xl px-4 py-4 font-bold text-base transition-colors border-2'
-              let optionStyle: React.CSSProperties = {}
 
               if (revealed) {
                 if (isCorrect) {
@@ -321,7 +319,7 @@ export default function QuizPage() {
               if (revealed) {
                 if (isCorrect || isSelected) {
                   badgeBg = 'rgba(255,255,255,0.25)'
-                  badgeColor = isCorrect ? 'hsl(var(--secondary-foreground))' : 'white'
+                  badgeColor = isCorrect ? 'var(--secondary-foreground)' : 'white'
                 } else {
                   badgeBg = 'hsl(var(--muted))'
                   badgeColor = 'hsl(var(--muted-foreground))'
@@ -342,7 +340,6 @@ export default function QuizPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.07, type: 'spring', stiffness: 260, damping: 22 }}
                   className={optionClassName}
-                  style={optionStyle}
                 >
                   <span className="flex items-center gap-3">
                     <span
