@@ -9,9 +9,8 @@ export function LandingPricing() {
   return (
     <section id="precios" className="scroll-mt-20 bg-card/40 py-16">
       <div className="mx-auto w-full max-w-4xl px-4">
-        <h2 className="mb-10 text-center text-3xl font-extrabold text-foreground">Precios simples</h2>
+        <h2 className="mb-10 text-center text-3xl font-extrabold text-foreground md:text-4xl">Precios simples</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {/* Gratis */}
           <div className="flex flex-col gap-4 rounded-2xl border-2 border-primary bg-card p-6 shadow-sm">
             <div>
               <h3 className="text-lg font-bold text-foreground">Gratis</h3>
@@ -29,7 +28,6 @@ export function LandingPricing() {
             </Link>
           </div>
 
-          {/* Premium — próximamente */}
           <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 opacity-80 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
