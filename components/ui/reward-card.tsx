@@ -29,7 +29,7 @@ export function RewardCard({
     >
       <div className="text-4xl select-none" aria-hidden>{icon}</div>
       <p className="font-bold text-sm leading-snug text-foreground">{title}</p>
-      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--robi-accent)]/20 px-2.5 py-0.5 text-xs font-bold text-[#8A6A00]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--robi-accent)]/20 px-2.5 py-0.5 text-xs font-bold text-[var(--robi-accent-ink)]">
         ⭐ {points.toLocaleString('es-AR')} pts
       </span>
       {locked ? (

@@ -120,7 +120,7 @@ export default function AddVideoPage() {
               <RobiPlaceholder size={96} mood="thinking" />
             </motion.div>
             <div>
-              <h2 className="text-2xl font-extrabold mb-2 text-robi-primary">
+              <h2 className="text-2xl font-extrabold mb-2 text-primary">
                 Robi está preparando la actividad{loadingDots}
               </h2>
               <p className="text-base text-muted-foreground font-medium">
@@ -133,7 +133,7 @@ export default function AddVideoPage() {
               {[0, 1, 2].map((i) => (
                 <motion.span
                   key={i}
-                  className="inline-block w-3 h-3 rounded-full bg-robi-primary"
+                  className="inline-block w-3 h-3 rounded-full bg-primary"
                   animate={{ opacity: [0.3, 1, 0.3] }}
                   transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.3 }}
                 />
@@ -160,7 +160,7 @@ export default function AddVideoPage() {
                 <RobiPlaceholder size={80} />
               </motion.div>
               <div className="text-4xl">🎉</div>
-              <h2 className="text-2xl font-extrabold text-robi-primary">
+              <h2 className="text-2xl font-extrabold text-primary">
                 ¡Video cargado con éxito!
               </h2>
               <p className="text-base text-muted-foreground font-medium">
@@ -227,7 +227,7 @@ export default function AddVideoPage() {
             {/* Header */}
             <div className="flex flex-col items-center gap-3 text-center pt-4">
               <RobiPlaceholder size={64} />
-              <h1 className="text-2xl font-extrabold tracking-tight text-robi-primary">
+              <h1 className="text-2xl font-extrabold tracking-tight text-primary">
                 Cargar video educativo
               </h1>
               <p className="text-sm text-muted-foreground font-medium max-w-sm">
@@ -308,23 +308,15 @@ export default function AddVideoPage() {
                     className={[
                       'flex items-start gap-3 cursor-pointer select-none rounded-2xl px-4 py-3 transition-colors',
                       checked
-                        ? 'border border-transparent'
+                        ? 'bg-[var(--robi-secondary)]/15 border border-[var(--robi-secondary)]/40'
                         : 'bg-muted border border-border',
                     ].join(' ')}
-                    style={
-                      checked
-                        ? {
-                            background: 'oklch(0.94 0.06 155 / 0.18)',
-                            border: '1.5px solid oklch(0.68 0.18 155 / 0.40)',
-                          }
-                        : undefined
-                    }
                   >
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={(e) => setChecked(e.target.checked)}
-                      className="mt-0.5 w-5 h-5 accent-robi-secondary shrink-0 cursor-pointer"
+                      className="mt-0.5 w-5 h-5 accent-secondary shrink-0 cursor-pointer"
                     />
                     <span className="text-sm font-semibold leading-snug text-foreground">
                       Revisé el video y es apto para mi hijo/a

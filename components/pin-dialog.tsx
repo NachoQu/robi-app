@@ -125,12 +125,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="rounded-xl px-4 py-2.5 text-sm font-semibold text-center w-full"
-                style={{
-                  background: 'oklch(0.97 0.05 27)',
-                  color: 'oklch(0.50 0.20 27)',
-                  border: '1.5px solid oklch(0.85 0.12 27)',
-                }}
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold text-center w-full bg-destructive/10 text-destructive border border-destructive/30"
               >
                 ⚠️ {error}
               </motion.div>
