@@ -32,7 +32,8 @@ El foco es el **aprendizaje, no la evaluación**: no hay aprobado ni reprobado. 
 | Capa | Tecnología |
 |---|---|
 | Framework | **Next.js 16** (App Router, TypeScript) |
-| UI | Tailwind CSS + shadcn/ui + Framer Motion |
+| UI | Tailwind CSS v4 + shadcn/ui + Framer Motion + lucide-react |
+| Diseño | Sistema de diseño Robi (tokens verde teal + primitivos) — ver abajo |
 | Auth + DB | **Supabase** (Auth email/password + Postgres con RLS) |
 | IA (quiz + filtro) | **OpenRouter** (modelos gratis; default `openai/gpt-oss-120b:free`) — detrás de una capa intercambiable |
 | Transcripción YouTube | **Supadata API** |
@@ -58,6 +59,16 @@ Todo el acceso al LLM pasa por la interfaz `AIProvider` (`filterContent` + `gene
 
 ### Gamificación
 10 pts base **siempre** + 5 por acierto (máx 35) + 1 badge por video. La escritura de puntos es atómica vía la función RPC `complete_activity` en Postgres (evita condiciones de carrera). Lógica en `lib/scoring.ts`.
+
+### Sistema de diseño Robi (`app/globals.css` + `components/`)
+Identidad **verde teal**, fuente **Nunito**. Todo color sale de **tokens CSS** definidos en `app/globals.css` (no hay literales `oklch`/hex sueltos en los componentes).
+
+- **Paleta:** `--robi-primary` `#2DBE9E` · `--robi-secondary` `#7ED957` · `--robi-accent` `#FFC447` · `--robi-coral` `#FF7A59` · `--robi-blue` `#4CA3F7` · fondo `#FAF7F2`. Mapeados también a los tokens semánticos de shadcn (`--primary`, `--accent`, etc.).
+- **Tokens de "tinta":** `--robi-accent-ink` / `--robi-blue-ink` / `--robi-success-ink` para texto oscuro legible sobre fondos tintados claros (chips, pills).
+- **Primitivos** (`components/ui/`): `Button` (variantes `primary`/`secondary`/`tertiary`), `StatusChip`, `AchievementBadge`, `StatCard`, `RewardCard`, `VideoCard`, `Progress`.
+- **Shell responsive** (`components/shell/`): `AppShell` (sidebar en `lg+`, bottom-nav en mobile) con wrappers client `KidShell` y `ParentShell` (mantienen los íconos lucide dentro del límite client, las páginas Server solo pasan props serializables).
+- **Mascota:** `components/robi/Robi.tsx` — SVG animado con moods `idle | thinking | celebrate | talking | encourage` (respeta `prefers-reduced-motion`).
+- **Regla de opacidad (Tailwind v4):** usar utilidades (`bg-primary/10`) — compilan a `color-mix` y funcionan con tokens hex. **Nunca** `var(--token)/0.3` ni `hsl(var(--hexToken))` en estilos inline (rompen con tokens hex).
 
 ---
 
@@ -105,9 +116,10 @@ npx supabase gen types typescript --project-id <PROJECT_ID> > lib/supabase/types
 app/
   (auth)/login, signup       # auth del padre
   onboarding/                # crear 1er perfil (server-guard: si ya hay perfil, redirige)
-  page.tsx                   # home: selección de perfiles + gate de PIN
-  parent/                    # panel del adulto (protegido por cookie de PIN)
+  page.tsx                   # / → Landing (sin sesión) | selección de perfiles + gate de PIN (con sesión)
+  parent/                    # panel del adulto (ParentShell + cookie de PIN)
   kid/[profileId]/           # mundo del niño (biblioteca, reproductor, quiz, resultado, álbum, premios)
+  globals.css                # tokens del sistema de diseño (paleta + inks + shadcn)
 actions/                     # Server Actions: auth, profiles, pin, videos, quiz, vouchers
 lib/
   ai/                        # AIProvider + OpenRouterProvider + ClaudeProvider + prompts (capa intercambiable)
@@ -115,11 +127,14 @@ lib/
   youtube/                   # parseo de URL + transcripción (Supadata)
   scoring.ts                 # lógica de puntos/badges
 components/
-  robi-placeholder.tsx       # placeholder de Robi (se reemplaza por la mascota animada)
-  ui/                        # shadcn
+  landing/                   # landing de marketing pública (nav, hero, cómo funciona, beneficios, precios, footer)
+  shell/                     # AppShell responsive + KidShell / ParentShell
+  robi/Robi.tsx              # mascota SVG animada (moods)
+  robi-placeholder.tsx       # wrapper de Robi (compat con call-sites existentes)
+  ui/                        # shadcn + primitivos del sistema (Button, StatusChip, AchievementBadge, StatCard, RewardCard, VideoCard, Progress)
 proxy.ts                     # auth/route-protection (Next 16: reemplaza middleware, corre en Node runtime)
 supabase/migrations/         # schema + RLS + RPC
-docs/superpowers/            # 👈 spec de diseño + plan de implementación (LEER PRIMERO)
+docs/superpowers/            # 👈 specs de diseño + planes de implementación (LEER PRIMERO)
 ```
 
 ---
@@ -154,21 +169,27 @@ git push -u origin feat/tu-feature
 - ✅ Capa de IA intercambiable (OpenRouter free + fallback) — verificada en vivo
 - ✅ Pipeline de procesamiento de video (transcripción → filtro → quiz → anclaje)
 - ✅ Auth (login/signup) + onboarding (crear perfil)
-- ✅ Home de selección de perfiles + gate de PIN del adulto
+- ✅ Mundo del niño completo: biblioteca + reproductor + quiz con Robi + resultado + álbum + premios (canje mock)
+- ✅ Panel del adulto: dashboard con StatCards + progreso por hijo, cargar video, gestión de vales
+- ✅ Mascota Robi animada (SVG con moods) — reemplazó el placeholder 🤖
+- ✅ **Sistema de diseño Robi** aplicado a toda la app (paleta verde teal, primitivos, AppShell responsive)
+- ✅ **Landing de marketing** pública en `/` (sin sesión)
 - ✅ Deploy en Vercel funcionando
 
-**Pendiente** (ver el plan para el detalle):
-- ⏳ Panel del adulto: cargar video con loader de Robi + dashboard de progreso
-- ⏳ Gestión de vales
-- ⏳ Mundo del niño: biblioteca + reproductor + quiz con Robi + pantalla de resultado
-- ⏳ Componente Robi animado (reemplaza el placeholder 🤖)
-- ⏳ Álbum de badges + catálogo de premios (canje mock)
+**Pendiente / próxima fase:**
+- ⏳ Login pixel-perfect (layout partido con panel ilustrado, según el primer mockup)
+- ⏳ Login social Google/Apple (requiere habilitar OAuth en Supabase)
+- ⏳ Premium real (hoy es placeholder "próximamente")
+- ⏳ Logout visible en mobile (el footer del `AppShell` hoy solo aparece en el sidebar desktop)
 
 ---
 
 ## 📚 Documentación de diseño
 
-- **Spec / diseño:** `docs/superpowers/specs/2026-06-19-robi-app-design.md`
-- **Plan de implementación (tareas):** `docs/superpowers/plans/2026-06-19-robi-app.md`
+Specs (el *qué*) y planes (el *cómo*, descompuesto en tareas):
 
-Estos dos documentos son la fuente de verdad del *qué* y el *cómo*. Si vas a sumarte al proyecto, empezá por ahí.
+- **App base:** `specs/2026-06-19-robi-app-design.md` · `plans/2026-06-19-robi-app.md`
+- **Sistema de diseño:** `specs/2026-06-20-robi-design-system.md` · `plans/2026-06-20-robi-design-system.md`
+- **Landing de marketing:** `specs/2026-06-20-robi-landing-design.md` · `plans/2026-06-20-robi-landing.md`
+
+Todos viven en `docs/superpowers/`. Si vas a sumarte al proyecto, empezá por ahí.
