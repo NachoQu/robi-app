@@ -47,7 +47,7 @@ function ConfettiParticle({ color, x, delay }: { color: string; x: number; delay
 const CONFETTI_COLORS = [
   'var(--robi-primary)',
   'var(--robi-accent)',
-  'var(--robi-success)',
+  'var(--robi-secondary)',
   'var(--robi-coral)',
   'var(--robi-secondary)',
   'var(--robi-blue)',
@@ -180,7 +180,7 @@ export default function ResultPage() {
               </span>
               <span
                 className="text-base font-extrabold"
-                style={{ color: result.correctCount >= 3 ? 'var(--robi-success)' : 'var(--robi-coral)' }}
+                style={{ color: result.correctCount >= 3 ? 'var(--robi-primary)' : 'var(--robi-coral)' }}
               >
                 {result.correctCount} / 5
               </span>

@@ -90,7 +90,7 @@ export default function AlbumClient({
             style={{
               background:
                 earnedCount === totalCount && totalCount > 0
-                  ? 'var(--robi-success)'
+                  ? 'var(--robi-primary)'
                   : 'color-mix(in oklch, var(--robi-accent) 20%, transparent)',
               color:
                 earnedCount === totalCount && totalCount > 0
@@ -176,7 +176,7 @@ export default function AlbumClient({
                     <span
                       className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
                       style={{
-                        background: 'var(--robi-success)',
+                        background: 'var(--robi-primary)',
                         color: 'white',
                       }}
                     >

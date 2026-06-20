@@ -51,7 +51,10 @@ export function AppShell({
 
       {/* Main */}
       <div className="lg:pl-60">
-        <main className="mx-auto w-full max-w-5xl px-4 py-6 pb-24 lg:pb-8">{children}</main>
+        <main className="mx-auto w-full max-w-5xl px-4 py-6 pb-24 lg:pb-8">
+          {children}
+          {footer && <div className="mt-8 border-t border-border pt-6 lg:hidden">{footer}</div>}
+        </main>
       </div>
 
       {/* Bottom nav — mobile */}

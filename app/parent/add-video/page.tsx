@@ -240,12 +240,7 @@ export default function AddVideoPage() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="rounded-2xl px-5 py-4 flex flex-col gap-1"
-                style={{
-                  background: 'oklch(0.97 0.05 27)',
-                  color: 'oklch(0.45 0.20 27)',
-                  border: '1.5px solid oklch(0.85 0.12 27)',
-                }}
+                className="rounded-2xl px-5 py-4 flex flex-col gap-1 bg-destructive/10 text-destructive border border-destructive/30"
               >
                 <p className="text-sm font-bold">⚠️ No pudimos procesar el video</p>
                 <p className="text-sm font-medium">{errorReason}</p>
