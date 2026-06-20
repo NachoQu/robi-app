@@ -37,37 +37,16 @@ export default function VoucherList({ initialVouchers }: Props) {
     <div className="flex flex-col gap-4">
       {/* Summary badge */}
       <div className="flex items-center gap-2">
-        <span
-          className="text-xs font-bold px-3 py-1 rounded-full"
-          style={{
-            background: 'oklch(0.94 0.06 155 / 0.25)',
-            color: 'oklch(0.38 0.14 155)',
-            border: '1.5px solid oklch(0.68 0.18 155 / 0.30)',
-          }}
-        >
+        <span className="text-xs font-bold px-3 py-1 rounded-full bg-[var(--robi-secondary)]/25 text-[var(--robi-success-ink)] border border-[var(--robi-secondary)]/40">
           ✅ {activeCount} activo{activeCount !== 1 ? 's' : ''}
         </span>
-        <span
-          className="text-xs font-semibold px-3 py-1 rounded-full"
-          style={{
-            background: 'oklch(0.96 0.02 262)',
-            color: 'var(--muted-foreground)',
-            border: '1.5px solid oklch(0.88 0.05 262)',
-          }}
-        >
+        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-muted text-muted-foreground border border-border">
           {vouchers.length - activeCount} inactivo{vouchers.length - activeCount !== 1 ? 's' : ''}
         </span>
       </div>
 
       {vouchers.length === 0 && (
-        <div
-          className="rounded-2xl px-6 py-8 text-center text-sm font-medium"
-          style={{
-            background: 'oklch(0.96 0.02 262)',
-            color: 'var(--muted-foreground)',
-            border: '1.5px dashed oklch(0.82 0.08 262)',
-          }}
-        >
+        <div className="rounded-2xl px-6 py-8 text-center text-sm font-medium bg-muted text-muted-foreground border border-dashed border-border">
           No hay premios configurados todavía.
         </div>
       )}
@@ -82,9 +61,8 @@ export default function VoucherList({ initialVouchers }: Props) {
             transition={{ duration: 0.25 }}
           >
             <Card
-              className="rounded-2xl border-0 shadow"
+              className="rounded-2xl border border-border shadow-sm bg-card"
               style={{
-                boxShadow: '0 2px 12px oklch(0.58 0.22 262 / 0.07)',
                 opacity: voucher.is_active ? 1 : 0.6,
                 transition: 'opacity 0.2s ease',
               }}
@@ -92,25 +70,20 @@ export default function VoucherList({ initialVouchers }: Props) {
               <CardContent className="px-5 py-4 flex items-start gap-4">
                 {/* Points badge */}
                 <div
-                  className="shrink-0 flex flex-col items-center justify-center rounded-2xl text-center"
-                  style={{
-                    minWidth: 56,
-                    height: 56,
-                    background: voucher.is_active
-                      ? 'oklch(0.94 0.06 95 / 0.35)'
-                      : 'oklch(0.96 0.02 262)',
-                    border: voucher.is_active
-                      ? '1.5px solid oklch(0.75 0.18 90 / 0.35)'
-                      : '1.5px solid oklch(0.88 0.05 262)',
-                    transition: 'background 0.25s, border-color 0.25s',
-                  }}
+                  className={[
+                    'shrink-0 flex flex-col items-center justify-center rounded-2xl text-center transition-colors',
+                    voucher.is_active
+                      ? 'bg-[var(--robi-accent)]/25 border border-[var(--robi-accent)]/40'
+                      : 'bg-muted border border-border',
+                  ].join(' ')}
+                  style={{ minWidth: 56, height: 56 }}
                 >
                   <span className="text-lg leading-none">⭐</span>
                   <span
-                    className="text-xs font-bold mt-0.5 leading-none"
-                    style={{
-                      color: voucher.is_active ? 'oklch(0.38 0.16 90)' : 'var(--muted-foreground)',
-                    }}
+                    className={[
+                      'text-xs font-bold mt-0.5 leading-none',
+                      voucher.is_active ? 'text-[var(--robi-accent-ink)]' : 'text-muted-foreground',
+                    ].join(' ')}
                   >
                     {voucher.points_cost}
                   </span>
@@ -128,26 +101,17 @@ export default function VoucherList({ initialVouchers }: Props) {
                     {voucher.title}
                   </p>
                   {voucher.description && (
-                    <p
-                      className="text-xs font-medium leading-snug"
-                      style={{ color: 'var(--muted-foreground)' }}
-                    >
+                    <p className="text-xs font-medium leading-snug text-muted-foreground">
                       {voucher.description}
                     </p>
                   )}
                   <span
-                    className="text-xs font-semibold mt-1 w-fit px-2 py-0.5 rounded-full"
-                    style={
+                    className={[
+                      'text-xs font-semibold mt-1 w-fit px-2 py-0.5 rounded-full',
                       voucher.is_active
-                        ? {
-                            background: 'oklch(0.94 0.06 155 / 0.20)',
-                            color: 'oklch(0.38 0.14 155)',
-                          }
-                        : {
-                            background: 'oklch(0.96 0.02 262)',
-                            color: 'var(--muted-foreground)',
-                          }
-                    }
+                        ? 'bg-[var(--robi-secondary)]/20 text-[var(--robi-success-ink)]'
+                        : 'bg-muted text-muted-foreground',
+                    ].join(' ')}
                   >
                     {voucher.is_active ? 'Activo' : 'Inactivo'}
                   </span>
@@ -169,8 +133,8 @@ export default function VoucherList({ initialVouchers }: Props) {
                       width: 44,
                       height: 24,
                       background: voucher.is_active
-                        ? 'var(--robi-success, oklch(0.55 0.20 155))'
-                        : 'oklch(0.82 0.04 262)',
+                        ? 'var(--robi-secondary)'
+                        : 'var(--muted)',
                     }}
                   />
                   {/* Thumb */}

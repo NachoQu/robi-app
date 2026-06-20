@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
+import { AchievementBadge } from '@/components/ui/achievement-badge'
 
 interface EarnedSlot {
   id: string
@@ -34,8 +35,8 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// Badge emojis that rotate per slot index (earned slots only)
-const BADGE_EMOJIS = ['🏅', '⭐', '🌟', '🎖️', '🥇', '✨', '🎯', '🚀']
+// Badge kinds that rotate per slot index
+const BADGE_KINDS: Array<'star' | 'shield' | 'gem'> = ['star', 'shield', 'gem']
 
 export default function AlbumClient({
   profileId,
@@ -46,13 +47,7 @@ export default function AlbumClient({
   totalCount,
 }: AlbumClientProps) {
   return (
-    <div
-      className="min-h-screen flex flex-col px-4 py-6"
-      style={{
-        background:
-          'linear-gradient(160deg, oklch(0.92 0.07 262) 0%, oklch(0.96 0.06 95) 60%, oklch(0.94 0.08 155 / 0.4) 100%)',
-      }}
-    >
+    <div className="min-h-screen flex flex-col px-4 py-6 bg-background">
       {/* Header area */}
       <div className="flex flex-col items-center gap-3 mb-6 w-full max-w-lg mx-auto">
         <div className="w-full">
@@ -70,11 +65,7 @@ export default function AlbumClient({
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex flex-col items-center gap-2 rounded-3xl px-8 py-5 w-full shadow-lg"
-          style={{
-            background: 'oklch(1 0 0 / 0.88)',
-            boxShadow: '0 6px 32px oklch(0.58 0.22 262 / 0.18)',
-          }}
+          className="flex flex-col items-center gap-2 rounded-3xl px-8 py-5 w-full shadow-lg bg-card border border-border"
         >
           <span
             className="text-5xl select-none"
@@ -99,13 +90,12 @@ export default function AlbumClient({
             style={{
               background:
                 earnedCount === totalCount && totalCount > 0
-                  ? 'var(--robi-success)'
-                  : 'oklch(0.94 0.06 95)',
+                  ? 'var(--robi-primary)'
+                  : 'color-mix(in oklch, var(--robi-accent) 20%, transparent)',
               color:
                 earnedCount === totalCount && totalCount > 0
                   ? 'white'
-                  : 'oklch(0.45 0.15 80)',
-              boxShadow: '0 2px 8px oklch(0.88 0.18 95 / 0.5)',
+                  : 'var(--foreground)',
             }}
           >
             🏅 Tenés {earnedCount} de {totalCount} insignias
@@ -115,10 +105,10 @@ export default function AlbumClient({
         {/* Robi tip bubble */}
         <div
           className="flex items-center gap-3 rounded-3xl px-5 py-3 w-full"
-          style={{ background: 'oklch(0.94 0.06 262 / 0.6)' }}
+          style={{ background: 'color-mix(in oklch, var(--robi-primary) 12%, transparent)' }}
         >
           <RobiPlaceholder size={44} />
-          <p className="text-sm font-bold" style={{ color: 'oklch(0.25 0.08 262)' }}>
+          <p className="text-sm font-bold text-foreground">
             {earnedCount === 0
               ? '¡Mirá videos y completá quizzes para coleccionar insignias! 🎯'
               : earnedCount === totalCount && totalCount > 0
@@ -136,14 +126,10 @@ export default function AlbumClient({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-col items-center gap-4 rounded-3xl px-6 py-12 text-center"
-            style={{
-              background: 'oklch(1 0 0 / 0.75)',
-              boxShadow: '0 4px 20px oklch(0.58 0.22 262 / 0.10)',
-            }}
+            className="flex flex-col items-center gap-4 rounded-3xl px-6 py-12 text-center bg-card border border-border shadow-sm"
           >
             <span className="text-6xl select-none">📭</span>
-            <p className="text-xl font-extrabold" style={{ color: 'oklch(0.45 0.08 262)' }}>
+            <p className="text-xl font-extrabold text-foreground">
               Tu álbum está vacío
             </p>
             <p className="text-base font-semibold text-muted-foreground">
@@ -165,19 +151,9 @@ export default function AlbumClient({
                 }}
               >
                 {slot.earned ? (
-                  /* ── Earned badge ── colorful sticker */
-                  <div
-                    className="rounded-3xl p-4 flex flex-col items-center gap-2 text-center shadow-lg"
-                    style={{
-                      background: 'oklch(1 0 0 / 0.92)',
-                      boxShadow: '0 6px 24px oklch(0.58 0.22 262 / 0.22)',
-                      border: '2.5px solid oklch(0.88 0.18 95 / 0.7)',
-                    }}
-                  >
-                    <motion.span
-                      className="text-4xl select-none"
-                      role="img"
-                      aria-label="Insignia ganada"
+                  /* ── Earned badge ── */
+                  <div className="rounded-3xl p-4 flex flex-col items-center gap-2 text-center shadow-lg bg-card border-2 border-border">
+                    <motion.div
                       animate={{ y: [0, -4, 0] }}
                       transition={{
                         repeat: Infinity,
@@ -186,20 +162,21 @@ export default function AlbumClient({
                         delay: i * 0.15,
                       }}
                     >
-                      {BADGE_EMOJIS[i % BADGE_EMOJIS.length]}
-                    </motion.span>
+                      <AchievementBadge
+                        kind={BADGE_KINDS[i % BADGE_KINDS.length]}
+                        locked={false}
+                        size={56}
+                      />
+                    </motion.div>
 
-                    <p
-                      className="text-xs font-extrabold leading-tight line-clamp-2"
-                      style={{ color: 'oklch(0.25 0.08 262)' }}
-                    >
+                    <p className="text-xs font-extrabold leading-tight line-clamp-2 text-foreground">
                       {slot.videoTitle}
                     </p>
 
                     <span
                       className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
                       style={{
-                        background: 'var(--robi-success)',
+                        background: 'var(--robi-primary)',
                         color: 'white',
                       }}
                     >
@@ -207,37 +184,19 @@ export default function AlbumClient({
                     </span>
                   </div>
                 ) : (
-                  /* ── Empty slot ── grayed / locked */
-                  <div
-                    className="rounded-3xl p-4 flex flex-col items-center gap-2 text-center"
-                    style={{
-                      background: 'oklch(0.93 0.02 262 / 0.55)',
-                      border: '2.5px dashed oklch(0.72 0.06 262 / 0.5)',
-                    }}
-                  >
-                    <span
-                      className="text-4xl select-none"
-                      role="img"
-                      aria-label="Insignia no ganada"
-                      style={{ filter: 'grayscale(1) opacity(0.35)' }}
-                    >
-                      🏅
-                    </span>
+                  /* ── Empty slot ── locked */
+                  <div className="rounded-3xl p-4 flex flex-col items-center gap-2 text-center border-2 border-dashed border-border bg-muted/40">
+                    <AchievementBadge
+                      kind={BADGE_KINDS[i % BADGE_KINDS.length]}
+                      locked
+                      size={56}
+                    />
 
-                    <p
-                      className="text-xs font-bold leading-tight line-clamp-2"
-                      style={{ color: 'oklch(0.55 0.05 262)' }}
-                    >
+                    <p className="text-xs font-bold leading-tight line-clamp-2 text-muted-foreground">
                       {slot.videoTitle}
                     </p>
 
-                    <span
-                      className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
-                      style={{
-                        background: 'oklch(0.80 0.04 262 / 0.5)',
-                        color: 'oklch(0.45 0.06 262)',
-                      }}
-                    >
+                    <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground">
                       ¿?
                     </span>
                   </div>

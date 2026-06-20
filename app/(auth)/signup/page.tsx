@@ -6,19 +6,8 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { signUp } from '@/actions/auth'
-
-function RobiPlaceholder() {
-  return (
-    <span
-      className="flex items-center justify-center w-20 h-20 rounded-full text-4xl select-none"
-      style={{ background: 'var(--robi-primary)', boxShadow: '0 4px 20px oklch(0.58 0.22 262 / 0.35)' }}
-      aria-label="Robi el robot"
-    >
-      🤖
-    </span>
-  )
-}
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -39,10 +28,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
-      style={{ background: 'linear-gradient(145deg, oklch(0.94 0.06 262) 0%, oklch(0.96 0.05 95) 100%)' }}
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-background">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
@@ -54,9 +40,9 @@ export default function SignupPage() {
             animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
             transition={{ duration: 1.2, delay: 0.4, ease: 'easeInOut' }}
           >
-            <RobiPlaceholder />
+            <RobiPlaceholder size={80} />
           </motion.div>
-          <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: 'var(--robi-primary)' }}>
+          <h1 className="text-3xl font-extrabold tracking-tight text-primary">
             ¡Hola! Soy Robi 👋
           </h1>
           <p className="text-base text-muted-foreground text-center font-medium">
@@ -64,16 +50,16 @@ export default function SignupPage() {
           </p>
         </div>
 
-        <Card className="rounded-3xl border-0 shadow-2xl" style={{ boxShadow: '0 8px 40px oklch(0.58 0.22 262 / 0.15)' }}>
+        <Card className="rounded-3xl bg-card shadow-sm border border-border">
           <CardHeader className="pb-2 pt-6 px-8">
-            <h2 className="text-xl font-bold text-center" style={{ color: 'var(--foreground)' }}>
+            <h2 className="text-xl font-bold text-center text-foreground">
               Crear cuenta
             </h2>
           </CardHeader>
           <CardContent className="px-8 pb-8">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                <label htmlFor="email" className="text-sm font-semibold text-foreground">
                   Correo electrónico
                 </label>
                 <Input
@@ -83,12 +69,12 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-12 rounded-xl text-base border-2 focus-visible:ring-0 focus-visible:border-[oklch(0.58_0.22_262)]"
+                  className="h-12 rounded-xl text-base border-2 focus-visible:ring-0 focus-visible:border-primary"
                   autoComplete="email"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="password" className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                <label htmlFor="password" className="text-sm font-semibold text-foreground">
                   Contraseña
                 </label>
                 <Input
@@ -99,7 +85,7 @@ export default function SignupPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="h-12 rounded-xl text-base border-2 focus-visible:ring-0 focus-visible:border-[oklch(0.58_0.22_262)]"
+                  className="h-12 rounded-xl text-base border-2 focus-visible:ring-0 focus-visible:border-primary"
                   autoComplete="new-password"
                 />
               </div>
@@ -108,8 +94,7 @@ export default function SignupPage() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="rounded-xl px-4 py-3 text-sm font-medium"
-                  style={{ background: 'oklch(0.97 0.05 27)', color: 'oklch(0.50 0.20 27)', border: '1.5px solid oklch(0.85 0.12 27)' }}
+                  className="rounded-xl px-4 py-3 text-sm font-medium bg-destructive/10 text-destructive border border-destructive/30"
                 >
                   ⚠️ {error}
                 </motion.div>
@@ -118,14 +103,9 @@ export default function SignupPage() {
               <motion.div whileTap={{ scale: 0.97 }} className="mt-2">
                 <Button
                   type="submit"
+                  variant="primary"
                   disabled={loading}
-                  className="w-full h-13 text-base font-bold rounded-2xl transition-all duration-200 hover:opacity-90 active:scale-95"
-                  style={{
-                    background: loading ? 'oklch(0.75 0.10 262)' : 'var(--robi-primary)',
-                    color: 'white',
-                    fontSize: '1.05rem',
-                    height: '3.25rem',
-                  }}
+                  className="w-full h-12 text-base font-bold"
                 >
                   {loading ? '⏳ Creando cuenta…' : '🚀 ¡Crear mi cuenta!'}
                 </Button>
@@ -136,8 +116,7 @@ export default function SignupPage() {
               ¿Ya tenés cuenta?{' '}
               <Link
                 href="/login"
-                className="font-bold hover:underline"
-                style={{ color: 'var(--robi-primary)' }}
+                className="font-bold hover:underline text-primary"
               >
                 Iniciá sesión
               </Link>

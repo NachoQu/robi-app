@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
+import { AchievementBadge } from '@/components/ui/achievement-badge'
+import { Button } from '@/components/ui/button'
 
 interface QuizResult {
   base: number
@@ -45,10 +47,10 @@ function ConfettiParticle({ color, x, delay }: { color: string; x: number; delay
 const CONFETTI_COLORS = [
   'var(--robi-primary)',
   'var(--robi-accent)',
-  'var(--robi-success)',
+  'var(--robi-secondary)',
   'var(--robi-coral)',
-  'oklch(0.85 0.18 60)',
-  'oklch(0.78 0.20 280)',
+  'var(--robi-secondary)',
+  'var(--robi-blue)',
 ]
 
 const CONFETTI_PARTICLES = Array.from({ length: 28 }, (_, i) => ({
@@ -104,10 +106,7 @@ export default function ResultPage() {
 
   return (
     <div
-      className="relative min-h-screen flex flex-col items-center justify-center px-4 py-8 overflow-hidden"
-      style={{
-        background: 'linear-gradient(160deg, oklch(0.92 0.07 262) 0%, oklch(0.96 0.06 95) 60%, oklch(0.94 0.08 155 / 0.4) 100%)',
-      }}
+      className="relative min-h-screen flex flex-col items-center justify-center px-4 py-8 overflow-hidden bg-background"
     >
       {/* Confetti */}
       <div className="fixed inset-0 pointer-events-none z-0" aria-hidden>
@@ -146,8 +145,7 @@ export default function ResultPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-2xl font-extrabold text-center leading-snug"
-          style={{ color: 'var(--robi-primary)' }}
+          className="text-[28px] font-bold text-primary text-center leading-snug"
         >
           {headline}
         </motion.h1>
@@ -157,11 +155,7 @@ export default function ResultPage() {
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.45, type: 'spring', stiffness: 240, damping: 20 }}
-          className="w-full rounded-3xl px-6 py-6 flex flex-col items-center gap-4 shadow-xl"
-          style={{
-            background: 'oklch(1 0 0 / 0.88)',
-            boxShadow: '0 8px 40px oklch(0.58 0.22 262 / 0.18)',
-          }}
+          className="w-full rounded-3xl px-6 py-6 flex flex-col items-center gap-4 bg-card shadow-sm border border-border"
         >
           {/* Badge earned */}
           <motion.div
@@ -170,16 +164,13 @@ export default function ResultPage() {
             transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 14 }}
             className="flex flex-col items-center gap-1"
           >
-            <span className="text-6xl select-none" role="img" aria-label="Badge ganado">🏅</span>
-            <p
-              className="text-lg font-extrabold"
-              style={{ color: 'oklch(0.45 0.12 262)' }}
-            >
+            <AchievementBadge kind="star" size={96} />
+            <p className="text-lg font-extrabold text-primary">
               ¡Ganaste un badge!
             </p>
           </motion.div>
 
-          <div className="w-full h-px" style={{ background: 'oklch(0.88 0.06 262 / 0.4)' }} />
+          <div className="w-full h-px bg-border" />
 
           {/* Score breakdown */}
           <div className="w-full flex flex-col gap-3">
@@ -189,7 +180,7 @@ export default function ResultPage() {
               </span>
               <span
                 className="text-base font-extrabold"
-                style={{ color: result.correctCount >= 3 ? 'var(--robi-success)' : 'var(--robi-coral)' }}
+                style={{ color: result.correctCount >= 3 ? 'var(--robi-primary)' : 'var(--robi-coral)' }}
               >
                 {result.correctCount} / 5
               </span>
@@ -197,7 +188,7 @@ export default function ResultPage() {
 
             <div className="flex items-center justify-between">
               <span className="text-base font-bold text-muted-foreground">Puntos base</span>
-              <span className="text-base font-extrabold" style={{ color: 'oklch(0.35 0.08 262)' }}>
+              <span className="text-base font-extrabold text-foreground">
                 +{result.base}
               </span>
             </div>
@@ -214,14 +205,8 @@ export default function ResultPage() {
               </div>
             )}
 
-            <div
-              className="flex items-center justify-between rounded-2xl px-4 py-3"
-              style={{ background: 'oklch(0.94 0.07 95 / 0.6)' }}
-            >
-              <span
-                className="text-lg font-extrabold"
-                style={{ color: 'oklch(0.38 0.12 80)' }}
-              >
+            <div className="flex items-center justify-between rounded-2xl px-4 py-3 bg-primary/10">
+              <span className="text-primary text-3xl font-bold">
                 +{earned} puntos ganados
               </span>
               <motion.span
@@ -239,13 +224,9 @@ export default function ResultPage() {
 
           {/* Score bar */}
           <div className="w-full">
-            <div
-              className="w-full h-3 rounded-full overflow-hidden"
-              style={{ background: 'oklch(0.88 0.06 262 / 0.4)' }}
-            >
+            <div className="w-full h-3 rounded-full overflow-hidden bg-muted">
               <motion.div
-                className="h-full rounded-full"
-                style={{ background: 'var(--robi-success)' }}
+                className="h-full rounded-full bg-primary"
                 initial={{ width: 0 }}
                 animate={{ width: `${pct}%` }}
                 transition={{ delay: 0.75, duration: 0.8, ease: 'easeOut' }}
@@ -260,14 +241,7 @@ export default function ResultPage() {
             transition={{ delay: 0.9 }}
             className="flex items-center gap-2"
           >
-            <span
-              className="flex items-center gap-1.5 text-xl font-extrabold rounded-full px-5 py-2"
-              style={{
-                background: 'oklch(0.94 0.06 95)',
-                color: 'oklch(0.40 0.15 80)',
-                boxShadow: '0 2px 10px oklch(0.88 0.18 95 / 0.5)',
-              }}
-            >
+            <span className="flex items-center gap-1.5 text-xl font-extrabold rounded-full px-5 py-2 bg-primary/10 text-primary">
               ⭐ Tenés {result.total.toLocaleString('es-AR')} puntos
             </span>
           </motion.div>
@@ -280,28 +254,16 @@ export default function ResultPage() {
           transition={{ delay: 1.0 }}
           className="w-full flex flex-col gap-3"
         >
-          <Link
-            href={`/kid/${profileId}`}
-            className="w-full block rounded-3xl py-4 text-center text-lg font-extrabold tracking-wide transition-all active:scale-95"
-            style={{
-              background: 'var(--robi-primary)',
-              color: 'white',
-              boxShadow: '0 6px 24px oklch(0.58 0.22 262 / 0.4)',
-            }}
-          >
-            ← Volver a mis videos
+          <Link href={`/kid/${profileId}`} className="w-full">
+            <Button variant="primary" className="w-full h-12 text-base font-extrabold">
+              Seguir aprendiendo
+            </Button>
           </Link>
 
-          <Link
-            href={`/kid/${profileId}/album`}
-            className="w-full block rounded-3xl py-4 text-center text-lg font-extrabold tracking-wide transition-all active:scale-95"
-            style={{
-              background: 'var(--robi-success)',
-              color: 'white',
-              boxShadow: '0 6px 24px oklch(0.55 0.18 155 / 0.4)',
-            }}
-          >
-            📚 Ver mi álbum
+          <Link href={`/kid/${profileId}/rewards`} className="w-full">
+            <Button variant="tertiary" className="w-full h-12 text-base font-extrabold">
+              Ver premios
+            </Button>
           </Link>
         </motion.div>
       </div>

@@ -55,97 +55,115 @@
   --color-robi-accent: var(--robi-accent);
   --color-robi-accent-foreground: var(--robi-accent-foreground);
   /* Success: cheerful green */
-  --color-robi-success: var(--robi-success);
-  --color-robi-success-foreground: var(--robi-success-foreground);
+  --color-robi-secondary: var(--robi-secondary);
+  --color-robi-secondary-foreground: var(--robi-secondary-foreground);
   /* Warm coral for highlights */
   --color-robi-coral: var(--robi-coral);
+  --color-robi-coral-foreground: var(--robi-coral-foreground);
+  /* Blue accent */
+  --color-robi-blue: var(--robi-blue);
+  --color-robi-blue-foreground: var(--robi-blue-foreground);
 }
 
 :root {
   /* Robi palette */
-  --robi-primary: oklch(0.58 0.22 262);        /* sky-indigo blue #4F72E8-ish */
-  --robi-primary-foreground: oklch(1 0 0);
-  --robi-accent: oklch(0.88 0.18 95);          /* sunny yellow */
-  --robi-accent-foreground: oklch(0.25 0 0);
-  --robi-success: oklch(0.68 0.18 155);        /* cheerful green */
-  --robi-success-foreground: oklch(1 0 0);
-  --robi-coral: oklch(0.70 0.18 30);           /* warm coral */
+  --robi-primary: #2DBE9E;
+  --robi-primary-foreground: #FFFFFF;
+  --robi-secondary: #7ED957;
+  --robi-secondary-foreground: #1F5117;
+  --robi-accent: #FFC447;
+  --robi-accent-foreground: #4A3500;
+  --robi-coral: #FF7A59;
+  --robi-coral-foreground: #FFFFFF;
+  --robi-blue: #4CA3F7;
+  --robi-blue-foreground: #FFFFFF;
+  /* Ink: texto oscuro legible sobre fondos tintados claros (chips, pills) */
+  --robi-accent-ink: #8A6A00;
+  --robi-blue-ink: #1E5FA8;
+  --robi-success-ink: #1B7A66;
 
-  /* shadcn base — overridden with warmer tones for Robi */
-  --background: oklch(0.98 0.01 95);           /* warm off-white */
-  --foreground: oklch(0.20 0.02 262);          /* deep navy */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.20 0.02 262);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.02 262);
-  --primary: oklch(0.58 0.22 262);             /* same as robi-primary */
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.03 262);           /* light blue-tinted white */
-  --secondary-foreground: oklch(0.30 0.08 262);
-  --muted: oklch(0.95 0.02 95);
-  --muted-foreground: oklch(0.55 0.04 262);
-  --accent: oklch(0.88 0.18 95);               /* sunny yellow */
-  --accent-foreground: oklch(0.25 0 0);
-  --destructive: oklch(0.60 0.22 27);
-  --border: oklch(0.90 0.03 262);
-  --input: oklch(0.93 0.02 262);
-  --ring: oklch(0.58 0.22 262);
-  --chart-1: oklch(0.58 0.22 262);
-  --chart-2: oklch(0.88 0.18 95);
-  --chart-3: oklch(0.68 0.18 155);
-  --chart-4: oklch(0.70 0.18 30);
-  --chart-5: oklch(0.72 0.20 320);
-  --radius: 1rem;                              /* generous rounding for playful feel */
-  --sidebar: oklch(0.96 0.02 262);
-  --sidebar-foreground: oklch(0.20 0.02 262);
-  --sidebar-primary: oklch(0.58 0.22 262);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.92 0.04 262);
-  --sidebar-accent-foreground: oklch(0.30 0.08 262);
-  --sidebar-border: oklch(0.90 0.03 262);
-  --sidebar-ring: oklch(0.58 0.22 262);
+  /* shadcn base — mapeado a la paleta Robi */
+  --background: #FAF7F2;
+  --foreground: #26312E;
+  --card: #FFFFFF;
+  --card-foreground: #26312E;
+  --popover: #FFFFFF;
+  --popover-foreground: #26312E;
+  --primary: #2DBE9E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #7ED957;
+  --secondary-foreground: #1F5117;
+  --muted: #F1EDE6;
+  --muted-foreground: #6B746F;
+  --accent: #FFC447;
+  --accent-foreground: #4A3500;
+  --destructive: #E5604A;
+  --border: #E8E3DA;
+  --input: #E8E3DA;
+  --ring: #2DBE9E;
+  --chart-1: #2DBE9E;
+  --chart-2: #FFC447;
+  --chart-3: #7ED957;
+  --chart-4: #FF7A59;
+  --chart-5: #4CA3F7;
+  --radius: 1rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #26312E;
+  --sidebar-primary: #2DBE9E;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EAF7F2;
+  --sidebar-accent-foreground: #1B7A66;
+  --sidebar-border: #E8E3DA;
+  --sidebar-ring: #2DBE9E;
 }
 
 .dark {
-  --background: oklch(0.16 0.03 262);
-  --foreground: oklch(0.96 0.01 262);
-  --card: oklch(0.22 0.03 262);
-  --card-foreground: oklch(0.96 0.01 262);
-  --popover: oklch(0.22 0.03 262);
-  --popover-foreground: oklch(0.96 0.01 262);
-  --primary: oklch(0.70 0.20 262);
-  --primary-foreground: oklch(0.10 0.02 262);
-  --secondary: oklch(0.28 0.04 262);
-  --secondary-foreground: oklch(0.92 0.02 262);
-  --muted: oklch(0.28 0.04 262);
-  --muted-foreground: oklch(0.68 0.05 262);
-  --accent: oklch(0.85 0.18 95);
-  --accent-foreground: oklch(0.20 0 0);
-  --destructive: oklch(0.68 0.22 27);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.70 0.20 262);
-  --chart-1: oklch(0.70 0.20 262);
-  --chart-2: oklch(0.85 0.18 95);
-  --chart-3: oklch(0.72 0.18 155);
-  --chart-4: oklch(0.72 0.18 30);
-  --chart-5: oklch(0.75 0.20 320);
-  --sidebar: oklch(0.22 0.03 262);
-  --sidebar-foreground: oklch(0.96 0.01 262);
-  --sidebar-primary: oklch(0.70 0.20 262);
-  --sidebar-primary-foreground: oklch(0.10 0.02 262);
-  --sidebar-accent: oklch(0.28 0.04 262);
-  --sidebar-accent-foreground: oklch(0.92 0.02 262);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.70 0.20 262);
+  --background: #15211D;
+  --foreground: #ECF3EF;
+  --card: #1E2C27;
+  --card-foreground: #ECF3EF;
+  --popover: #1E2C27;
+  --popover-foreground: #ECF3EF;
+  --primary: #3FD3B0;
+  --primary-foreground: #08201A;
+  --secondary: #2E5B22;
+  --secondary-foreground: #DDF3CF;
+  --muted: #273730;
+  --muted-foreground: #9DB0A6;
+  --accent: #FFC447;
+  --accent-foreground: #2A1E00;
+  --destructive: #FF7A59;
+  --border: rgba(255,255,255,0.10);
+  --input: rgba(255,255,255,0.15);
+  --ring: #3FD3B0;
+  --chart-1: #3FD3B0;
+  --chart-2: #FFC447;
+  --chart-3: #7ED957;
+  --chart-4: #FF7A59;
+  --chart-5: #4CA3F7;
+  --sidebar: #1E2C27;
+  --sidebar-foreground: #ECF3EF;
+  --sidebar-primary: #3FD3B0;
+  --sidebar-primary-foreground: #08201A;
+  --sidebar-accent: #273730;
+  --sidebar-accent-foreground: #9DB0A6;
+  --sidebar-border: rgba(255,255,255,0.10);
+  --sidebar-ring: #3FD3B0;
 
-  --robi-primary: oklch(0.70 0.20 262);
-  --robi-primary-foreground: oklch(0.10 0.02 262);
-  --robi-accent: oklch(0.85 0.18 95);
-  --robi-accent-foreground: oklch(0.20 0 0);
-  --robi-success: oklch(0.72 0.18 155);
-  --robi-success-foreground: oklch(0.10 0 0);
-  --robi-coral: oklch(0.72 0.18 30);
+  --robi-primary: #3FD3B0;
+  --robi-primary-foreground: #08201A;
+  --robi-secondary: #7ED957;
+  --robi-secondary-foreground: #102A0A;
+  --robi-accent: #FFC447;
+  --robi-accent-foreground: #2A1E00;
+  --robi-coral: #FF7A59;
+  --robi-coral-foreground: #2A0E06;
+  --robi-blue: #4CA3F7;
+  --robi-blue-foreground: #07223D;
+  /* Ink: variantes claras para texto sobre tintes en modo oscuro */
+  --robi-accent-ink: #F0C868;
+  --robi-blue-ink: #9CC9F5;
+  --robi-success-ink: #7FD8C4;
 }
 
 @layer base {

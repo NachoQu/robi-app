@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
+import { Button } from '@/components/ui/button'
 
 interface VideoPlayerProps {
   youtubeId: string
@@ -88,25 +89,17 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col px-4 py-6"
-      style={{
-        background: 'linear-gradient(160deg, oklch(0.14 0.04 262) 0%, oklch(0.18 0.05 262) 100%)',
-      }}
-    >
+    <div className="min-h-screen flex flex-col px-4 py-6 bg-background">
       {/* Back + title */}
       <div className="w-full max-w-2xl mx-auto mb-4">
         <Link
           href={`/kid/${profileId}`}
           className="text-sm font-bold flex items-center gap-1 mb-3"
-          style={{ color: 'oklch(0.75 0.12 262)' }}
+          style={{ color: 'var(--robi-primary)' }}
         >
           ← Volver a mis videos
         </Link>
-        <h1
-          className="text-xl font-extrabold leading-snug"
-          style={{ color: 'oklch(0.96 0.01 262)' }}
-        >
+        <h1 className="text-xl font-extrabold leading-snug text-foreground">
           {title}
         </h1>
       </div>
@@ -114,12 +107,8 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
       {/* Player wrapper */}
       <div className="w-full max-w-2xl mx-auto">
         <div
-          className="relative w-full rounded-3xl overflow-hidden shadow-2xl"
-          style={{
-            aspectRatio: '16/9',
-            background: 'oklch(0 0 0)',
-            boxShadow: '0 8px 48px oklch(0.58 0.22 262 / 0.45)',
-          }}
+          className="relative w-full rounded-3xl overflow-hidden shadow-2xl bg-black"
+          style={{ aspectRatio: '16/9' }}
         >
           <div id={playerContainerId} className="absolute inset-0 w-full h-full" />
         </div>
@@ -128,12 +117,9 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
       {/* Robi cheer hint */}
       {!videoEnded && (
         <div className="w-full max-w-2xl mx-auto mt-4">
-          <div
-            className="flex items-center gap-3 rounded-2xl px-4 py-3"
-            style={{ background: 'oklch(0.22 0.06 262 / 0.8)' }}
-          >
+          <div className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-muted/60">
             <RobiPlaceholder size={40} />
-            <p className="text-sm font-bold" style={{ color: 'oklch(0.88 0.06 262)' }}>
+            <p className="text-sm font-bold text-foreground">
               ¡Muy bien! Cuando termines, tocá el botón 🎉
             </p>
           </div>
@@ -159,27 +145,24 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
               className="flex items-center gap-3"
             >
               <RobiPlaceholder size={52} />
-              <p
-                className="text-xl font-extrabold"
-                style={{ color: 'oklch(0.96 0.01 262)' }}
-              >
+              <p className="text-xl font-extrabold text-foreground">
                 ¡Genial, lo viste todo! 🎊
               </p>
             </motion.div>
 
-            <motion.button
+            <motion.div
+              className="w-full"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleActivity}
-              className="w-full rounded-3xl py-5 text-xl font-extrabold tracking-wide shadow-2xl transition-colors"
-              style={{
-                background: 'var(--robi-success)',
-                color: 'white',
-                boxShadow: '0 6px 32px oklch(0.68 0.18 155 / 0.55)',
-              }}
             >
-              ¡Listo! Hacer la actividad 🚀
-            </motion.button>
+              <Button
+                variant="primary"
+                className="w-full rounded-3xl py-5 text-xl font-extrabold tracking-wide h-auto"
+                onClick={handleActivity}
+              >
+                ¡Listo! Hacer la actividad 🚀
+              </Button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

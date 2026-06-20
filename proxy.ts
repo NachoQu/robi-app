@@ -13,7 +13,9 @@ export async function proxy(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const path = req.nextUrl.pathname
   const isAuthPage = path.startsWith('/login') || path.startsWith('/signup')
-  if (!user && !isAuthPage) return NextResponse.redirect(new URL('/login', req.url))
+  // Rutas públicas: la landing ('/') + las páginas de auth. El resto requiere sesión.
+  const isPublic = path === '/' || isAuthPage
+  if (!user && !isPublic) return NextResponse.redirect(new URL('/login', req.url))
   if (user && isAuthPage) return NextResponse.redirect(new URL('/', req.url))
   return res
 }
