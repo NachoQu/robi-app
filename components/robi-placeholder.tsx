@@ -1,28 +1,15 @@
+import { Robi, type RobiMood } from '@/components/robi/Robi'
+
 interface RobiPlaceholderProps {
   size?: number
   className?: string
+  mood?: RobiMood
 }
 
 /**
- * Shared Robi placeholder — a 🤖 in a styled circle using Robi palette tokens.
- * Task 15 will replace this with the real animated <Robi /> component.
- * This is the single swap point.
+ * Shared Robi placeholder — now renders the real animated <Robi /> mascot.
+ * All existing call-sites keep working; pass `mood` for context-specific animation.
  */
-export function RobiPlaceholder({ size = 80, className }: RobiPlaceholderProps) {
-  const fontSize = Math.round(size * 0.48)
-  return (
-    <span
-      className={`flex items-center justify-center rounded-full select-none shrink-0${className ? ` ${className}` : ''}`}
-      style={{
-        width: size,
-        height: size,
-        background: 'var(--robi-primary)',
-        boxShadow: '0 4px 20px oklch(0.58 0.22 262 / 0.35)',
-        fontSize,
-      }}
-      aria-label="Robi el robot"
-    >
-      🤖
-    </span>
-  )
+export function RobiPlaceholder({ size = 80, className, mood = 'idle' }: RobiPlaceholderProps) {
+  return <Robi size={size} className={className} mood={mood} />
 }

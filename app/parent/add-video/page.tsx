@@ -117,7 +117,7 @@ export default function AddVideoPage() {
               animate={{ y: [0, -12, 0, -6, 0] }}
               transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }}
             >
-              <RobiPlaceholder size={96} />
+              <RobiPlaceholder size={96} mood="thinking" />
             </motion.div>
             <div>
               <h2

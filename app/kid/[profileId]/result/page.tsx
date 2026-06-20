@@ -137,7 +137,7 @@ export default function ResultPage() {
               ease: 'easeInOut',
             }}
           >
-            <RobiPlaceholder size={96} />
+            <RobiPlaceholder size={96} mood="celebrate" />
           </motion.div>
         </motion.div>
 

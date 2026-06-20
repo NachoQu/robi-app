@@ -265,7 +265,7 @@ export default function QuizPage() {
             }
             transition={{ duration: 0.5 }}
           >
-            <RobiPlaceholder size={44} />
+            <RobiPlaceholder size={44} mood="talking" />
           </motion.div>
           <p className="text-sm font-bold" style={{ color: 'oklch(0.20 0.06 262)' }}>
             {getRobiMsg(answerState, currentIndex)}
