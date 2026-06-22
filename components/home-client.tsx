@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User, ChevronDown, Lock, LogOut, Shield, Check } from 'lucide-react'
@@ -24,9 +25,11 @@ interface HomeClientProps {
 }
 
 export function HomeClient({ profiles, hasPin }: HomeClientProps) {
+  const router = useRouter()
   const [pinOpen, setPinOpen] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [currentHasPin, setCurrentHasPin] = useState(hasPin)
 
   return (
     <div className="min-h-screen flex flex-col px-4 py-8 bg-background">
@@ -67,7 +70,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
               >
                 {/* Panel de adultos */}
                 <button
-                  onClick={() => { setMenuOpen(false); setPinOpen(true) }}
+                  onClick={() => { setMenuOpen(false); currentHasPin ? setPinOpen(true) : router.push('/parent') }}
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted transition-colors text-left"
                 >
                   <span className="w-8 h-8 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
@@ -76,12 +79,18 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-semibold text-foreground">Panel de adultos</span>
                     <span className="text-xs text-muted-foreground">Gestioná el aprendizaje</span>
+                    <span className="flex items-center gap-1 mt-0.5">
+                      <Shield size={10} className="text-muted-foreground/50" />
+                      <span className="text-[10px] text-muted-foreground/50 font-medium">
+                        {currentHasPin ? 'Protegido por PIN' : 'Sin PIN activo'}
+                      </span>
+                      {currentHasPin && <Check size={10} className="text-green-500/70" />}
+                    </span>
                   </div>
                 </button>
 
-                <div className="h-px bg-border mx-3" />
-
                 {/* Cerrar sesión */}
+                <div className="h-px bg-border" />
                 <form action={signOut}>
                   <button
                     type="submit"
@@ -96,23 +105,6 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                     </div>
                   </button>
                 </form>
-
-                {/* PIN footer */}
-                <div className="h-px bg-border" />
-                <button
-                  onClick={() => { setMenuOpen(false); setPinOpen(true) }}
-                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted transition-colors"
-                >
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Shield size={13} />
-                    <span className="text-xs font-medium">Protegido por PIN</span>
-                  </div>
-                  {hasPin ? (
-                    <Check size={14} className="text-green-500" />
-                  ) : (
-                    <span className="text-xs font-bold text-primary">Activar &rsaquo;</span>
-                  )}
-                </button>
               </motion.div>
             </>
           )}
@@ -215,7 +207,12 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
       </div>
 
       {/* PIN Dialog */}
-      <PinDialog open={pinOpen} onOpenChange={setPinOpen} isFirstTime={!hasPin} />
+      <PinDialog
+        open={pinOpen}
+        onOpenChange={setPinOpen}
+        isFirstTime={!currentHasPin}
+        onPinChanged={(nowHasPin) => setCurrentHasPin(nowHasPin)}
+      />
 
       {/* Upgrade CTA Dialog */}
       <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>

@@ -5,19 +5,22 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { ManagePinDialog } from '@/components/manage-pin-dialog'
 import { verifyPin } from '@/actions/pin'
 
 interface PinDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   isFirstTime: boolean
+  onPinChanged?: (nowHasPin: boolean) => void
 }
 
-export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
+export function PinDialog({ open, onOpenChange, isFirstTime, onPinChanged }: PinDialogProps) {
   const router = useRouter()
   const [digits, setDigits] = useState(['', '', '', ''])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [managePinOpen, setManagePinOpen] = useState(false)
   const inputsRef = useRef<HTMLInputElement[]>([])
 
   useEffect(() => {
@@ -152,8 +155,24 @@ export function PinDialog({ open, onOpenChange, isFirstTime }: PinDialogProps) {
                 : '✅ Entrar'}
             </Button>
           </motion.div>
+
+          {!isFirstTime && (
+            <button
+              onClick={() => { onOpenChange(false); setManagePinOpen(true) }}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
+            >
+              Gestionar PIN
+            </button>
+          )}
         </div>
       </DialogContent>
+
+      <ManagePinDialog
+        open={managePinOpen}
+        onOpenChange={setManagePinOpen}
+        hasPin={!isFirstTime}
+        onPinChanged={(nowHasPin) => { onPinChanged?.(nowHasPin) }}
+      />
     </Dialog>
   )
 }
