@@ -42,7 +42,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
     .eq('child_profile_id', id)
     .order('completed_at', { ascending: false })
 
-  const rows = (activities ?? []) as {
+  const rows = (activities ?? []) as unknown as {
     id: string
     completed_at: string
     bonus_points: number

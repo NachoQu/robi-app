@@ -103,7 +103,7 @@ export default async function ParentPage() {
       .in('child_profile_id', profileIds)
       .order('completed_at', { ascending: false })
 
-    allActivities = (acts ?? []) as ActivityRow[]
+    allActivities = (acts ?? []) as unknown as ActivityRow[]
   }
 
   // Derive per-profile stats from single activities result
