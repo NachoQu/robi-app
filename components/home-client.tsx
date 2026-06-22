@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -25,9 +25,72 @@ interface HomeClientProps {
 export function HomeClient({ profiles, hasPin }: HomeClientProps) {
   const [pinOpen, setPinOpen] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <div className="min-h-screen flex flex-col px-4 py-8 bg-background">
+
+      {/* Top bar */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+        className="flex justify-end items-start mb-2 relative"
+      >
+        {/* Avatar button */}
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="flex items-center gap-1.5 rounded-full border border-border bg-card shadow-sm px-2 py-1.5 hover:bg-muted transition-colors active:scale-95"
+          aria-label="Menú de adulto"
+        >
+          <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-lg select-none">👤</span>
+          <span className="text-muted-foreground text-xs pr-1">▾</span>
+        </button>
+
+        {/* Dropdown */}
+        <AnimatePresence>
+          {menuOpen && (
+            <>
+              {/* Backdrop */}
+              <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="absolute right-0 top-12 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[200px] py-2 overflow-hidden"
+              >
+                <button
+                  onClick={() => { setMenuOpen(false); setPinOpen(true) }}
+                  className="w-full flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                >
+                  <span className="text-lg mt-0.5 select-none">🔒</span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-semibold text-foreground">Panel de adultos</span>
+                    <span className="text-xs text-muted-foreground">
+                      {hasPin ? 'Protegido con PIN' : 'Configurá tu PIN'}
+                    </span>
+                  </div>
+                </button>
+
+                <div className="h-px bg-border mx-3" />
+
+                <form action={signOut}>
+                  <button
+                    type="submit"
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                  >
+                    <span className="text-lg select-none">↪️</span>
+                    <span className="text-sm font-semibold text-foreground">Cerrar sesión</span>
+                  </button>
+                </form>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
@@ -107,29 +170,20 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           </motion.div>
         </div>
 
-        {/* Acciones de adulto */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-4 flex items-center gap-3"
-        >
-          <button
-            onClick={() => setPinOpen(true)}
-            className="text-sm font-semibold text-muted-foreground hover:underline transition-all flex items-center gap-1.5"
+        {/* Hint pill — solo cuando no hay PIN */}
+        {!hasPin && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+            className="flex items-center gap-2.5 bg-muted border border-border rounded-full px-4 py-2.5 max-w-sm"
           >
-            Panel de adultos 🔒
-          </button>
-          <span className="text-border" aria-hidden>·</span>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="text-sm font-semibold text-muted-foreground hover:underline transition-all"
-            >
-              Cerrar sesión
-            </button>
-          </form>
-        </motion.div>
+            <span className="text-base select-none">💡</span>
+            <span className="text-xs text-muted-foreground font-medium">
+              Desde el panel de adultos podés gestionar videos, puntos y más.
+            </span>
+          </motion.div>
+        )}
       </div>
 
       {/* PIN Dialog */}
