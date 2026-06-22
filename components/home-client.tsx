@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { User, ChevronDown, Lock, LogOut, Shield, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -37,14 +38,17 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
         transition={{ duration: 0.4, delay: 0.3 }}
         className="flex justify-end items-start mb-2 relative"
       >
-        {/* Avatar button */}
+        {/* Adultos button */}
         <button
           onClick={() => setMenuOpen((v) => !v)}
-          className="flex items-center gap-1.5 rounded-full border border-border bg-card shadow-sm px-2 py-1.5 hover:bg-muted transition-colors active:scale-95"
-          aria-label="Menú de adulto"
+          className="flex items-center gap-2 rounded-full border border-border bg-card shadow-sm px-3 py-2 hover:bg-muted transition-colors active:scale-95"
+          aria-label="Panel de adultos"
         >
-          <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-lg select-none">👤</span>
-          <span className="text-muted-foreground text-xs pr-1">▾</span>
+          <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <User size={14} className="text-primary" />
+          </span>
+          <span className="text-sm font-semibold text-foreground">Adultos</span>
+          <ChevronDown size={14} className="text-muted-foreground" />
         </button>
 
         {/* Dropdown */}
@@ -59,32 +63,56 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -8 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="absolute right-0 top-12 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[200px] py-2 overflow-hidden"
+                className="absolute right-0 top-12 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[220px] overflow-hidden"
               >
+                {/* Panel de adultos */}
                 <button
                   onClick={() => { setMenuOpen(false); setPinOpen(true) }}
-                  className="w-full flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted transition-colors text-left"
                 >
-                  <span className="text-lg mt-0.5 select-none">🔒</span>
+                  <span className="w-8 h-8 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+                    <Lock size={15} className="text-green-600 dark:text-green-400" />
+                  </span>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-semibold text-foreground">Panel de adultos</span>
-                    <span className="text-xs text-muted-foreground">
-                      {hasPin ? 'Protegido con PIN' : 'Configurá tu PIN'}
-                    </span>
+                    <span className="text-xs text-muted-foreground">Gestioná el aprendizaje</span>
                   </div>
                 </button>
 
                 <div className="h-px bg-border mx-3" />
 
+                {/* Cerrar sesión */}
                 <form action={signOut}>
                   <button
                     type="submit"
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                    className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted transition-colors text-left"
                   >
-                    <span className="text-lg select-none">↪️</span>
-                    <span className="text-sm font-semibold text-foreground">Cerrar sesión</span>
+                    <span className="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                      <LogOut size={15} className="text-red-500 dark:text-red-400" />
+                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-semibold text-foreground">Cerrar sesión</span>
+                      <span className="text-xs text-muted-foreground">Salir de la cuenta actual</span>
+                    </div>
                   </button>
                 </form>
+
+                {/* PIN footer */}
+                <div className="h-px bg-border" />
+                <button
+                  onClick={() => { setMenuOpen(false); setPinOpen(true) }}
+                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted transition-colors"
+                >
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Shield size={13} />
+                    <span className="text-xs font-medium">Protegido por PIN</span>
+                  </div>
+                  {hasPin ? (
+                    <Check size={14} className="text-green-500" />
+                  ) : (
+                    <span className="text-xs font-bold text-primary">Activar &rsaquo;</span>
+                  )}
+                </button>
               </motion.div>
             </>
           )}
