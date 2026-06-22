@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -152,6 +153,14 @@ export default function AddVideoPage() {
 
   return (
     <div className="max-w-lg mx-auto flex flex-col gap-8">
+      <Link
+        href="/parent"
+        className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit sm:hidden"
+        style={{ color: 'var(--robi-primary)' }}
+      >
+        ← Volver al panel
+      </Link>
+
       <AnimatePresence mode="wait">
         {/* ─── LOADING STATE ─── */}
         {pageState === 'loading' && (
