@@ -81,3 +81,14 @@ export async function processVideo(input: { url: string; childProfileId: string 
   await supabase.from('video_assignments').insert({ video_id: videoId, child_profile_id: input.childProfileId })
   return { ok: true, videoId }
 }
+
+export async function assignVideoToProfiles(input: { videoId: string; childProfileIds: string[] }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+
+  const { error } = await supabase.from('video_assignments').insert(
+    input.childProfileIds.map((pid) => ({ video_id: input.videoId, child_profile_id: pid }))
+  )
+  return { ok: !error }
+}

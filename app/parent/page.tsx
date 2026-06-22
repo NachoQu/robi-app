@@ -313,7 +313,7 @@ export default async function ParentPage() {
                         Ver detalle <ChevronRight size={14} />
                       </Link>
                       <Link
-                        href="/parent/add-video"
+                        href={`/parent/add-video?profileId=${profile.id}`}
                         className="flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-muted transition-colors"
                       >
                         <Plus size={13} /> Asignar video
