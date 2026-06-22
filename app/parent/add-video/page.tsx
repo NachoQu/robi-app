@@ -270,12 +270,14 @@ export default function AddVideoPage() {
             transition={{ duration: 0.35 }}
             className="flex flex-col gap-6"
           >
-            <div className="flex flex-col items-center gap-3 text-center pt-4">
-              <RobiPlaceholder size={64} />
-              <h1 className="text-2xl font-extrabold tracking-tight text-primary">Cargar video educativo</h1>
-              <p className="text-sm text-muted-foreground font-medium max-w-sm">
-                Buscá un video de YouTube apto para tu hijo/a y pegá el link acá. Robi va a crear un quiz automáticamente.
-              </p>
+            <div className="flex items-center gap-3 pt-2">
+              <RobiPlaceholder size={40} />
+              <div>
+                <h1 className="text-lg font-extrabold tracking-tight text-primary leading-tight">Cargar video educativo</h1>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">
+                  Pegá un link de YouTube y Robi crea el quiz.
+                </p>
+              </div>
             </div>
 
             {pageState === 'error' && errorReason && (
@@ -290,7 +292,7 @@ export default function AddVideoPage() {
             )}
 
             <Card className="rounded-3xl border border-border shadow-sm bg-card">
-              <CardContent className="px-8 py-7">
+              <CardContent className="px-5 py-5 sm:px-8 sm:py-7">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
                   {/* Child multi-select */}
