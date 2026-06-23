@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { RewardCard } from '@/components/ui/reward-card'
+import { redeemVoucher } from '@/actions/vouchers'
 
 interface Voucher {
   id: string
@@ -19,36 +20,31 @@ interface Voucher {
   points_cost: number
 }
 
+interface Redemption {
+  id: string
+  voucher_id: string
+  redeemed_at: string
+  voucher_title: string
+  voucher_points_cost: number
+}
+
 interface RewardsClientProps {
   profileId: string
   profileName: string
   profileAvatar: string
   totalPoints: number
   vouchers: Voucher[]
+  redemptions: Redemption[]
 }
 
-// Confetti particle for the celebration dialog
 function ConfettiParticle({ color, x, delay }: { color: string; x: number; delay: number }) {
   return (
     <motion.div
       className="absolute top-0 rounded-sm pointer-events-none"
-      style={{
-        left: `${x}%`,
-        width: 8,
-        height: 8,
-        background: color,
-      }}
+      style={{ left: `${x}%`, width: 8, height: 8, background: color }}
       initial={{ y: -10, opacity: 1, rotate: 0 }}
-      animate={{
-        y: 220,
-        opacity: [1, 1, 0],
-        rotate: [0, 360 * (x > 50 ? 1 : -1) * 2],
-      }}
-      transition={{
-        duration: 1.8 + delay,
-        delay: delay * 0.4,
-        ease: 'easeIn',
-      }}
+      animate={{ y: 220, opacity: [1, 1, 0], rotate: [0, 360 * (x > 50 ? 1 : -1) * 2] }}
+      transition={{ duration: 1.8 + delay, delay: delay * 0.4, ease: 'easeIn' }}
     />
   )
 }
@@ -69,8 +65,15 @@ const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
   delay: i * 0.08,
 }))
 
-// Prize icons rotation
 const PRIZE_ICONS = ['🎁', '🏆', '🎉', '🎊', '🌟', '🎀', '🥳', '🎈']
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
 
 export default function RewardsClient({
   profileId,
@@ -78,13 +81,37 @@ export default function RewardsClient({
   profileAvatar,
   totalPoints,
   vouchers,
+  redemptions,
 }: RewardsClientProps) {
+  const [currentPoints, setCurrentPoints] = useState(totalPoints)
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [pending, setPending] = useState(false)
+  const [redeemError, setRedeemError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'catalogo' | 'canjes'>('catalogo')
+  const [localRedemptions, setLocalRedemptions] = useState<Redemption[]>(redemptions)
 
-  function handleRedeem(voucher: Voucher) {
-    // MOCK: purely visual confirmation — no DB writes, no points deduction
+  async function handleRedeem(voucher: Voucher) {
+    setPending(true)
+    setRedeemError(null)
+    const result = await redeemVoucher(profileId, voucher.id)
+    setPending(false)
+    if (!result.ok) {
+      setRedeemError(result.error ?? 'No se pudo canjear el premio')
+      return
+    }
+    const newPoints = result.newPoints ?? currentPoints - voucher.points_cost
+    setCurrentPoints(newPoints)
+    setLocalRedemptions((prev) => [
+      {
+        id: crypto.randomUUID(),
+        voucher_id: voucher.id,
+        redeemed_at: new Date().toISOString(),
+        voucher_title: voucher.title,
+        voucher_points_cost: voucher.points_cost,
+      },
+      ...prev,
+    ])
     setSelectedVoucher(voucher)
     setDialogOpen(true)
   }
@@ -115,21 +142,13 @@ export default function RewardsClient({
           transition={{ duration: 0.4 }}
           className="flex flex-col items-center gap-2 rounded-3xl px-8 py-5 w-full shadow-lg bg-card border border-border"
         >
-          <span
-            className="text-5xl select-none"
-            role="img"
-            aria-label={`Avatar de ${profileName}`}
-          >
+          <span className="text-5xl select-none" role="img" aria-label={`Avatar de ${profileName}`}>
             {profileAvatar}
           </span>
-          <h1
-            className="text-2xl font-extrabold tracking-tight"
-            style={{ color: 'var(--robi-coral)' }}
-          >
+          <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--robi-coral)' }}>
             🏆 Mis Premios
           </h1>
 
-          {/* Points pill — prominent */}
           <motion.span
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -140,7 +159,7 @@ export default function RewardsClient({
               color: 'var(--foreground)',
             }}
           >
-            ⭐ Tenés {totalPoints.toLocaleString('es-AR')} puntos
+            ⭐ Tenés {currentPoints.toLocaleString('es-AR')} puntos
           </motion.span>
         </motion.div>
 
@@ -157,7 +176,22 @@ export default function RewardsClient({
           </p>
         </div>
 
-        {/* Tabs row — Catálogo / Mis canjes */}
+        {/* Error inline */}
+        {redeemError && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full rounded-2xl px-4 py-3 text-sm font-bold text-center"
+            style={{
+              background: 'color-mix(in oklch, var(--robi-coral) 15%, transparent)',
+              color: 'var(--robi-coral)',
+            }}
+          >
+            {redeemError}
+          </motion.div>
+        )}
+
+        {/* Tabs */}
         <div className="flex w-full rounded-2xl overflow-hidden border border-border bg-muted/40">
           <button
             onClick={() => setActiveTab('catalogo')}
@@ -177,7 +211,7 @@ export default function RewardsClient({
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Mis canjes
+            Mis canjes {localRedemptions.length > 0 && `(${localRedemptions.length})`}
           </button>
         </div>
       </div>
@@ -185,21 +219,48 @@ export default function RewardsClient({
       {/* Content area */}
       <div className="w-full max-w-lg mx-auto flex-1">
         {activeTab === 'canjes' ? (
-          /* Placeholder for Mis canjes — visual only */
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.25 }}
-            className="flex flex-col items-center gap-4 rounded-3xl px-6 py-12 text-center bg-card border border-border shadow-sm"
-          >
-            <span className="text-5xl select-none">🎀</span>
-            <p className="text-lg font-extrabold text-foreground">Próximamente</p>
-            <p className="text-sm font-semibold text-muted-foreground">
-              Acá vas a ver todos tus canjes anteriores.
-            </p>
-          </motion.div>
+          localRedemptions.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.25 }}
+              className="flex flex-col items-center gap-4 rounded-3xl px-6 py-12 text-center bg-card border border-border shadow-sm"
+            >
+              <span className="text-5xl select-none">🎀</span>
+              <p className="text-lg font-extrabold text-foreground">Todavía no canjeaste premios</p>
+              <p className="text-sm font-semibold text-muted-foreground">
+                Cuando canjees un premio, va a aparecer acá.
+              </p>
+            </motion.div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {localRedemptions.map((r, i) => (
+                <motion.div
+                  key={r.id}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.06 * i }}
+                  className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3 shadow-sm"
+                >
+                  <span className="text-2xl select-none">🎁</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm text-foreground truncate">{r.voucher_title}</p>
+                    <p className="text-xs text-muted-foreground">{formatDate(r.redeemed_at)}</p>
+                  </div>
+                  <span
+                    className="text-xs font-bold rounded-full px-2.5 py-1 shrink-0"
+                    style={{
+                      background: 'color-mix(in oklch, var(--robi-accent) 20%, transparent)',
+                      color: 'var(--robi-accent-ink)',
+                    }}
+                  >
+                    ⭐ {r.voucher_points_cost.toLocaleString('es-AR')} pts
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          )
         ) : vouchers.length === 0 ? (
-          /* Empty state */
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -207,9 +268,7 @@ export default function RewardsClient({
             className="flex flex-col items-center gap-4 rounded-3xl px-6 py-12 text-center bg-card border border-border shadow-sm"
           >
             <span className="text-6xl select-none">🎁</span>
-            <p className="text-xl font-extrabold text-foreground">
-              No hay premios disponibles
-            </p>
+            <p className="text-xl font-extrabold text-foreground">No hay premios disponibles</p>
             <p className="text-base font-semibold text-muted-foreground">
               ¡Pedile a mamá o papá que carguen premios para vos!
             </p>
@@ -217,8 +276,8 @@ export default function RewardsClient({
         ) : (
           <div className="grid grid-cols-2 gap-4">
             {vouchers.map((voucher, i) => {
-              const canRedeem = totalPoints >= voucher.points_cost
-              const missing = voucher.points_cost - totalPoints
+              const canRedeem = currentPoints >= voucher.points_cost
+              const missing = voucher.points_cost - currentPoints
 
               return (
                 <motion.div
@@ -233,6 +292,7 @@ export default function RewardsClient({
                     icon={PRIZE_ICONS[i % PRIZE_ICONS.length]}
                     locked={!canRedeem}
                     missing={missing}
+                    disabled={pending}
                     onRedeem={() => handleRedeem(voucher)}
                   />
                 </motion.div>
@@ -242,13 +302,13 @@ export default function RewardsClient({
         )}
       </div>
 
-      {/* ── MOCK Redeem Dialog ── purely visual, NO DB writes, NO points deduction */}
+      {/* Redeem Dialog */}
       <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) handleCloseDialog() }}>
         <DialogContent
           showCloseButton={false}
           className="overflow-hidden rounded-3xl bg-card border-2 border-border"
         >
-          {/* Confetti inside dialog */}
+          {/* Confetti */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
             <AnimatePresence>
               {dialogOpen &&
@@ -273,13 +333,8 @@ export default function RewardsClient({
               </motion.div>
             </motion.div>
 
-            {/* Headline */}
             <DialogHeader className="items-center text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                 <DialogTitle
                   className="text-xl font-extrabold text-center leading-snug"
                   style={{ color: 'var(--robi-primary)' }}
@@ -298,14 +353,13 @@ export default function RewardsClient({
                 className="w-full rounded-2xl px-5 py-4 flex flex-col items-center gap-1 text-center bg-muted/60 border border-border"
               >
                 <span className="text-4xl">🎁</span>
-                <p className="text-base font-extrabold text-foreground">
-                  {selectedVoucher.title}
-                </p>
+                <p className="text-base font-extrabold text-foreground">{selectedVoucher.title}</p>
                 {selectedVoucher.description && (
-                  <p className="text-xs font-semibold text-muted-foreground">
-                    {selectedVoucher.description}
-                  </p>
+                  <p className="text-xs font-semibold text-muted-foreground">{selectedVoucher.description}</p>
                 )}
+                <p className="text-xs font-bold mt-1" style={{ color: 'var(--robi-accent-ink)' }}>
+                  Te quedan ⭐ {currentPoints.toLocaleString('es-AR')} pts
+                </p>
               </motion.div>
             )}
 
@@ -326,9 +380,7 @@ export default function RewardsClient({
               transition={{ delay: 0.55 }}
               onClick={handleCloseDialog}
               className="w-full rounded-2xl py-3.5 font-extrabold text-white transition-all active:scale-95 hover:brightness-110"
-              style={{
-                background: 'var(--robi-primary)',
-              }}
+              style={{ background: 'var(--robi-primary)' }}
             >
               ¡Entendido! 🚀
             </motion.button>
