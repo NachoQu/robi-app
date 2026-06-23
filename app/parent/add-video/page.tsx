@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -25,6 +26,8 @@ interface QuizQuestion {
 
 type PageState = 'form' | 'loading' | 'error' | 'success'
 
+
+
 function extractYouTubeId(url: string): string | null {
   try {
     const u = new URL(url)
@@ -39,13 +42,107 @@ function extractYouTubeId(url: string): string | null {
   }
 }
 
+function BackButton() {
+  const router = useRouter()
+  return (
+    <button
+      onClick={() => router.back()}
+      className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit"
+      style={{ color: 'var(--robi-primary)' }}
+    >
+      ← Volver
+    </button>
+  )
+}
+
+function SuccessState({
+  multiChild,
+  questions,
+  onCargarOtro,
+}: {
+  multiChild: boolean
+  questions: QuizQuestion[]
+  onCargarOtro: () => void
+}) {
+  return (
+    <motion.div
+      key="success"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-4"
+    >
+      {/* Success card */}
+      <div className="rounded-3xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-6 py-8 flex flex-col items-center gap-4 text-center">
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+        >
+          <CheckCircle2 size={56} className="text-green-500 dark:text-green-400" strokeWidth={1.5} />
+        </motion.div>
+        <div>
+          <h2 className="text-2xl font-extrabold text-green-800 dark:text-green-300">¡Listo!</h2>
+          <p className="text-sm font-medium text-green-700 dark:text-green-400 mt-1">
+            El video fue cargado y el quiz está listo.{' '}
+            {multiChild ? 'Los niños ya pueden verlo.' : 'Tu hijo/a ya puede verlo y contestar las preguntas.'}
+          </p>
+        </div>
+      </div>
+
+      {/* Quiz preview — siempre desplegado */}
+      {questions.length > 0 && (
+        <Card className="rounded-3xl border border-border shadow-sm">
+          <CardHeader className="px-6 pt-5 pb-2">
+            <h3 className="text-base font-bold text-foreground">
+              Quiz generado ({questions.length} preguntas)
+            </h3>
+            <p className="text-xs text-muted-foreground font-medium">
+              Solo vos podés ver estas preguntas
+            </p>
+          </CardHeader>
+          <CardContent className="px-6 pb-6 flex flex-col gap-4">
+            {questions.map((q, idx) => (
+              <div key={idx} className="flex flex-col gap-2">
+                <p className="text-sm font-semibold text-foreground">
+                  {idx + 1}. {q.question_text}
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {(q.options as string[]).map((opt, oi) => (
+                    <span key={oi} className="text-xs rounded-xl px-3 py-2 font-medium bg-muted text-foreground">
+                      {String.fromCharCode(65 + oi)}. {opt}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="flex flex-col gap-2 mt-2">
+        <Button variant="primary" size="lg" onClick={onCargarOtro} className="w-full text-base font-bold">
+          Cargar otro video
+        </Button>
+        <Link href="/parent/videos" className="w-full">
+          <Button variant="outline" size="lg" className="w-full text-base font-semibold">
+            Ver biblioteca
+          </Button>
+        </Link>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function AddVideoPage() {
   const searchParams = useSearchParams()
   const preselectedId = searchParams.get('profileId')
+  const preselectedUrl = searchParams.get('url')
 
   const [profiles, setProfiles] = useState<ChildProfile[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [url, setUrl] = useState('')
+  const [url, setUrl] = useState(preselectedUrl ?? '')
   const [checked, setChecked] = useState(false)
   const [pageState, setPageState] = useState<PageState>('form')
   const [errorReason, setErrorReason] = useState<string | null>(null)
@@ -133,13 +230,7 @@ export default function AddVideoPage() {
 
   return (
     <div className="max-w-lg mx-auto flex flex-col gap-8">
-      <Link
-        href="/parent"
-        className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit sm:hidden"
-        style={{ color: 'var(--robi-primary)' }}
-      >
-        ← Volver al panel
-      </Link>
+      <BackButton />
 
       <AnimatePresence mode="wait">
         {/* ─── LOADING STATE ─── */}
@@ -183,61 +274,11 @@ export default function AddVideoPage() {
 
         {/* ─── SUCCESS STATE ─── */}
         {pageState === 'success' && (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            className="flex flex-col gap-6"
-          >
-            <div className="flex flex-col items-center gap-3 text-center py-6">
-              <motion.div
-                animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
-                transition={{ duration: 1.0, ease: 'easeInOut' }}
-              >
-                <RobiPlaceholder size={80} />
-              </motion.div>
-              <div className="text-4xl">🎉</div>
-              <h2 className="text-2xl font-extrabold text-primary">¡Video cargado con éxito!</h2>
-              <p className="text-base text-muted-foreground font-medium">
-                El quiz está listo. {selectedIds.length > 1 ? 'Los niños ya pueden verlo.' : 'Tu hijo/a ya puede verlo y contestar las preguntas.'}
-              </p>
-            </div>
-
-            {questions.length > 0 && (
-              <Card className="rounded-3xl border border-border shadow-sm">
-                <CardHeader className="px-6 pt-5 pb-2">
-                  <h3 className="text-base font-bold text-foreground">
-                    Vista previa de las preguntas ({questions.length})
-                  </h3>
-                  <p className="text-xs text-muted-foreground font-medium">
-                    Estas son las preguntas que Robi generó — solo vos las ves acá.
-                  </p>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 flex flex-col gap-4">
-                  {questions.map((q, idx) => (
-                    <div key={idx} className="flex flex-col gap-2">
-                      <p className="text-sm font-semibold text-foreground">
-                        {idx + 1}. {q.question_text}
-                      </p>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        {(q.options as string[]).map((opt, oi) => (
-                          <span key={oi} className="text-xs rounded-xl px-3 py-2 font-medium bg-muted text-foreground">
-                            {String.fromCharCode(65 + oi)}. {opt}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            <Button variant="primary" size="lg" onClick={handleCargarOtro} className="w-full text-base font-bold">
-              Cargar otro video
-            </Button>
-          </motion.div>
+          <SuccessState
+            multiChild={selectedIds.length > 1}
+            questions={questions}
+            onCargarOtro={handleCargarOtro}
+          />
         )}
 
         {/* ─── FORM / ERROR STATE ─── */}
@@ -264,10 +305,13 @@ export default function AddVideoPage() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="rounded-2xl px-5 py-4 flex flex-col gap-1 bg-destructive/10 text-destructive border border-destructive/30"
+                className="rounded-2xl px-5 py-4 flex items-start gap-3 bg-destructive/10 border border-destructive/30"
               >
-                <p className="text-sm font-bold">⚠️ No pudimos procesar el video</p>
-                <p className="text-sm font-medium">{errorReason}</p>
+                <span className="text-xl shrink-0 mt-0.5">❌</span>
+                <div>
+                  <p className="text-sm font-bold text-destructive">No pudimos procesar el video</p>
+                  <p className="text-sm font-medium text-destructive/80 mt-0.5">{errorReason}</p>
+                </div>
               </motion.div>
             )}
 
