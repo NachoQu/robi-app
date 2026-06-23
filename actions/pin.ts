@@ -30,7 +30,11 @@ export async function verifyPassword(password: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user?.email) return { ok: false }
   const { error } = await supabase.auth.signInWithPassword({ email: user.email, password })
-  return { ok: !error }
+  if (error) return { ok: false }
+  // Re-set the cookie so the layout doesn't redirect after signInWithPassword refreshes the session
+  const cookieOptions = { maxAge: 1800, httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/' }
+  ;(await cookies()).set('parent_unlocked', '1', cookieOptions)
+  return { ok: true }
 }
 
 export async function updatePin(newPin: string) {

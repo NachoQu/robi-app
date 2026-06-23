@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { LayoutDashboard, Video, Gift, LogOut } from 'lucide-react'
+import { LayoutDashboard, Video, Gift, LogOut, UserCircle } from 'lucide-react'
 import { AppShell, type NavItem } from '@/components/shell/app-shell'
 import { signOut } from '@/actions/auth'
 
@@ -24,6 +24,7 @@ export function ParentShell({ children }: { children: ReactNode }) {
     { href: '/parent', label: 'Panel', icon: LayoutDashboard },
     { href: '/parent/add-video', label: 'Videos', icon: Video },
     { href: '/parent/vouchers', label: 'Premios', icon: Gift },
+    { href: '/parent/account', label: 'Cuenta', icon: UserCircle },
   ]
 
   return (

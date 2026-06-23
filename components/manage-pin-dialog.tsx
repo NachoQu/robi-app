@@ -60,10 +60,6 @@ export function ManagePinDialog({ open, onOpenChange, hasPin, onPinChanged }: Ma
     setDigits(newDigits)
     setError(null)
     if (cleaned && index < 3) inputsRef.current[index + 1]?.focus()
-    if (cleaned && index === 3) {
-      const pin = [...newDigits.slice(0, 3), cleaned].join('')
-      if (pin.length === 4) handleSavePin(pin)
-    }
   }
 
   function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
