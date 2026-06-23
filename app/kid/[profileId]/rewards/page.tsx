@@ -10,7 +10,6 @@ export default async function RewardsPage({ params }: PageProps) {
   const { profileId } = await params
   const supabase = await createClient()
 
-  // Load profile (includes total_points and user_id for vouchers lookup)
   const { data: profile } = await supabase
     .from('child_profiles')
     .select('id, name, avatar, total_points, user_id')
@@ -19,7 +18,6 @@ export default async function RewardsPage({ params }: PageProps) {
 
   if (!profile) notFound()
 
-  // Load active vouchers belonging to the parent (user_id)
   const { data: vouchersRaw } = await supabase
     .from('vouchers')
     .select('id, title, description, points_cost')
@@ -27,13 +25,35 @@ export default async function RewardsPage({ params }: PageProps) {
     .eq('is_active', true)
     .order('points_cost', { ascending: true })
 
-  type VoucherRow = {
+  const { data: redemptionsRaw } = await supabase
+    .from('redemptions')
+    .select('id, voucher_id, redeemed_at, vouchers(title, points_cost)')
+    .eq('child_profile_id', profileId)
+    .order('redeemed_at', { ascending: false })
+
+  type VoucherRow = { id: string; title: string; description: string | null; points_cost: number }
+  type RedemptionRow = {
     id: string
-    title: string
-    description: string | null
-    points_cost: number
+    voucher_id: string
+    redeemed_at: string
+    voucher_title: string
+    voucher_points_cost: number
   }
+
   const vouchers: VoucherRow[] = ((vouchersRaw ?? []) as unknown as VoucherRow[])
+
+  const redemptions: RedemptionRow[] = ((redemptionsRaw ?? []) as unknown as Array<{
+    id: string
+    voucher_id: string
+    redeemed_at: string
+    vouchers: { title: string; points_cost: number } | null
+  }>).map((r) => ({
+    id: r.id,
+    voucher_id: r.voucher_id,
+    redeemed_at: r.redeemed_at,
+    voucher_title: r.vouchers?.title ?? 'Premio',
+    voucher_points_cost: r.vouchers?.points_cost ?? 0,
+  }))
 
   return (
     <RewardsClient
@@ -42,6 +62,7 @@ export default async function RewardsPage({ params }: PageProps) {
       profileAvatar={profile.avatar}
       totalPoints={profile.total_points}
       vouchers={vouchers}
+      redemptions={redemptions}
     />
   )
 }

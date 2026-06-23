@@ -21,9 +21,10 @@ interface VideoPlayerProps {
   title: string
   profileId: string
   videoId: string
+  previousActivity?: { base_points: number; bonus_points: number } | null
 }
 
-export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlayerProps) {
+export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActivity }: VideoPlayerProps) {
   const router = useRouter()
   const playerContainerId = 'yt-player-container'
   const [videoEnded, setVideoEnded] = useState(false)
@@ -126,7 +127,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
         </div>
       )}
 
-      {/* "¡Listo! Hacer la actividad" button — appears when video ends */}
+      {/* Post-video panel — appears when video ends */}
       <AnimatePresence>
         {videoEnded && (
           <motion.div
@@ -137,32 +138,68 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId }: VideoPlaye
             transition={{ type: 'spring', stiffness: 320, damping: 22 }}
             className="w-full max-w-2xl mx-auto mt-6 flex flex-col items-center gap-4"
           >
-            {/* Celebration row */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center gap-3"
-            >
-              <RobiPlaceholder size={52} />
-              <p className="text-xl font-extrabold text-foreground">
-                ¡Genial, lo viste todo! 🎊
-              </p>
-            </motion.div>
+            {previousActivity ? (
+              /* Already completed — show previous score */
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-3"
+                >
+                  <RobiPlaceholder size={52} mood="celebrate" />
+                  <p className="text-xl font-extrabold text-foreground">
+                    ¡Ya completaste esta actividad! ✅
+                  </p>
+                </motion.div>
 
-            <motion.div
-              className="w-full"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="primary"
-                className="w-full rounded-3xl py-5 text-xl font-extrabold tracking-wide h-auto"
-                onClick={handleActivity}
-              >
-                ¡Listo! Hacer la actividad 🚀
-              </Button>
-            </motion.div>
+                <div className="w-full rounded-3xl px-5 py-4 flex flex-col items-center gap-1 bg-secondary/20 border border-secondary/30">
+                  <p className="text-base font-bold text-muted-foreground">Tu puntaje anterior</p>
+                  <p className="text-3xl font-extrabold" style={{ color: 'var(--robi-primary)' }}>
+                    ⭐ {previousActivity.base_points + previousActivity.bonus_points} / 35 pts
+                  </p>
+                </div>
+
+                <motion.div className="w-full" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Button
+                    variant="secondary"
+                    className="w-full rounded-3xl py-5 text-xl font-extrabold tracking-wide h-auto"
+                    onClick={() => router.push(`/kid/${profileId}`)}
+                  >
+                    Seguir aprendiendo →
+                  </Button>
+                </motion.div>
+              </>
+            ) : (
+              /* First time — show activity button */
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-3"
+                >
+                  <RobiPlaceholder size={52} />
+                  <p className="text-xl font-extrabold text-foreground">
+                    ¡Genial, lo viste todo! 🎊
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  className="w-full"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant="primary"
+                    className="w-full rounded-3xl py-5 text-xl font-extrabold tracking-wide h-auto"
+                    onClick={handleActivity}
+                  >
+                    ¡Listo! Hacer la actividad 🚀
+                  </Button>
+                </motion.div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

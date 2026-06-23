@@ -8,6 +8,7 @@ export function RewardCard({
   icon,
   locked = false,
   missing,
+  disabled = false,
   onRedeem,
   className,
 }: {
@@ -16,6 +17,7 @@ export function RewardCard({
   icon: ReactNode
   locked?: boolean
   missing?: number
+  disabled?: boolean
   onRedeem?: () => void
   className?: string
 }) {
@@ -37,7 +39,7 @@ export function RewardCard({
           Te faltan {missing?.toLocaleString('es-AR')} pts
         </span>
       ) : (
-        <Button variant="primary" className="h-8 px-4 text-xs" onClick={onRedeem}>
+        <Button variant="primary" className="h-8 px-4 text-xs" onClick={onRedeem} disabled={disabled}>
           Canjear
         </Button>
       )}

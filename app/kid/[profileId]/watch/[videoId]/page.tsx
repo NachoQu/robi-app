@@ -10,11 +10,20 @@ export default async function WatchPage({ params }: PageProps) {
   const { profileId, videoId } = await params
   const supabase = await createClient()
 
-  const { data: video } = await supabase
-    .from('videos')
-    .select('id, youtube_id, title')
-    .eq('id', videoId)
-    .single()
+  const [{ data: video }, { data: previousActivity }] = await Promise.all([
+    supabase
+      .from('videos')
+      .select('id, youtube_id, title')
+      .eq('id', videoId)
+      .single(),
+    supabase
+      .from('activities')
+      .select('base_points, bonus_points')
+      .eq('child_profile_id', profileId)
+      .eq('video_id', videoId)
+      .limit(1)
+      .maybeSingle(),
+  ])
 
   if (!video) notFound()
 
@@ -24,6 +33,7 @@ export default async function WatchPage({ params }: PageProps) {
       title={video.title ?? 'Video educativo'}
       profileId={profileId}
       videoId={videoId}
+      previousActivity={previousActivity}
     />
   )
 }
