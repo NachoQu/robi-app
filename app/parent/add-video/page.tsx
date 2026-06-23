@@ -25,6 +25,20 @@ interface QuizQuestion {
 
 type PageState = 'form' | 'loading' | 'error' | 'success'
 
+function extractYouTubeId(url: string): string | null {
+  try {
+    const u = new URL(url)
+    if (u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0] || null
+    if (u.hostname.includes('youtube.com')) {
+      if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/shorts/')[1].split('?')[0] || null
+      return u.searchParams.get('v')
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 export default function AddVideoPage() {
   const searchParams = useSearchParams()
   const preselectedId = searchParams.get('profileId')
@@ -312,6 +326,15 @@ export default function AddVideoPage() {
                       className="h-12 rounded-xl text-sm border-2 border-border focus-visible:ring-0 focus-visible:border-primary"
                       autoComplete="off"
                     />
+                    {extractYouTubeId(url) && (
+                      <div className="relative rounded-2xl overflow-hidden aspect-video w-full">
+                        <img
+                          src={`https://img.youtube.com/vi/${extractYouTubeId(url)}/mqdefault.jpg`}
+                          alt="Vista previa del video"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Mandatory checkbox */}
@@ -348,6 +371,18 @@ export default function AddVideoPage() {
                 </form>
               </CardContent>
             </Card>
+
+            {/* Hint Robi */}
+            <div
+              className="flex items-start gap-3 rounded-2xl px-4 py-3"
+              style={{ background: 'color-mix(in oklch, var(--robi-secondary) 12%, transparent)', border: '1px solid color-mix(in oklch, var(--robi-secondary) 25%, transparent)' }}
+            >
+              <RobiPlaceholder size={28} className="shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-xs font-bold" style={{ color: 'var(--robi-secondary)' }}>Consejo de Robi</p>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">Los videos cortos, de menos de 5 minutos, son más fáciles de terminar para los chicos.</p>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
