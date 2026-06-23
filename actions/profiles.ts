@@ -3,6 +3,32 @@ import { createClient } from '@/lib/supabase/server'
 
 const FREE_PROFILE_LIMIT = 1
 
+export async function updateChildProfile(profileId: string, input: { name: string; avatar: string }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+  const { error } = await supabase
+    .from('child_profiles')
+    .update({ name: input.name, avatar: input.avatar })
+    .eq('id', profileId)
+    .eq('user_id', user.id)
+  if (error) return { ok: false }
+  return { ok: true }
+}
+
+export async function deleteChildProfile(profileId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+  const { error } = await supabase
+    .from('child_profiles')
+    .delete()
+    .eq('id', profileId)
+    .eq('user_id', user.id)
+  if (error) return { ok: false }
+  return { ok: true }
+}
+
 export async function createProfile(input: { name: string; avatar: string; age?: number }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

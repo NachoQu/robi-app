@@ -38,10 +38,10 @@ export default async function VouchersPage() {
       <div className="flex flex-col gap-1">
         <Link
           href="/parent"
-          className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit"
+          className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit sm:hidden"
           style={{ color: 'var(--robi-primary)' }}
         >
-          ← Volver
+          ← Volver al panel
         </Link>
         <h1 className="text-2xl font-extrabold tracking-tight mt-2" style={{ color: 'var(--foreground)' }}>
           🎁 Gestionar premios

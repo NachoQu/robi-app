@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Plus } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toggleVoucher } from '@/actions/vouchers'
 import type { Voucher } from './page'
 
@@ -13,6 +16,7 @@ interface Props {
 export default function VoucherList({ initialVouchers }: Props) {
   const [vouchers, setVouchers] = useState<Voucher[]>(initialVouchers)
   const [pending, startTransition] = useTransition()
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
 
   function handleToggle(id: string, currentActive: boolean) {
     const newActive = !currentActive
@@ -35,6 +39,15 @@ export default function VoucherList({ initialVouchers }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Crear nuevo */}
+      <button
+        onClick={() => setUpgradeOpen(true)}
+        className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors w-full"
+      >
+        <Plus size={16} />
+        Crear nuevo premio
+      </button>
+
       {/* Summary badge */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-bold px-3 py-1 rounded-full bg-[var(--robi-secondary)]/25 text-[var(--robi-success-ink)] border border-[var(--robi-secondary)]/40">
@@ -153,6 +166,31 @@ export default function VoucherList({ initialVouchers }: Props) {
           </motion.div>
         ))}
       </AnimatePresence>
+
+      {/* Premium dialog */}
+      <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
+        <DialogContent className="rounded-3xl border border-border shadow-2xl max-w-sm w-full bg-card">
+          <DialogHeader className="pt-2">
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-5xl select-none">🎁</span>
+              <DialogTitle className="text-xl font-extrabold text-center text-primary">
+                ¡Premios personalizados con Premium!
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 pb-4 px-2 text-center">
+            <p className="text-base text-muted-foreground font-medium">
+              Con <strong className="text-primary">Robi Premium</strong> podés crear premios a medida para motivar a tus hijos según sus intereses.
+            </p>
+            <div className="rounded-2xl px-4 py-3 text-sm font-semibold bg-[var(--robi-accent)]/20 text-[var(--robi-accent-ink)] border border-[var(--robi-accent)]/40">
+              ⭐ Próximamente disponible
+            </div>
+            <Button variant="primary" size="lg" onClick={() => setUpgradeOpen(false)} className="rounded-2xl font-bold h-12">
+              Entendido
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

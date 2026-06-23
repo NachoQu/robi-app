@@ -1,13 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
-import { processVideo } from '@/actions/videos'
+import { processVideo, assignVideoToProfiles } from '@/actions/videos'
 import { createClient } from '@/lib/supabase/client'
 
 interface ChildProfile {
@@ -24,38 +25,56 @@ interface QuizQuestion {
 
 type PageState = 'form' | 'loading' | 'error' | 'success'
 
+function extractYouTubeId(url: string): string | null {
+  try {
+    const u = new URL(url)
+    if (u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0] || null
+    if (u.hostname.includes('youtube.com')) {
+      if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/shorts/')[1].split('?')[0] || null
+      return u.searchParams.get('v')
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 export default function AddVideoPage() {
-  const router = useRouter()
+  const searchParams = useSearchParams()
+  const preselectedId = searchParams.get('profileId')
+
   const [profiles, setProfiles] = useState<ChildProfile[]>([])
-  const [selectedProfileId, setSelectedProfileId] = useState<string>('')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [url, setUrl] = useState('')
   const [checked, setChecked] = useState(false)
   const [pageState, setPageState] = useState<PageState>('form')
   const [errorReason, setErrorReason] = useState<string | null>(null)
-  const [videoId, setVideoId] = useState<string | null>(null)
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [loadingDots, setLoadingDots] = useState('.')
 
-  // Load profiles
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
-      supabase
-        .from('child_profiles')
-        .select('id, name, avatar')
-        .eq('user_id', user.id)
-        .order('name')
-        .then(({ data }) => {
-          if (data && data.length > 0) {
-            setProfiles(data)
-            if (data.length === 1) setSelectedProfileId(data[0].id)
-          }
-        })
-    })
-  }, [])
+  const supabase = createClient()
 
-  // Animated loading dots
+  const loadData = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const { data: profilesData } = await supabase
+      .from('child_profiles').select('id, name, avatar').eq('user_id', user.id).order('name')
+
+    const loadedProfiles = profilesData ?? []
+    setProfiles(loadedProfiles)
+
+    if (selectedIds.length === 0) {
+      if (preselectedId) {
+        setSelectedIds([preselectedId])
+      } else if (loadedProfiles.length === 1) {
+        setSelectedIds([loadedProfiles[0].id])
+      }
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { loadData() }, [loadData])
+
   useEffect(() => {
     if (pageState !== 'loading') return
     const interval = setInterval(() => {
@@ -64,14 +83,21 @@ export default function AddVideoPage() {
     return () => clearInterval(interval)
   }, [pageState])
 
+  function toggleProfile(id: string) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    )
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!selectedProfileId || !url.trim() || !checked) return
+    if (selectedIds.length === 0 || !url.trim() || !checked) return
 
     setPageState('loading')
     setErrorReason(null)
 
-    const result = await processVideo({ url: url.trim(), childProfileId: selectedProfileId })
+    const [firstId, ...restIds] = selectedIds
+    const result = await processVideo({ url: url.trim(), childProfileId: firstId })
 
     if (!result.ok) {
       setErrorReason(result.reason ?? 'Ocurrió un error. Intentá de nuevo.')
@@ -79,29 +105,42 @@ export default function AddVideoPage() {
       return
     }
 
-    const newVideoId = result.videoId!
-    setVideoId(newVideoId)
+    const videoId = result.videoId!
 
-    // Non-blocking: fetch quiz questions for preview
-    const supabase = createClient()
+    if (restIds.length > 0) {
+      await assignVideoToProfiles({ videoId, childProfileIds: restIds })
+    }
+
     const { data: qs } = await supabase
       .from('quiz_questions')
       .select('question_text, options, position')
-      .eq('video_id', newVideoId)
+      .eq('video_id', videoId)
       .order('position')
     setQuestions(qs ?? [])
     setPageState('success')
+    await loadData()
   }
 
-  function handleRetry() {
+  function handleCargarOtro() {
     setPageState('form')
     setErrorReason(null)
+    setUrl('')
+    setChecked(false)
+    setQuestions([])
   }
 
-  const canSubmit = !!selectedProfileId && url.trim().length > 0 && checked
+  const canSubmit = selectedIds.length > 0 && url.trim().length > 0 && checked
 
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="max-w-lg mx-auto flex flex-col gap-8">
+      <Link
+        href="/parent"
+        className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit sm:hidden"
+        style={{ color: 'var(--robi-primary)' }}
+      >
+        ← Volver al panel
+      </Link>
+
       <AnimatePresence mode="wait">
         {/* ─── LOADING STATE ─── */}
         {pageState === 'loading' && (
@@ -160,15 +199,12 @@ export default function AddVideoPage() {
                 <RobiPlaceholder size={80} />
               </motion.div>
               <div className="text-4xl">🎉</div>
-              <h2 className="text-2xl font-extrabold text-primary">
-                ¡Video cargado con éxito!
-              </h2>
+              <h2 className="text-2xl font-extrabold text-primary">¡Video cargado con éxito!</h2>
               <p className="text-base text-muted-foreground font-medium">
-                El quiz está listo. Tu hijo/a ya puede verlo y contestar las preguntas.
+                El quiz está listo. {selectedIds.length > 1 ? 'Los niños ya pueden verlo.' : 'Tu hijo/a ya puede verlo y contestar las preguntas.'}
               </p>
             </div>
 
-            {/* Optional questions preview */}
             {questions.length > 0 && (
               <Card className="rounded-3xl border border-border shadow-sm">
                 <CardHeader className="px-6 pt-5 pb-2">
@@ -187,10 +223,7 @@ export default function AddVideoPage() {
                       </p>
                       <div className="grid grid-cols-2 gap-1.5">
                         {(q.options as string[]).map((opt, oi) => (
-                          <span
-                            key={oi}
-                            className="text-xs rounded-xl px-3 py-2 font-medium bg-muted text-foreground"
-                          >
+                          <span key={oi} className="text-xs rounded-xl px-3 py-2 font-medium bg-muted text-foreground">
                             {String.fromCharCode(65 + oi)}. {opt}
                           </span>
                         ))}
@@ -201,16 +234,9 @@ export default function AddVideoPage() {
               </Card>
             )}
 
-            <motion.div whileTap={{ scale: 0.97 }}>
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={() => router.push('/parent')}
-                className="w-full text-base font-bold"
-              >
-                Listo →
-              </Button>
-            </motion.div>
+            <Button variant="primary" size="lg" onClick={handleCargarOtro} className="w-full text-base font-bold">
+              Cargar otro video
+            </Button>
           </motion.div>
         )}
 
@@ -224,18 +250,16 @@ export default function AddVideoPage() {
             transition={{ duration: 0.35 }}
             className="flex flex-col gap-6"
           >
-            {/* Header */}
-            <div className="flex flex-col items-center gap-3 text-center pt-4">
-              <RobiPlaceholder size={64} />
-              <h1 className="text-2xl font-extrabold tracking-tight text-primary">
-                Cargar video educativo
-              </h1>
-              <p className="text-sm text-muted-foreground font-medium max-w-sm">
-                Buscá un video de YouTube apto para tu hijo/a y pegá el link acá. Robi va a crear un quiz automáticamente.
-              </p>
+            <div className="flex items-center gap-3 pt-2">
+              <RobiPlaceholder size={40} />
+              <div>
+                <h1 className="text-lg font-extrabold tracking-tight text-primary leading-tight">Cargar video educativo</h1>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">
+                  Pegá un link de YouTube y Robi crea el quiz.
+                </p>
+              </div>
             </div>
 
-            {/* Error card */}
             {pageState === 'error' && errorReason && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -248,47 +272,48 @@ export default function AddVideoPage() {
             )}
 
             <Card className="rounded-3xl border border-border shadow-sm bg-card">
-              <CardContent className="px-8 py-7">
+              <CardContent className="px-5 py-5 sm:px-8 sm:py-7">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                  {/* Profile selector */}
-                  <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor="profile"
-                      className="text-sm font-semibold text-foreground"
-                    >
-                      Perfil del niño/a
+
+                  {/* Child multi-select */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold text-foreground">
+                      Asignar a
                     </label>
                     {profiles.length === 0 ? (
                       <p className="text-sm text-muted-foreground font-medium">Cargando perfiles…</p>
-                    ) : profiles.length === 1 ? (
-                      <div className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-sm bg-muted border border-border text-foreground">
-                        <span className="text-2xl">{profiles[0].avatar}</span>
-                        <span>{profiles[0].name}</span>
-                      </div>
                     ) : (
-                      <select
-                        id="profile"
-                        value={selectedProfileId}
-                        onChange={(e) => setSelectedProfileId(e.target.value)}
-                        required
-                        className="h-12 rounded-xl text-sm font-semibold px-4 border-2 border-border bg-card text-foreground focus:outline-none focus:border-primary"
-                      >
-                        <option value="">Elegí un perfil…</option>
-                        {profiles.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.avatar} {p.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="flex flex-wrap gap-2">
+                        {profiles.map((p) => {
+                          const selected = selectedIds.includes(p.id)
+                          return (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => toggleProfile(p.id)}
+                              className={[
+                                'flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-semibold border-2 transition-all',
+                                selected
+                                  ? 'bg-primary/10 border-primary text-primary'
+                                  : 'bg-muted border-transparent text-foreground hover:border-border',
+                              ].join(' ')}
+                            >
+                              <span className="text-lg">{p.avatar}</span>
+                              <span>{p.name}</span>
+                              {selected && <span className="text-xs">✓</span>}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
+                    {selectedIds.length === 0 && profiles.length > 0 && (
+                      <p className="text-xs text-muted-foreground font-medium">Seleccioná al menos un perfil</p>
                     )}
                   </div>
 
                   {/* URL input */}
                   <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor="url"
-                      className="text-sm font-semibold text-foreground"
-                    >
+                    <label htmlFor="url" className="text-sm font-semibold text-foreground">
                       Link del video de YouTube
                     </label>
                     <Input
@@ -301,6 +326,15 @@ export default function AddVideoPage() {
                       className="h-12 rounded-xl text-sm border-2 border-border focus-visible:ring-0 focus-visible:border-primary"
                       autoComplete="off"
                     />
+                    {extractYouTubeId(url) && (
+                      <div className="relative rounded-2xl overflow-hidden aspect-video w-full">
+                        <img
+                          src={`https://img.youtube.com/vi/${extractYouTubeId(url)}/mqdefault.jpg`}
+                          alt="Vista previa del video"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Mandatory checkbox */}
@@ -323,7 +357,6 @@ export default function AddVideoPage() {
                     </span>
                   </label>
 
-                  {/* Submit */}
                   <motion.div whileTap={{ scale: 0.97 }} className="mt-1">
                     <Button
                       variant="primary"
@@ -338,9 +371,22 @@ export default function AddVideoPage() {
                 </form>
               </CardContent>
             </Card>
+
+            {/* Hint Robi */}
+            <div
+              className="flex items-start gap-3 rounded-2xl px-4 py-3"
+              style={{ background: 'color-mix(in oklch, var(--robi-secondary) 12%, transparent)', border: '1px solid color-mix(in oklch, var(--robi-secondary) 25%, transparent)' }}
+            >
+              <RobiPlaceholder size={28} className="shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-xs font-bold" style={{ color: 'var(--robi-secondary)' }}>Consejo de Robi</p>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">Los videos cortos, de menos de 5 minutos, son más fáciles de terminar para los chicos.</p>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   )
 }

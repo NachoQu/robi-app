@@ -33,3 +33,14 @@ export async function signOut() {
   await supabase.auth.signOut()
   redirect('/')
 }
+
+export async function sendPasswordResetEmail() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user?.email) return { ok: false }
+  const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
+  })
+  if (error) return { ok: false }
+  return { ok: true }
+}
