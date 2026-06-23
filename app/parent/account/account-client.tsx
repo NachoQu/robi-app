@@ -27,8 +27,8 @@ export function AccountClient({ email, hasPin: initialHasPin }: AccountClientPro
     }
   }
 
-  const FREE = ['1 perfil de niño', 'Videos ilimitados', 'Quizzes con IA', 'Puntos y badges']
-  const PREMIUM = ['Hasta 5 perfiles', 'Catálogo de premios ampliado', 'Reportes para padres', 'Soporte prioritario']
+  const FREE = ['1 perfil de niño', 'Videos limitados', 'Quizzes con IA', 'Puntos y badges']
+  const PREMIUM = ['Hasta 5 perfiles', 'Videos ilimitados', 'Catálogo de premios ampliado', 'Soporte prioritario']
 
   return (
     <div className="flex flex-col gap-8">
