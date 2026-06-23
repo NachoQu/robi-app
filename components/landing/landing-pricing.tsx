@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-const FREE = ['1 perfil de niño', 'Videos ilimitados', 'Quizzes con IA', 'Puntos y badges']
-const PREMIUM = ['Hasta 5 perfiles', 'Catálogo de premios ampliado', 'Reportes para padres', 'Soporte prioritario']
+const FREE = ['1 perfil de niño', 'Videos limitados', 'Quizzes con IA', 'Puntos y badges']
+const PREMIUM = ['Hasta 5 perfiles', 'Videos ilimitados', 'Catálogo de premios ampliado', 'Soporte prioritario']
 
 export function LandingPricing() {
   return (

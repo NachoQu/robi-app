@@ -7,7 +7,7 @@ import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Robi } from '@/components/robi/Robi'
 
-export type NavItem = { href: string; label: string; icon: LucideIcon }
+export type NavItem = { href: string; label: string; icon: LucideIcon; matchPaths?: string[] }
 
 export function AppShell({
   nav,
@@ -15,13 +15,19 @@ export function AppShell({
   children,
 }: { nav: NavItem[]; footer?: ReactNode; children: ReactNode }) {
   const pathname = usePathname()
-  // Most-specific match wins: among the nav hrefs that match the current
-  // path (exact or as a path prefix), the longest one is the active item.
-  // This keeps a parent item ("/parent") from lighting up on a child route
-  // ("/parent/add-video"), and prevents an "/" href from matching everything.
+
+  function itemMatches({ href, matchPaths }: NavItem) {
+    if (pathname === href || pathname.startsWith(href + '/')) return true
+    return matchPaths?.some((p) => pathname === p || pathname.startsWith(p + '/')) ?? false
+  }
+
   const activeHref = nav
-    .filter(({ href }) => pathname === href || pathname.startsWith(href + '/'))
-    .sort((a, b) => b.href.length - a.href.length)[0]?.href
+    .filter(itemMatches)
+    .sort((a, b) => {
+      const lenA = Math.max(a.href.length, ...(a.matchPaths?.map((p) => p.length) ?? [0]))
+      const lenB = Math.max(b.href.length, ...(b.matchPaths?.map((p) => p.length) ?? [0]))
+      return lenB - lenA
+    })[0]?.href
   const isActive = (href: string) => href === activeHref
 
   return (

@@ -28,8 +28,14 @@ export async function processVideo(input: { url: string; childProfileId: string 
     return { ok: true, videoId: existing.id }
   }
 
+  let title: string | null = null
+  try {
+    const oembed = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${youtubeId}&format=json`)
+    if (oembed.ok) title = ((await oembed.json()) as { title?: string }).title ?? null
+  } catch {}
+
   const { data: video } = await supabase.from('videos')
-    .insert({ user_id: user.id, youtube_url: input.url, youtube_id: youtubeId, status: 'processing' })
+    .insert({ user_id: user.id, youtube_url: input.url, youtube_id: youtubeId, status: 'processing', title })
     .select('id').single()
   if (!video) return { ok: false, reason: 'No pudimos iniciar el procesamiento del video. Probá de nuevo.' }
   const videoId = video.id
@@ -80,6 +86,41 @@ export async function processVideo(input: { url: string; childProfileId: string 
   )
   await supabase.from('video_assignments').insert({ video_id: videoId, child_profile_id: input.childProfileId })
   return { ok: true, videoId }
+}
+
+export async function updateVideoTitle(input: { videoId: string; title: string }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+
+  const trimmed = input.title.trim()
+  if (!trimmed) return { ok: false }
+
+  const { error } = await supabase
+    .from('videos')
+    .update({ title: trimmed })
+    .eq('id', input.videoId)
+    .eq('user_id', user.id)
+
+  return { ok: !error }
+}
+
+export async function deleteRejectedVideo(input: { videoId: string }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+
+  const { data: video } = await supabase
+    .from('videos')
+    .select('status')
+    .eq('id', input.videoId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!video || video.status !== 'rejected') return { ok: false }
+
+  const { error } = await supabase.from('videos').delete().eq('id', input.videoId).eq('user_id', user.id)
+  return { ok: !error }
 }
 
 export async function assignVideoToProfiles(input: { videoId: string; childProfileIds: string[] }) {
