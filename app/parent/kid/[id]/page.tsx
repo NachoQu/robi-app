@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { EditProfileButton } from './edit-profile-button'
 
 function formatDate(dateStr: string) {
   const diffDays = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000)
@@ -75,12 +76,17 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
         >
           {profile.avatar}
         </span>
-        <div>
+        <div className="flex-1 min-w-0">
           <h1 className="text-xl font-extrabold text-foreground">{profile.name}</h1>
           <p className="text-sm text-muted-foreground font-medium mt-0.5">
             {rows.length} video{rows.length !== 1 ? 's' : ''} completado{rows.length !== 1 ? 's' : ''} · {profile.total_points} pts acumulados
           </p>
         </div>
+        <EditProfileButton
+          profileId={profile.id}
+          initialName={profile.name}
+          initialAvatar={profile.avatar}
+        />
       </div>
 
       {/* Stats */}

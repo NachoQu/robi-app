@@ -310,7 +310,7 @@ export default async function ParentPage() {
                         href={`/parent/kid/${profile.id}`}
                         className="flex items-center justify-between gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-bold text-primary hover:bg-primary/10 transition-colors"
                       >
-                        Ver historial <ChevronRight size={14} />
+                        Ver detalle <ChevronRight size={14} />
                       </Link>
                       <Link
                         href={`/parent/add-video?profileId=${profile.id}`}
