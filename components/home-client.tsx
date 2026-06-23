@@ -8,6 +8,7 @@ import { User, ChevronDown, Lock, LogOut, Shield, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Robi } from '@/components/robi/Robi'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { PinDialog } from '@/components/pin-dialog'
 import { signOut } from '@/actions/auth'
@@ -32,15 +33,25 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
   const [currentHasPin, setCurrentHasPin] = useState(hasPin)
 
   return (
-    <div className="min-h-screen flex flex-col px-4 py-8 bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
+      <div className="w-full max-w-lg mx-auto px-4 py-8 flex flex-col flex-1">
 
       {/* Top bar */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.3 }}
-        className="flex justify-end items-start mb-2 relative"
+        className="flex justify-between items-center mb-8 relative"
       >
+        {/* Logo izquierda */}
+        <div className="flex items-center gap-2 px-1">
+          <Robi size={36} />
+          <span className="flex flex-col leading-none">
+            <span className="text-xl font-bold text-primary">Robi</span>
+            <span className="text-[10px] font-semibold text-muted-foreground">Aprende. Juega. Gana.</span>
+          </span>
+        </div>
+
         {/* Adultos button */}
         <button
           onClick={() => setMenuOpen((v) => !v)}
@@ -133,7 +144,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
       </motion.div>
 
       {/* Profile grid */}
-      <div className="flex-1 flex flex-col items-center w-full max-w-lg mx-auto gap-6">
+      <div className="flex-1 flex flex-col items-center w-full gap-6">
         <div className="grid grid-cols-2 gap-4 w-full sm:grid-cols-3">
           {profiles.map((profile, i) => (
             <motion.div
@@ -207,6 +218,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
       </div>
 
       {/* PIN Dialog */}
+      </div>
       <PinDialog
         open={pinOpen}
         onOpenChange={setPinOpen}
