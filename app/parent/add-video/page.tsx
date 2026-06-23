@@ -17,13 +17,6 @@ interface ChildProfile {
   avatar: string
 }
 
-interface AssignedVideo {
-  assignmentId: string
-  videoId: string
-  title: string | null
-  childProfileId: string
-}
-
 interface QuizQuestion {
   question_text: string
   options: string[]
@@ -38,8 +31,6 @@ export default function AddVideoPage() {
 
   const [profiles, setProfiles] = useState<ChildProfile[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [activeChildId, setActiveChildId] = useState<string | null>(null)
-  const [assignedVideos, setAssignedVideos] = useState<AssignedVideo[]>([])
   const [url, setUrl] = useState('')
   const [checked, setChecked] = useState(false)
   const [pageState, setPageState] = useState<PageState>('form')
@@ -53,13 +44,8 @@ export default function AddVideoPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    const [{ data: profilesData }, { data: assignmentsData }] = await Promise.all([
-      supabase.from('child_profiles').select('id, name, avatar').eq('user_id', user.id).order('name'),
-      supabase
-        .from('video_assignments')
-        .select('id, video_id, child_profile_id, videos(title)')
-        .order('created_at', { ascending: false }),
-    ])
+    const { data: profilesData } = await supabase
+      .from('child_profiles').select('id, name, avatar').eq('user_id', user.id).order('name')
 
     const loadedProfiles = profilesData ?? []
     setProfiles(loadedProfiles)
@@ -71,19 +57,6 @@ export default function AddVideoPage() {
         setSelectedIds([loadedProfiles[0].id])
       }
     }
-
-    if (!activeChildId && loadedProfiles.length > 0) {
-      setActiveChildId(loadedProfiles[0].id)
-    }
-
-    setAssignedVideos(
-      ((assignmentsData ?? []) as any[]).map((a) => ({
-        assignmentId: a.id,
-        videoId: a.video_id,
-        title: a.videos?.title ?? null,
-        childProfileId: a.child_profile_id,
-      }))
-    )
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { loadData() }, [loadData])
@@ -143,13 +116,6 @@ export default function AddVideoPage() {
   }
 
   const canSubmit = selectedIds.length > 0 && url.trim().length > 0 && checked
-
-  const videosByChild = profiles.map((p) => ({
-    profile: p,
-    videos: assignedVideos.filter((v) => v.childProfileId === p.id),
-  }))
-
-  const activeChild = videosByChild.find((g) => g.profile.id === activeChildId) ?? null
 
   return (
     <div className="max-w-lg mx-auto flex flex-col gap-8">
@@ -386,67 +352,6 @@ export default function AddVideoPage() {
         )}
       </AnimatePresence>
 
-      {/* ─── VIDEOS ASIGNADOS ─── */}
-      {pageState !== 'loading' && profiles.length > 0 && (
-        <section className="flex flex-col gap-4">
-          <h2 className="text-[22px] font-bold text-foreground">Videos asignados</h2>
-
-          {/* Chips con scroll horizontal */}
-          <div className="overflow-x-auto -mx-1 scrollbar-hide">
-            <div className="flex gap-2 px-1 w-max">
-              {videosByChild.map(({ profile, videos }) => {
-                const active = activeChildId === profile.id
-                return (
-                  <button
-                    key={profile.id}
-                    onClick={() => setActiveChildId(profile.id)}
-                    className={[
-                      'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold border transition-colors whitespace-nowrap',
-                      active
-                        ? 'bg-primary/10 border-primary/40 text-primary'
-                        : 'bg-card border-border text-muted-foreground hover:text-foreground',
-                    ].join(' ')}
-                  >
-                    <span className="text-base">{profile.avatar}</span>
-                    {profile.name}
-                    <span className={[
-                      'text-[11px] rounded-full px-1.5 py-0.5 font-bold',
-                      active ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground',
-                    ].join(' ')}>
-                      {videos.length}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Lista del hijo activo */}
-          {activeChild && (
-            activeChild.videos.length === 0 ? (
-              <div className="rounded-2xl bg-card border border-border px-6 py-6 flex flex-col items-start gap-1">
-                <p className="text-sm font-bold text-foreground">Sin videos asignados</p>
-                <p className="text-xs text-muted-foreground font-medium">
-                  Cargá un video arriba para asignárselo a {activeChild.profile.name}.
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {activeChild.videos.map((v) => (
-                  <div
-                    key={v.assignmentId}
-                    className="rounded-2xl bg-card border border-border px-4 py-3"
-                  >
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {v.title ?? 'Sin título aún'}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )
-          )}
-        </section>
-      )}
     </div>
   )
 }
