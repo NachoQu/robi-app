@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { AchievementBadge } from '@/components/ui/achievement-badge'
@@ -47,19 +46,9 @@ export default function AlbumClient({
   totalCount,
 }: AlbumClientProps) {
   return (
-    <div className="min-h-screen flex flex-col px-4 py-6 bg-background">
+    <div className="flex flex-col">
       {/* Header area */}
       <div className="flex flex-col items-center gap-3 mb-6 w-full max-w-lg mx-auto">
-        <div className="w-full">
-          <Link
-            href={`/kid/${profileId}`}
-            className="text-sm font-bold flex items-center gap-1"
-            style={{ color: 'var(--robi-primary)' }}
-          >
-            ← Volver
-          </Link>
-        </div>
-
         {/* Profile / title card */}
         <motion.div
           initial={{ opacity: 0, y: -16 }}

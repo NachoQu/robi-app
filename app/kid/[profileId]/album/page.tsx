@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AlbumClient from './album-client'
+import { KidShell } from '@/components/shell/kid-shell'
 
 interface PageProps {
   params: Promise<{ profileId: string }>
@@ -69,13 +70,20 @@ export default async function AlbumPage({ params }: PageProps) {
   const slots = [...earnedSlots, ...emptySlots]
 
   return (
-    <AlbumClient
+    <KidShell
       profileId={profileId}
       profileName={profile.name}
       profileAvatar={profile.avatar}
-      slots={slots}
-      earnedCount={earnedSlots.length}
-      totalCount={slots.length}
-    />
+      points={profile.total_points}
+    >
+      <AlbumClient
+        profileId={profileId}
+        profileName={profile.name}
+        profileAvatar={profile.avatar}
+        slots={slots}
+        earnedCount={earnedSlots.length}
+        totalCount={slots.length}
+      />
+    </KidShell>
   )
 }

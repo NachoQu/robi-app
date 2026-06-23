@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { Home, Gift, BookOpen } from 'lucide-react'
+import { Home, Gift, BookOpen, LayoutDashboard } from 'lucide-react'
 import { AppShell, type NavItem } from '@/components/shell/app-shell'
 
 interface KidShellProps {
@@ -20,7 +20,8 @@ export function KidShell({
   children,
 }: KidShellProps) {
   const nav: NavItem[] = [
-    { href: `/kid/${profileId}`, label: 'Inicio', icon: Home },
+    { href: '/', label: 'Home', icon: Home },
+    { href: `/kid/${profileId}`, label: 'Mi Panel', icon: LayoutDashboard },
     { href: `/kid/${profileId}/album`, label: 'Mi álbum', icon: BookOpen },
     { href: `/kid/${profileId}/rewards`, label: 'Premios', icon: Gift },
   ]

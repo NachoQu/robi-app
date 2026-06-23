@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import RewardsClient from './rewards-client'
+import { KidShell } from '@/components/shell/kid-shell'
 
 interface PageProps {
   params: Promise<{ profileId: string }>
@@ -56,13 +57,20 @@ export default async function RewardsPage({ params }: PageProps) {
   }))
 
   return (
-    <RewardsClient
+    <KidShell
       profileId={profileId}
       profileName={profile.name}
       profileAvatar={profile.avatar}
-      totalPoints={profile.total_points}
-      vouchers={vouchers}
-      redemptions={redemptions}
-    />
+      points={profile.total_points}
+    >
+      <RewardsClient
+        profileId={profileId}
+        profileName={profile.name}
+        profileAvatar={profile.avatar}
+        totalPoints={profile.total_points}
+        vouchers={vouchers}
+        redemptions={redemptions}
+      />
+    </KidShell>
   )
 }
