@@ -37,17 +37,30 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
 
   if (!profile) notFound()
 
-  const { data: activities } = await supabase
-    .from('activities')
-    .select('id, completed_at, bonus_points, videos(title)')
-    .eq('child_profile_id', id)
-    .order('completed_at', { ascending: false })
+  const [{ data: activities }, { data: redemptions }] = await Promise.all([
+    supabase
+      .from('activities')
+      .select('id, completed_at, bonus_points, videos(title)')
+      .eq('child_profile_id', id)
+      .order('completed_at', { ascending: false }),
+    supabase
+      .from('redemptions')
+      .select('id, redeemed_at, vouchers(title, points_cost)')
+      .eq('child_profile_id', id)
+      .order('redeemed_at', { ascending: false }),
+  ])
 
   const rows = (activities ?? []) as unknown as {
     id: string
     completed_at: string
     bonus_points: number
     videos: { title: string | null } | null
+  }[]
+
+  const redemptionRows = (redemptions ?? []) as unknown as {
+    id: string
+    redeemed_at: string
+    vouchers: { title: string | null; points_cost: number } | null
   }[]
 
   const weekStart = new Date()
@@ -146,6 +159,45 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
                 </div>
               )
             })}
+          </div>
+        )}
+      </section>
+
+      {/* Premios canjeados */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[22px] font-bold text-foreground">Premios canjeados</h2>
+
+        {redemptionRows.length === 0 ? (
+          <div className="rounded-2xl bg-card border border-border px-6 py-8 flex flex-col items-start gap-2">
+            <span className="text-3xl mb-1">🎁</span>
+            <p className="text-sm font-bold text-foreground">Todavía no canjeó ningún premio</p>
+            <p className="text-xs text-muted-foreground font-medium">
+              Cuando {profile.name} acumule suficientes puntos podrá canjear premios.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-[1fr_80px_60px] gap-2 px-4">
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Premio</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Fecha</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide text-right">Pts</p>
+            </div>
+            {redemptionRows.map((row) => (
+              <div
+                key={row.id}
+                className="grid grid-cols-[1fr_80px_60px] gap-2 items-center rounded-2xl bg-card border border-border px-4 py-3"
+              >
+                <p className="text-sm font-medium text-foreground truncate">
+                  {row.vouchers?.title ?? 'Premio'}
+                </p>
+                <p className="text-xs text-muted-foreground font-medium">
+                  {formatDate(row.redeemed_at)}
+                </p>
+                <p className="text-sm font-bold text-right" style={{ color: 'var(--robi-accent-ink)' }}>
+                  -{row.vouchers?.points_cost ?? 0}
+                </p>
+              </div>
+            ))}
           </div>
         )}
       </section>

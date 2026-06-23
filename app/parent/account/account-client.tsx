@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { KeyRound, Mail, Lock } from 'lucide-react'
+import { KeyRound, Mail, Lock, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { ManagePinDialog } from '@/components/manage-pin-dialog'
 import { sendPasswordResetEmail } from '@/actions/auth'
@@ -27,8 +27,58 @@ export function AccountClient({ email, hasPin: initialHasPin }: AccountClientPro
     }
   }
 
+  const FREE = ['1 perfil de niño', 'Videos ilimitados', 'Quizzes con IA', 'Puntos y badges']
+  const PREMIUM = ['Hasta 5 perfiles', 'Catálogo de premios ampliado', 'Reportes para padres', 'Soporte prioritario']
+
   return (
     <div className="flex flex-col gap-8">
+
+      {/* Plan */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest px-1">Tu plan</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Gratis */}
+          <div className="flex flex-col gap-4 rounded-2xl border-2 border-primary bg-card p-5">
+            <div>
+              <h3 className="text-base font-bold text-foreground">Gratis</h3>
+              <p className="text-2xl font-extrabold text-primary">$0</p>
+            </div>
+            <ul className="flex flex-col gap-2">
+              {FREE.map((f) => (
+                <li key={f} className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Check size={14} className="text-primary shrink-0" /> {f}
+                </li>
+              ))}
+            </ul>
+            <span className="mt-auto flex items-center justify-center h-10 w-full rounded-xl text-sm font-bold bg-primary/10 text-primary">
+              Plan actual
+            </span>
+          </div>
+
+          {/* Premium */}
+          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 opacity-80">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="text-base font-bold text-foreground">Premium</h3>
+                <p className="text-2xl font-extrabold text-muted-foreground">Pronto</p>
+              </div>
+              <span className="rounded-full px-2.5 py-1 text-xs font-bold shrink-0" style={{ background: 'color-mix(in oklch, var(--robi-accent) 20%, transparent)', color: 'var(--robi-accent-ink)' }}>
+                Próximamente
+              </span>
+            </div>
+            <ul className="flex flex-col gap-2">
+              {PREMIUM.map((f) => (
+                <li key={f} className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                  <Check size={14} className="text-muted-foreground shrink-0" /> {f}
+                </li>
+              ))}
+            </ul>
+            <button disabled className="mt-auto h-10 w-full rounded-xl text-sm font-bold border border-border text-muted-foreground cursor-not-allowed">
+              Próximamente
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Seguridad */}
       <section className="flex flex-col gap-3">
