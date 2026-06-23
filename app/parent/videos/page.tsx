@@ -40,7 +40,7 @@ export default async function VideosPage() {
       .in('video_id', videoIds)
 
     for (const row of assignments ?? []) {
-      const r = row as { video_id: string; child_profiles: { id: string; name: string; avatar: string } | null }
+      const r = row as unknown as { video_id: string; child_profiles: { id: string; name: string; avatar: string } | null }
       if (!assignmentsByVideo[r.video_id]) assignmentsByVideo[r.video_id] = []
       if (r.child_profiles) assignmentsByVideo[r.video_id].push(r.child_profiles)
     }
