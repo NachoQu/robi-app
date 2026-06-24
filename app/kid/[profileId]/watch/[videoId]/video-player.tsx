@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { Button } from '@/components/ui/button'
+import { markVideoWatched } from '@/actions/videos'
 
 interface VideoPlayerProps {
   youtubeId: string
@@ -47,6 +48,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
           // YT.PlayerState.ENDED === 0
           if (event.data === 0) {
             setVideoEnded(true)
+            void markVideoWatched({ videoId, childProfileId: profileId })
           }
         },
       },

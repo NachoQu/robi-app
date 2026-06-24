@@ -37,10 +37,10 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
 
   if (!profile) notFound()
 
-  const [{ data: activities }, { data: redemptions }] = await Promise.all([
+  const [{ data: activities }, { data: redemptions }, { data: watches }] = await Promise.all([
     supabase
       .from('activities')
-      .select('id, completed_at, bonus_points, videos(title)')
+      .select('id, video_id, completed_at, bonus_points, videos(title)')
       .eq('child_profile_id', id)
       .order('completed_at', { ascending: false }),
     supabase
@@ -48,14 +48,53 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
       .select('id, redeemed_at, vouchers(title, points_cost)')
       .eq('child_profile_id', id)
       .order('redeemed_at', { ascending: false }),
+    supabase
+      .from('video_assignments')
+      .select('video_id, watched_at')
+      .eq('child_profile_id', id)
+      .not('watched_at', 'is', null)
+      .order('watched_at', { ascending: false }),
   ])
 
   const rows = (activities ?? []) as unknown as {
     id: string
+    video_id: string
     completed_at: string
     bonus_points: number
     videos: { title: string | null } | null
   }[]
+
+  const watchRows = (watches ?? []) as unknown as {
+    video_id: string
+    watched_at: string
+  }[]
+
+  // IDs de videos con quiz completado para no mostrar "Vio el video" duplicado
+  const completedVideoIds = new Set(rows.map((r) => r.video_id))
+
+  // Mapa de video_id → title para los watched (busca en activities primero, luego muestra genérico)
+  const titleByVideoId = new Map(rows.map((r) => [r.video_id, r.videos?.title ?? null]))
+
+  // Para watches sin title en activities, buscar en videos
+  const unwatchedIds = watchRows.filter((w) => !completedVideoIds.has(w.video_id)).map((w) => w.video_id)
+  if (unwatchedIds.length > 0) {
+    const { data: videoTitles } = await supabase
+      .from('videos')
+      .select('id, title')
+      .in('id', unwatchedIds)
+    ;(videoTitles ?? []).forEach((v: { id: string; title: string | null }) => titleByVideoId.set(v.id, v.title))
+  }
+
+  type HistorialEntry =
+    | { kind: 'quiz'; id: string; date: string; title: string | null; bonus_points: number }
+    | { kind: 'watch'; id: string; date: string; title: string | null }
+
+  const historial: HistorialEntry[] = [
+    ...rows.map((r) => ({ kind: 'quiz' as const, id: r.id, date: r.completed_at, title: r.videos?.title ?? null, bonus_points: r.bonus_points })),
+    ...watchRows
+      .filter((w) => !completedVideoIds.has(w.video_id))
+      .map((w) => ({ kind: 'watch' as const, id: w.video_id, date: w.watched_at, title: titleByVideoId.get(w.video_id) ?? null })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   const redemptionRows = (redemptions ?? []) as unknown as {
     id: string
@@ -70,6 +109,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
   const avgCorrect = rows.length > 0
     ? Math.round(rows.reduce((s, r) => s + correctAnswers(r.bonus_points), 0) / rows.length * 20)
     : 0
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -120,7 +160,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
       <section className="flex flex-col gap-3">
         <h2 className="text-[22px] font-bold text-foreground">Historial de videos</h2>
 
-        {rows.length === 0 ? (
+        {historial.length === 0 ? (
           <div className="rounded-2xl bg-card border border-border px-6 py-8 flex flex-col items-start gap-2">
             <span className="text-3xl mb-1">🎬</span>
             <p className="text-sm font-bold text-foreground">Todavía no completó ningún video</p>
@@ -133,32 +173,27 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {/* Column headers */}
-            <div className="grid grid-cols-[1fr_80px_52px] gap-2 px-4">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Video</p>
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Fecha</p>
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide text-right">Resp.</p>
-            </div>
-
-            {rows.map((row) => {
-              const correct = correctAnswers(row.bonus_points)
-              return (
-                <div
-                  key={row.id}
-                  className="grid grid-cols-[1fr_80px_52px] gap-2 items-center rounded-2xl bg-card border border-border px-4 py-3"
-                >
+            {historial.map((entry) => (
+              <div
+                key={entry.kind + entry.id + entry.date}
+                className="grid grid-cols-[1fr_80px_52px] gap-2 items-center rounded-2xl bg-card border border-border px-4 py-3"
+              >
+                <div className="flex flex-col gap-0.5 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">
-                    {row.videos?.title ?? 'Video sin título'}
+                    {entry.title ?? 'Video sin título'}
                   </p>
-                  <p className="text-xs text-muted-foreground font-medium">
-                    {formatDate(row.completed_at)}
-                  </p>
-                  <p className={`text-sm font-bold text-right ${answersColor(correct)}`}>
-                    {correct}/5
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    {entry.kind === 'quiz' ? '✅ Completó el quiz' : '👀 Vio el video'}
                   </p>
                 </div>
-              )
-            })}
+                <p className="text-xs text-muted-foreground font-medium">
+                  {formatDate(entry.date)}
+                </p>
+                <p className={`text-sm font-bold text-right ${entry.kind === 'quiz' ? answersColor(correctAnswers(entry.bonus_points)) : 'text-muted-foreground'}`}>
+                  {entry.kind === 'quiz' ? `${correctAnswers(entry.bonus_points)}/5` : '—'}
+                </p>
+              </div>
+            ))}
           </div>
         )}
       </section>

@@ -1,4 +1,5 @@
 'use server'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { parseYoutubeId } from '@/lib/youtube/parse-url'
 import { fetchTranscript } from '@/lib/youtube/transcript'
@@ -138,5 +139,21 @@ export async function assignVideoToProfiles(input: { videoId: string; childProfi
   const { error } = await supabase.from('video_assignments').insert(
     input.childProfileIds.map((pid) => ({ video_id: input.videoId, child_profile_id: pid }))
   )
+  return { ok: !error }
+}
+
+export async function markVideoWatched(input: { videoId: string; childProfileId: string }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+
+  const { error } = await supabase
+    .from('video_assignments')
+    .update({ watched_at: new Date().toISOString() })
+    .eq('video_id', input.videoId)
+    .eq('child_profile_id', input.childProfileId)
+    .is('watched_at', null)
+
+  if (!error) revalidatePath(`/parent/kid/${input.childProfileId}`)
   return { ok: !error }
 }
