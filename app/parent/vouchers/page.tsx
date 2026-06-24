@@ -33,7 +33,7 @@ export default async function VouchersPage() {
   const vouchers: Voucher[] = data ?? []
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto">
+    <div className="flex flex-col gap-6">
       {/* Back link + title */}
       <div className="flex flex-col gap-1">
         <Link

@@ -92,7 +92,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
   return (
     <div className="min-h-screen flex flex-col px-4 py-6 bg-background">
       {/* Back + title */}
-      <div className="w-full max-w-2xl mx-auto mb-4">
+      <div className="w-full max-w-4xl mx-auto mb-4">
         <Link
           href={`/kid/${profileId}`}
           className="text-sm font-bold flex items-center gap-1 mb-3"
@@ -105,19 +105,37 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
         </h1>
       </div>
 
-      {/* Player wrapper */}
-      <div className="w-full max-w-2xl mx-auto">
+      {/* Player wrapper — TV frame */}
+      <div className="w-full max-w-4xl mx-auto">
+        {/* TV outer bezel */}
         <div
-          className="relative w-full rounded-3xl overflow-hidden shadow-2xl bg-black"
-          style={{ aspectRatio: '16/9' }}
+          className="relative w-full rounded-2xl shadow-2xl"
+          style={{ background: '#1a1a1a', padding: '16px 16px 0 16px' }}
         >
-          <div id={playerContainerId} className="absolute inset-0 w-full h-full" />
+          {/* Screen */}
+          <div
+            className="relative w-full overflow-hidden"
+            style={{ aspectRatio: '16/9', background: '#000', borderRadius: '4px' }}
+          >
+            <div id={playerContainerId} className="absolute inset-0 w-full h-full" />
+          </div>
+
+          {/* TV bottom bar */}
+          <div
+            className="flex items-center justify-center"
+            style={{ height: '28px' }}
+          >
+            <div
+              className="rounded-full"
+              style={{ width: '8px', height: '8px', background: '#444' }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Robi cheer hint */}
       {!videoEnded && (
-        <div className="w-full max-w-2xl mx-auto mt-4">
+        <div className="w-full max-w-4xl mx-auto mt-4">
           <div className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-muted/60">
             <RobiPlaceholder size={40} />
             <p className="text-sm font-bold text-foreground">
@@ -136,7 +154,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 16 }}
             transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-            className="w-full max-w-2xl mx-auto mt-6 flex flex-col items-center gap-4"
+            className="w-full max-w-4xl mx-auto mt-6 flex flex-col items-center gap-4"
           >
             {previousActivity ? (
               /* Already completed — show previous score */

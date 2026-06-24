@@ -14,7 +14,7 @@ export default async function AccountPage() {
     .maybeSingle()
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto">
+    <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Cuenta</h1>
         <p className="text-sm text-muted-foreground font-medium mt-0.5">Configuración de tu cuenta</p>

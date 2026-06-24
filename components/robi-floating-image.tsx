@@ -3,13 +3,12 @@
 import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 
-interface RobiPlaceholderProps {
+interface RobiFloatingImageProps {
   size?: number
   className?: string
-  mood?: string
 }
 
-export function RobiPlaceholder({ size = 80, className }: RobiPlaceholderProps) {
+export function RobiFloatingImage({ size = 48, className }: RobiFloatingImageProps) {
   const reduced = useReducedMotion() ?? false
 
   return (

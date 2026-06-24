@@ -17,18 +17,6 @@ export function LandingScience() {
           <strong className="text-foreground">hace</strong> algo con lo que vio.
         </p>
 
-        {/* Comparación pasivo vs activo */}
-        <div className="mx-auto mb-12 grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <p className="mb-1 text-sm font-bold text-muted-foreground">Solo mirar 😴</p>
-            <p className="text-sm text-muted-foreground">El video pasa y se olvida. Sin participación, poco queda.</p>
-          </div>
-          <div className="rounded-2xl border-2 border-primary bg-card p-5">
-            <p className="mb-1 text-sm font-bold text-primary">Mirar + hacer 🚀</p>
-            <p className="text-sm text-foreground">El chico responde, recuerda y aplica. El conocimiento se fija.</p>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {PRINCIPLES.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm">

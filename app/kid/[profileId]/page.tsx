@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { VideoCard } from '@/components/ui/video-card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { RobiPlaceholder } from '@/components/robi-placeholder'
+import { RobiFloatingImage } from '@/components/robi-floating-image'
 import { KidShell } from '@/components/shell/kid-shell'
 
 interface PageProps {
@@ -103,9 +103,9 @@ export default async function KidLibraryPage({ params }: PageProps) {
 
       {/* Robi greeting */}
       <div className="mb-6 flex items-center gap-3 rounded-2xl bg-primary/5 px-5 py-3 border border-primary/10">
-        <RobiPlaceholder size={48} />
+        <RobiFloatingImage size={48} />
         <p className="text-base font-bold text-foreground">
-          ¡Elegí un video y aprendé algo nuevo hoy! 🚀
+          ¡Elegí un video y aprendé algo nuevo hoy!
         </p>
       </div>
 

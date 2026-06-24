@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Robi — Aprendé jugando",
   description: "La app de aprendizaje gamificada para chicos",
+  icons: {
+    icon: "/robi-favicon.png",
+  },
 };
 
 export default function RootLayout({

@@ -8,8 +8,7 @@ import { User, ChevronDown, Lock, LogOut, Shield, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Robi } from '@/components/robi/Robi'
-import { RobiPlaceholder } from '@/components/robi-placeholder'
+import Image from 'next/image'
 import { PinDialog } from '@/components/pin-dialog'
 import { signOut } from '@/actions/auth'
 
@@ -34,23 +33,18 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <div className="w-full max-w-lg mx-auto px-4 py-8 flex flex-col flex-1">
 
-      {/* Top bar */}
+      {/* Top bar — full width */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.3 }}
-        className="flex justify-between items-center mb-8 relative"
+        className="w-full px-4 py-4 flex justify-between items-center relative"
       >
         {/* Logo izquierda */}
-        <div className="flex items-center gap-2 px-1">
-          <Robi size={36} />
-          <span className="flex flex-col leading-none">
-            <span className="text-xl font-bold text-primary">Robi</span>
-            <span className="text-[10px] font-semibold text-muted-foreground">Aprende. Juega. Gana.</span>
-          </span>
-        </div>
+        <Link href="/" className="flex items-center">
+          <Image src="/robi-logo.png" alt="Robi" width={100} height={40} className="h-10 w-auto" />
+        </Link>
 
         {/* Adultos button */}
         <button
@@ -61,7 +55,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <User size={14} className="text-primary" />
           </span>
-          <span className="text-sm font-semibold text-foreground">Adultos</span>
+          <span className="text-sm font-semibold text-foreground">Acceso adultos</span>
           <ChevronDown size={14} className="text-muted-foreground" />
         </button>
 
@@ -77,7 +71,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -8 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="absolute right-0 top-12 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[220px] overflow-hidden"
+                className="absolute right-4 top-14 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[220px] overflow-hidden"
               >
                 {/* Panel de adultos */}
                 <button
@@ -122,6 +116,8 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
         </AnimatePresence>
       </motion.div>
 
+      <div className="w-full max-w-lg mx-auto px-4 pb-8 flex flex-col flex-1">
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
@@ -131,15 +127,15 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
       >
         <motion.div
           animate={{ y: [0, -6, 0, -3, 0] }}
-          transition={{ duration: 1.6, delay: 0.5, ease: 'easeInOut' }}
+          transition={{ duration: 1.6, delay: 0.5, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop' }}
         >
-          <RobiPlaceholder size={72} />
+          <Image src="/robi-welcome.png" alt="Robi" width={96} height={96} className="w-24 h-24 object-contain" priority />
         </motion.div>
         <h1 className="text-3xl font-extrabold tracking-tight text-center text-primary">
           ¡Hola! ¿Quién aprende hoy?
         </h1>
         <p className="text-sm text-muted-foreground text-center font-medium">
-          Elegí un perfil para empezar a ganar puntos 🌟
+          Elegí un perfil para empezar a ganar puntos
         </p>
       </motion.div>
 
@@ -149,14 +145,15 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           {profiles.map((profile, i) => (
             <motion.div
               key={profile.id}
+              className="h-full"
               initial={{ opacity: 0, scale: 0.88, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.07, ease: 'easeOut' }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
             >
-              <Link href={`/kid/${profile.id}`} className="block">
-                <Card className="rounded-3xl bg-card shadow-sm border border-border cursor-pointer transition-shadow hover:shadow-xl">
+              <Link href={`/kid/${profile.id}`} className="block h-full">
+                <Card className="rounded-3xl bg-card shadow-sm border border-border cursor-pointer transition-shadow hover:shadow-xl h-full">
                   <CardContent className="flex flex-col items-center gap-2 py-6 px-4">
                     <span className="text-5xl select-none" role="img" aria-label={`Avatar de ${profile.name}`}>
                       {profile.avatar}
@@ -175,6 +172,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
 
           {/* Add profile button */}
           <motion.div
+            className="h-full"
             initial={{ opacity: 0, scale: 0.88, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.4, delay: profiles.length * 0.07, ease: 'easeOut' }}
@@ -187,10 +185,10 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                   window.location.href = '/onboarding'
                 }
               }}
-              className="w-full"
+              className="w-full h-full"
             >
-              <Card className="rounded-3xl border-2 border-dashed border-primary/40 bg-primary/5 cursor-pointer transition-all hover:shadow-md">
-                <CardContent className="flex flex-col items-center gap-2 py-6 px-4">
+              <Card className="rounded-3xl border-2 border-dashed border-primary/40 bg-primary/5 cursor-pointer transition-all hover:shadow-md h-full">
+                <CardContent className="flex flex-col items-center justify-center gap-2 py-6 px-4 h-full">
                   <span className="text-4xl select-none">➕</span>
                   <span className="text-sm font-bold text-center text-primary">
                     Agregar perfil
@@ -219,6 +217,19 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
 
       {/* PIN Dialog */}
       </div>
+
+      {/* Landscape footer */}
+      <div className="w-full mt-auto">
+        <Image
+          src="/montana-bg.png"
+          alt=""
+          width={2172}
+          height={498}
+          className="w-full h-auto object-cover block"
+          priority={false}
+        />
+      </div>
+
       <PinDialog
         open={pinOpen}
         onOpenChange={setPinOpen}

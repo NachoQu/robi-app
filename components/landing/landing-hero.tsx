@@ -1,11 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Play } from 'lucide-react'
-import { Robi } from '@/components/robi/Robi'
 import { Button } from '@/components/ui/button'
-import { PreviewVideo, PreviewQuiz } from './previews'
 
 export function LandingHero() {
   const reduced = useReducedMotion() ?? false
@@ -50,30 +49,27 @@ export function LandingHero() {
           </motion.div>
         </div>
 
-        {/* Ilustración: previews + Robi */}
+        {/* Ilustración hero */}
         <motion.div
-          {...(reduced ? {} : { initial: { opacity: 0, scale: 0.92 }, animate: { opacity: 1, scale: 1 }, transition: { duration: 0.6, delay: 0.1 } })}
-          className="relative mx-auto w-full max-w-sm pb-10"
+          {...(reduced ? {} : { initial: { opacity: 0, scale: 0.95 }, animate: { opacity: 1, scale: 1 }, transition: { duration: 0.6, delay: 0.1 } })}
+          className="relative mx-auto w-full max-w-lg"
         >
-          <div className="absolute inset-0 -z-10 rounded-[3rem] bg-secondary/20 blur-2xl" aria-hidden />
-          <PreviewVideo />
-          <div className="absolute -bottom-2 -right-3 w-40 sm:w-48">
-            <PreviewQuiz />
-          </div>
           <motion.div
-            animate={reduced ? {} : { y: [0, -8, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -left-4 -top-8"
+            animate={reduced ? {} : { y: [0, -10, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Robi size={80} mood="idle" />
+            <Image
+              src="/robi-hero2.png"
+              alt="Robi convierte videos en aprendizaje"
+              width={640}
+              height={640}
+              priority
+              className="h-auto w-full object-contain drop-shadow-xl"
+            />
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Colinas decorativas */}
-      <svg className="block w-full text-secondary/25" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden>
-        <path fill="currentColor" d="M0,64 C240,120 480,16 720,48 C960,80 1200,120 1440,72 L1440,120 L0,120 Z" />
-      </svg>
     </section>
   )
 }
