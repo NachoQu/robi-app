@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react'
 import { AchievementBadge } from '@/components/ui/achievement-badge'
 
-test('renderiza un svg para cada kind', () => {
-  const { container, rerender } = render(<AchievementBadge kind="star" />)
-  expect(container.querySelector('svg')).toBeTruthy()
-  rerender(<AchievementBadge kind="shield" />)
-  expect(container.querySelector('svg')).toBeTruthy()
-  rerender(<AchievementBadge kind="gem" locked />)
-  expect(container.querySelector('svg')).toBeTruthy()
+test('renderiza una imagen para cada badge', () => {
+  const { container, rerender } = render(<AchievementBadge imageSrc="/badge-icon-1.png" />)
+  expect(container.querySelector('img')).toBeTruthy()
+  rerender(<AchievementBadge imageSrc="/badge-icon-2.png" />)
+  expect(container.querySelector('img')).toBeTruthy()
+  rerender(<AchievementBadge imageSrc="/badge-icon-3.png" locked />)
+  expect(container.querySelector('img')).toBeTruthy()
 })

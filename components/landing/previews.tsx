@@ -59,7 +59,7 @@ export function PreviewResult({ className }: { className?: string }) {
   return (
     <DeviceFrame className={className}>
       <div className="flex flex-col items-center gap-2 p-5 text-center">
-        <AchievementBadge kind="star" size={56} />
+        <AchievementBadge imageSrc="/badge-icon-1.png" size={56} />
         <p className="text-base font-extrabold text-primary">¡Excelente!</p>
         <p className="text-2xl font-extrabold text-primary">+25 pts</p>
         <p className="text-xs font-semibold text-muted-foreground">4 de 5 correctas</p>
