@@ -1,0 +1,2 @@
+-- No migration needed: points_cost for new vouchers is set at signup time via application code (actions/auth.ts).
+-- Existing records are intentionally left unchanged.

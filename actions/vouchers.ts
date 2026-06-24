@@ -7,6 +7,13 @@ export async function toggleVoucher(id: string, isActive: boolean): Promise<{ ok
   return { ok: !error }
 }
 
+export async function updateVoucherPoints(id: string, points: number): Promise<{ ok: boolean }> {
+  if (points < 1) return { ok: false }
+  const supabase = await createClient()
+  const { error } = await supabase.from('vouchers').update({ points_cost: points }).eq('id', id)
+  return { ok: !error }
+}
+
 export async function redeemVoucher(
   childProfileId: string,
   voucherId: string,

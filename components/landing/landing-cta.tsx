@@ -31,13 +31,13 @@ export function LandingCta() {
     <section className="pb-0 pt-24">
       <div className="mx-auto w-full max-w-5xl px-4">
         <div className="flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-between">
-          <FadeIn direction="left" className="flex flex-col items-start gap-5 text-left">
-            <h2 className="text-3xl font-extrabold text-foreground md:text-4xl">Empezá gratis hoy</h2>
+          <FadeIn direction="left" className="flex max-w-xs flex-col items-start gap-5 text-left">
+            <h2 className="text-3xl font-extrabold text-foreground md:text-4xl">El aprendizaje que se siente como juego</h2>
             <p className="max-w-sm text-base text-muted-foreground">
               Convertí el tiempo de pantalla en tiempo de aprendizaje. Sin tarjeta, en minutos.
             </p>
             <Link href="/signup">
-              <Button className="h-12 px-8 text-base">Crear mi cuenta</Button>
+              <Button className="h-12 rounded-full px-8 text-base">Crear mi cuenta</Button>
             </Link>
           </FadeIn>
 

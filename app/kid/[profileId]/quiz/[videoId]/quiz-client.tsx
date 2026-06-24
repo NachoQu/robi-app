@@ -140,11 +140,13 @@ export default function QuizPage() {
       setSubmitting(true)
       setSubmitError(false)
       try {
-        const result = await submitQuiz({
-          childProfileId: profileId,
-          videoId,
-          answers: newAnswers,
-        })
+        const timeout = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 15000)
+        )
+        const result = await Promise.race([
+          submitQuiz({ childProfileId: profileId, videoId, answers: newAnswers }),
+          timeout,
+        ])
         // Pass result via sessionStorage (clean, no URL length issues)
         sessionStorage.setItem(
           `quiz-result-${profileId}`,
@@ -184,7 +186,7 @@ export default function QuizPage() {
   }
 
   const total = questions.length
-  const progress = ((currentIndex) / total) * 100
+  const progress = ((currentIndex + 1) / total) * 100
 
   // Derive Robi mood from answer state
   const robiMood = answerState === 'correct' ? 'celebrate' : answerState === 'incorrect' ? 'encourage' : 'talking'
@@ -200,6 +202,16 @@ export default function QuizPage() {
     <div className="min-h-screen bg-background flex flex-col px-4 py-6">
       <div className="w-full max-w-lg mx-auto flex flex-col gap-5">
 
+        {/* Back to video */}
+        <button
+          onClick={() => router.push(`/kid/${profileId}/watch/${videoId}`)}
+          className="text-sm font-bold flex items-center gap-1 mb-3"
+          style={{ color: 'var(--robi-primary)' }}
+          aria-label="Volver al video"
+        >
+          ← Volver al video
+        </button>
+
         {/* Header row: progress + TTS toggle */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-1.5 flex-1">
@@ -211,7 +223,7 @@ export default function QuizPage() {
                 Pregunta {currentIndex + 1} de {total}
               </span>
               <span className="text-sm font-bold text-muted-foreground">
-                {currentIndex}/{total} respondidas
+                {currentIndex + 1}/{total} respondidas
               </span>
             </div>
             {/* Progress bar using design-system primitive */}

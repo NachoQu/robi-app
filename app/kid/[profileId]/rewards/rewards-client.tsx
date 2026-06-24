@@ -238,7 +238,7 @@ export default function RewardsClient({
               transition={{ duration: 0.25 }}
               className="flex flex-col items-center gap-4 rounded-3xl px-6 py-12 text-center bg-card border border-border shadow-sm"
             >
-              <span className="text-5xl select-none">🎀</span>
+
               <p className="text-lg font-extrabold text-foreground">Todavía no canjeaste premios</p>
               <p className="text-sm font-semibold text-muted-foreground">
                 Cuando canjees un premio, va a aparecer acá.

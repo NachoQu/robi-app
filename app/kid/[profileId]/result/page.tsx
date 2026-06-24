@@ -70,20 +70,16 @@ export default function ResultPage() {
   useEffect(() => {
     const raw = sessionStorage.getItem(`quiz-result-${profileId}`)
     if (!raw) {
-      // No result data — redirect back to kid library
       router.replace(`/kid/${profileId}`)
       return
     }
     try {
       const parsed = JSON.parse(raw) as QuizResult
       setResult(parsed)
-      // Clear after reading so back-navigation is clean
-      sessionStorage.removeItem(`quiz-result-${profileId}`)
+      setReady(true)
     } catch {
       router.replace(`/kid/${profileId}`)
-      return
     }
-    setReady(true)
   }, [profileId, router])
 
   if (!ready || !result) {
@@ -254,13 +250,21 @@ export default function ResultPage() {
           transition={{ delay: 1.0 }}
           className="w-full flex flex-col gap-3"
         >
-          <Link href={`/kid/${profileId}`} className="w-full">
+          <Link
+            href={`/kid/${profileId}`}
+            className="w-full"
+            onClick={() => sessionStorage.removeItem(`quiz-result-${profileId}`)}
+          >
             <Button variant="primary" className="w-full h-12 text-base font-extrabold">
               Seguir aprendiendo
             </Button>
           </Link>
 
-          <Link href={`/kid/${profileId}/rewards`} className="w-full">
+          <Link
+            href={`/kid/${profileId}/rewards`}
+            className="w-full"
+            onClick={() => sessionStorage.removeItem(`quiz-result-${profileId}`)}
+          >
             <Button variant="tertiary" className="w-full h-12 text-base font-extrabold">
               Ver premios
             </Button>
