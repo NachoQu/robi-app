@@ -67,33 +67,36 @@ export default async function KidLibraryPage({ params }: PageProps) {
       points={profile.total_points}
     >
       {/* Header card */}
-      <header className="mb-6 flex flex-col gap-4 rounded-2xl bg-card p-6 shadow-sm border border-border sm:flex-row sm:items-center sm:justify-between">
+      <header className="mb-6 flex items-center justify-between gap-4 rounded-2xl bg-card px-6 py-5 shadow-sm border border-border">
         <div className="flex items-center gap-4">
           <span className="text-5xl select-none" role="img" aria-label={`Avatar de ${profile.name}`}>
             {profile.avatar}
           </span>
-          <div className="flex flex-col gap-1.5">
-            <h1 className="text-[28px] font-bold leading-none text-foreground">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-[26px] font-bold leading-none text-foreground">
               ¡Hola, {profile.name}!
             </h1>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 font-bold text-primary">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span
+                className="rounded-full px-3 py-0.5 text-sm font-bold text-foreground"
+                style={{ background: '#FEF9C3' }}
+              >
                 ⭐ {profile.total_points.toLocaleString('es-AR')} pts
               </span>
-            </div>
-            {totalCount > 0 && (
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-muted-foreground">
-                  {watchedCount} de {totalCount} videos vistos
-                </span>
-                <div className="w-24">
-                  <Progress value={progressValue} />
+              {totalCount > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {watchedCount} de {totalCount} videos vistos
+                  </span>
+                  <div className="w-24">
+                    <Progress value={progressValue} />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-        <Link href={`/kid/${profileId}/rewards`}>
+        <Link href={`/kid/${profileId}/rewards`} className="shrink-0">
           <Button variant="primary" className="h-10 px-5 gap-2">
             <Gift size={18} />
             Ver premios

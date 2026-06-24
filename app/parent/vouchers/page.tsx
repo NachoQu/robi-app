@@ -44,7 +44,7 @@ export default async function VouchersPage() {
           ← Volver al panel
         </Link>
         <h1 className="text-2xl font-extrabold tracking-tight mt-2" style={{ color: 'var(--foreground)' }}>
-          🎁 Gestionar premios
+          Gestionar premios
         </h1>
         <p className="text-sm text-muted-foreground font-medium">
           Activá los premios que tu hijo/a puede canjear con sus puntos. Los premios inactivos no aparecen en el catálogo.

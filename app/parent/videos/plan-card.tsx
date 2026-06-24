@@ -94,7 +94,7 @@ export function PlanCard({ usedCount }: { usedCount: number }) {
           <button
             onClick={() => setOpen(true)}
             className="flex items-center gap-1 text-xs font-bold shrink-0 hover:opacity-75 transition-opacity mt-1"
-            style={{ color: 'var(--robi-accent)' }}
+            style={{ color: 'var(--robi-primary)' }}
           >
             <Crown size={13} />
             Ver beneficios

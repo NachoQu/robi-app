@@ -53,9 +53,9 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           aria-label="Panel de adultos"
         >
           <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-            <User size={14} className="text-primary" />
+            <Lock size={14} className="text-primary" />
           </span>
-          <span className="text-sm font-semibold text-foreground">Acceso adultos</span>
+          <span className="text-sm font-semibold text-foreground">Gestionar cuenta</span>
           <ChevronDown size={14} className="text-muted-foreground" />
         </button>
 
@@ -78,18 +78,17 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                   onClick={() => { setMenuOpen(false); setPinOpen(true) }}
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted transition-colors text-left"
                 >
-                  <span className="w-8 h-8 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                    <Lock size={15} className="text-green-600 dark:text-green-400" />
+                  <span className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <User size={15} className="text-primary" />
                   </span>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-semibold text-foreground">Panel de adultos</span>
-                    <span className="text-xs text-muted-foreground">Gestioná el aprendizaje</span>
                     <span className="flex items-center gap-1 mt-0.5">
-                      <Shield size={10} className="text-muted-foreground/50" />
-                      <span className="text-[10px] text-muted-foreground/50 font-medium">
+                      <Shield size={10} className="text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground font-medium">
                         {currentHasPin ? 'Protegido por PIN' : 'Sin PIN activo'}
                       </span>
-                      {currentHasPin && <Check size={10} className="text-green-500/70" />}
+                      {currentHasPin && <Check size={10} className="text-muted-foreground" />}
                     </span>
                   </div>
                 </button>
@@ -106,7 +105,6 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                     </span>
                     <div className="flex flex-col gap-0.5">
                       <span className="text-sm font-semibold text-foreground">Cerrar sesión</span>
-                      <span className="text-xs text-muted-foreground">Salir de la cuenta actual</span>
                     </div>
                   </button>
                 </form>
@@ -242,7 +240,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
         <DialogContent className="rounded-3xl border border-border shadow-2xl max-w-sm w-full bg-card">
           <DialogHeader className="pt-2">
             <div className="flex flex-col items-center gap-3">
-              <span className="text-5xl select-none">🚀</span>
+              <img src="/cohete-icon.png" alt="cohete" className="w-14 h-14 select-none" />
               <DialogTitle className="text-xl font-extrabold text-center text-primary">
                 ¡Más perfiles con Premium!
               </DialogTitle>
@@ -250,7 +248,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           </DialogHeader>
           <div className="flex flex-col gap-4 pb-4 px-2 text-center">
             <p className="text-base text-muted-foreground font-medium">
-              La versión gratuita incluye 1 perfil. Con <strong className="text-primary">Robi Premium</strong> podés agregar hasta 5 perfiles para toda la familia. 👨‍👩‍👧‍👦
+              La versión gratuita incluye 1 perfil. Con <strong className="text-primary">Robi Premium</strong> podés agregar hasta 5 perfiles para toda la familia.
             </p>
             <div className="rounded-2xl px-4 py-3 text-sm font-semibold bg-[var(--robi-accent)]/20 text-[var(--robi-accent-ink)] border border-[var(--robi-accent)]/40">
               ⭐ Próximamente disponible

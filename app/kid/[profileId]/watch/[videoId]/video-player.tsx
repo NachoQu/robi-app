@@ -162,26 +162,34 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex items-center gap-3"
+                  transition={{ delay: 0.1 }}
+                  className="flex flex-col items-center gap-2"
                 >
-                  <RobiPlaceholder size={52} mood="celebrate" />
-                  <p className="text-xl font-extrabold text-foreground">
+                  <RobiPlaceholder size={72} mood="celebrate" />
+                  <p className="text-xl font-extrabold text-foreground text-center">
                     ¡Ya completaste esta actividad! ✅
                   </p>
                 </motion.div>
 
-                <div className="w-full rounded-3xl px-5 py-4 flex flex-col items-center gap-1 bg-secondary/20 border border-secondary/30">
-                  <p className="text-base font-bold text-muted-foreground">Tu puntaje anterior</p>
-                  <p className="text-3xl font-extrabold" style={{ color: 'var(--robi-primary)' }}>
-                    ⭐ {previousActivity.base_points + previousActivity.bonus_points} / 35 pts
-                  </p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.22 }}
+                  className="w-full max-w-xs mx-auto rounded-2xl px-4 py-3 flex flex-col items-center gap-0.5 bg-primary/5 border border-primary/10"
+                >
+                  <span className="text-xs font-semibold text-muted-foreground">Tu puntaje anterior</span>
+                  <span className="text-2xl font-extrabold leading-none text-foreground">
+                    ⭐ {previousActivity.base_points + previousActivity.bonus_points} / 35
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {Math.round(((previousActivity.base_points + previousActivity.bonus_points) / 35) * 100)}% completado
+                  </span>
+                </motion.div>
 
-                <motion.div className="w-full" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <motion.div className="w-full max-w-xs mx-auto" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                   <Button
-                    variant="secondary"
-                    className="w-full rounded-3xl py-5 text-xl font-extrabold tracking-wide h-auto"
+                    variant="default"
+                    className="w-full rounded-3xl py-3.5 text-lg font-extrabold tracking-wide h-auto"
                     onClick={() => router.push(`/kid/${profileId}`)}
                   >
                     Seguir aprendiendo →

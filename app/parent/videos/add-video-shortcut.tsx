@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Plus, Link } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
@@ -28,7 +28,7 @@ export function AddVideoShortcut() {
 
       <div className="flex gap-2">
         <div className="flex-1 relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-red-500 text-sm pointer-events-none">▶</span>
+          <Link size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
             type="url"
             placeholder="Pegá el link de YouTube aquí..."
@@ -58,7 +58,7 @@ export function AddVideoShortcut() {
       >
         <RobiPlaceholder size={20} className="shrink-0 mt-0.5" />
         <p className="text-xs font-medium text-muted-foreground">
-          <span className="font-bold" style={{ color: 'var(--robi-secondary)' }}>Consejo de Robi: </span>
+          <span className="font-bold" style={{ color: 'var(--robi-primary)' }}>Consejo de Robi: </span>
           Los videos de menos de 5 minutos tienen mayor tasa de finalización.
         </p>
       </div>

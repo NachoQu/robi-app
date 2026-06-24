@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ManagePinDialog } from '@/components/manage-pin-dialog'
@@ -82,7 +83,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime, onPinChanged }: Pin
       >
         <DialogHeader className="pt-2 pb-0">
           <div className="flex flex-col items-center gap-2">
-            <span className="text-4xl select-none">🔒</span>
+            <Image src="/candado-icon.png" alt="Candado" width={56} height={56} className="select-none" />
             <DialogTitle className="text-xl font-extrabold text-center" style={{ color: 'var(--robi-primary)' }}>
               Panel de adultos
             </DialogTitle>
@@ -152,7 +153,7 @@ export function PinDialog({ open, onOpenChange, isFirstTime, onPinChanged }: Pin
                 ? '⏳ Verificando…'
                 : isFirstTime
                 ? '🔐 Crear PIN'
-                : '✅ Entrar'}
+                : 'Entrar'}
             </Button>
           </motion.div>
 

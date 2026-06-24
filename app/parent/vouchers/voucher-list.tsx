@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,6 +9,21 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toggleVoucher } from '@/actions/vouchers'
 import type { Voucher } from './page'
+
+const TITLE_ICONS: Record<string, string> = {
+  '30 min más de pantalla': '/telefono-icon.png',
+  'Elegir la cena': '/cena-icon.png',
+  'Noche de pijamas en el living': '/pijamada-icon.png',
+  'Elegir la película del viernes': '/tv-icon.png',
+  'Una hora de juego con mamá/papá': '/estrella-icon.png',
+  'Traer un amigo a dormir': '/dormir-icon.png',
+}
+
+function VoucherIcon({ title }: { title: string }) {
+  const src = TITLE_ICONS[title]
+  if (src) return <Image src={src} alt={title} width={40} height={40} className="select-none" />
+  return <span className="text-2xl select-none">⭐</span>
+}
 
 interface Props {
   initialVouchers: Voucher[]
@@ -89,9 +105,9 @@ export default function VoucherList({ initialVouchers }: Props) {
                       ? 'bg-[var(--robi-accent)]/25 border border-[var(--robi-accent)]/40'
                       : 'bg-muted border border-border',
                   ].join(' ')}
-                  style={{ minWidth: 56, height: 56 }}
+                  style={{ minWidth: 68, height: 68 }}
                 >
-                  <span className="text-lg leading-none">⭐</span>
+                  <VoucherIcon title={voucher.title} />
                   <span
                     className={[
                       'text-xs font-bold mt-0.5 leading-none',
@@ -146,7 +162,7 @@ export default function VoucherList({ initialVouchers }: Props) {
                       width: 44,
                       height: 24,
                       background: voucher.is_active
-                        ? 'var(--robi-secondary)'
+                        ? 'var(--robi-primary)'
                         : 'var(--muted)',
                     }}
                   />
@@ -172,7 +188,7 @@ export default function VoucherList({ initialVouchers }: Props) {
         <DialogContent className="rounded-3xl border border-border shadow-2xl max-w-sm w-full bg-card">
           <DialogHeader className="pt-2">
             <div className="flex flex-col items-center gap-3">
-              <span className="text-5xl select-none">🎁</span>
+              <Image src="/regalo-icon.png" alt="Premio" width={56} height={56} className="select-none" />
               <DialogTitle className="text-xl font-extrabold text-center text-primary">
                 ¡Premios personalizados con Premium!
               </DialogTitle>

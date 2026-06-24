@@ -1,37 +1,40 @@
-import { Star, Shield, Gem, type LucideIcon } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
-type Kind = 'star' | 'shield' | 'gem'
-
-const KIND: Record<Kind, { Icon: LucideIcon; color: string }> = {
-  star: { Icon: Star, color: 'var(--robi-accent)' },
-  shield: { Icon: Shield, color: 'var(--robi-primary)' },
-  gem: { Icon: Gem, color: 'var(--robi-blue)' },
-}
+export const BADGE_ICONS = [
+  '/badge-icon-1.png',
+  '/badge-icon-2.png',
+  '/badge-icon-3.png',
+  '/badge-icon-5.png',
+  '/badge-icon-6.png',
+]
 
 export function AchievementBadge({
-  kind,
+  imageSrc,
   locked = false,
   size = 56,
   className,
-}: { kind: Kind; locked?: boolean; size?: number; className?: string }) {
-  const { Icon, color } = KIND[kind]
+}: {
+  imageSrc: string
+  locked?: boolean
+  size?: number
+  className?: string
+}) {
   return (
     <span
-      className={cn('inline-flex items-center justify-center rounded-full shadow-md', className)}
-      style={{
-        width: size,
-        height: size,
-        background: locked ? 'var(--muted)' : color,
-        opacity: locked ? 0.5 : 1,
-      }}
-      aria-label={locked ? 'Logro bloqueado' : `Logro ${kind}`}
+      className={cn('inline-flex items-center justify-center', className)}
+      style={{ width: size, height: size }}
+      aria-label={locked ? 'Logro bloqueado' : 'Logro desbloqueado'}
     >
-      <Icon
-        size={size * 0.5}
-        color={locked ? 'var(--muted-foreground)' : 'white'}
-        fill={locked ? 'none' : 'white'}
-        strokeWidth={2}
+      <Image
+        src={imageSrc}
+        alt=""
+        width={size}
+        height={size}
+        style={{
+          objectFit: 'contain',
+          filter: locked ? 'grayscale(1) opacity(0.4)' : 'none',
+        }}
       />
     </span>
   )
