@@ -5,6 +5,7 @@ export const BADGE_ICONS = [
   '/badge-icon-1.png',
   '/badge-icon-2.png',
   '/badge-icon-3.png',
+  '/badge-icon-4.png',
   '/badge-icon-5.png',
   '/badge-icon-6.png',
 ]

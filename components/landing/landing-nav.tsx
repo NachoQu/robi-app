@@ -5,8 +5,8 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 const LINKS = [
-  { id: 'como-funciona', label: 'Cómo funciona' },
-  { id: 'por-que-funciona', label: 'Por qué funciona' },
+  { id: 'como-funciona', label: '¿Cómo funciona?' },
+  { id: 'por-que-funciona', label: '¿Por qué funciona?' },
   { id: 'beneficios', label: 'Beneficios' },
   { id: 'precios', label: 'Precios' },
   { id: 'faq', label: 'FAQ' },
