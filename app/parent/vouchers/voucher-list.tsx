@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { toggleVoucher } from '@/actions/vouchers'
+import { toggleVoucher, updateVoucherPoints } from '@/actions/vouchers'
 import type { Voucher } from './page'
 
 const TITLE_ICONS: Record<string, string> = {
@@ -49,6 +49,30 @@ export default function VoucherList({ initialVouchers }: Props) {
         )
       }
     })
+  }
+
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function startEdit(id: string, currentPoints: number) {
+    setEditingId(id)
+    setEditValue(String(currentPoints))
+    setTimeout(() => inputRef.current?.select(), 0)
+  }
+
+  function handlePointsKeyDown(e: React.KeyboardEvent, id: string) {
+    if (e.key === 'Enter') commitEdit(id)
+    if (e.key === 'Escape') setEditingId(null)
+  }
+
+  function commitEdit(id: string) {
+    const pts = parseInt(editValue, 10)
+    if (!isNaN(pts) && pts > 0) {
+      setVouchers((prev) => prev.map((v) => (v.id === id ? { ...v, points_cost: pts } : v)))
+      startTransition(async () => { await updateVoucherPoints(id, pts) })
+    }
+    setEditingId(null)
   }
 
   const activeCount = vouchers.filter((v) => v.is_active).length
@@ -108,14 +132,30 @@ export default function VoucherList({ initialVouchers }: Props) {
                   style={{ minWidth: 68, height: 68 }}
                 >
                   <VoucherIcon title={voucher.title} />
-                  <span
-                    className={[
-                      'text-xs font-bold mt-0.5 leading-none',
-                      voucher.is_active ? 'text-[var(--robi-accent-ink)]' : 'text-muted-foreground',
-                    ].join(' ')}
-                  >
-                    {voucher.points_cost}
-                  </span>
+                  {editingId === voucher.id ? (
+                    <input
+                      ref={inputRef}
+                      type="number"
+                      min={1}
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onBlur={() => commitEdit(voucher.id)}
+                      onKeyDown={(e) => handlePointsKeyDown(e, voucher.id)}
+                      className="w-12 text-center text-xs font-bold bg-transparent border-b border-[var(--robi-accent)] outline-none mt-0.5 leading-none"
+                      style={{ color: voucher.is_active ? 'var(--robi-accent-ink)' : 'var(--muted-foreground)' }}
+                    />
+                  ) : (
+                    <button
+                      onClick={() => startEdit(voucher.id, voucher.points_cost)}
+                      title="Editar puntos"
+                      className={[
+                        'text-xs font-bold mt-0.5 leading-none hover:underline cursor-pointer',
+                        voucher.is_active ? 'text-[var(--robi-accent-ink)]' : 'text-muted-foreground',
+                      ].join(' ')}
+                    >
+                      {voucher.points_cost}
+                    </button>
+                  )}
                 </div>
 
                 {/* Title + description */}

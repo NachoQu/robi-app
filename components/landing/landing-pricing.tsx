@@ -11,7 +11,7 @@ export function LandingPricing() {
     <section id="precios" className="scroll-mt-20 bg-card/40 py-[120px]">
       <div className="mx-auto w-full max-w-4xl px-4">
         <FadeIn>
-          <h2 className="mb-10 text-center text-3xl font-extrabold text-foreground md:text-4xl">Empieza gratis, crece cuando quieras</h2>
+          <h2 className="mb-10 text-center text-3xl font-extrabold text-foreground md:text-4xl">Empezá gratis, crece cuando quieras</h2>
         </FadeIn>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FadeIn delay={0.05}>

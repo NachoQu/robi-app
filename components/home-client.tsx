@@ -22,9 +22,10 @@ interface ChildProfile {
 interface HomeClientProps {
   profiles: ChildProfile[]
   hasPin: boolean
+  userEmail: string
 }
 
-export function HomeClient({ profiles, hasPin }: HomeClientProps) {
+export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
   const router = useRouter()
   const [pinOpen, setPinOpen] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
@@ -53,9 +54,9 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
           aria-label="Panel de adultos"
         >
           <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-            <Lock size={14} className="text-primary" />
+            <User size={14} className="text-primary" />
           </span>
-          <span className="text-sm font-semibold text-foreground">Gestionar cuenta</span>
+          <span className="text-sm font-semibold text-foreground">{userEmail}</span>
           <ChevronDown size={14} className="text-muted-foreground" />
         </button>
 
@@ -79,7 +80,7 @@ export function HomeClient({ profiles, hasPin }: HomeClientProps) {
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted transition-colors text-left"
                 >
                   <span className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <User size={15} className="text-primary" />
+                    <Lock size={15} className="text-primary" />
                   </span>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-semibold text-foreground">Panel de adultos</span>
