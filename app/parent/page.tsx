@@ -74,9 +74,18 @@ export default async function ParentPage() {
 
   type ActivityRow = {
     child_profile_id: string
+    video_id: string
     completed_at: string
     base_points: number
     bonus_points: number
+    child_profiles: { name: string; avatar: string } | null
+    videos: { title: string | null } | null
+  }
+
+  type WatchRow = {
+    child_profile_id: string
+    video_id: string
+    watched_at: string
     child_profiles: { name: string; avatar: string } | null
     videos: { title: string | null } | null
   }
@@ -99,7 +108,7 @@ export default async function ParentPage() {
 
     const { data: acts } = await supabase
       .from('activities')
-      .select('child_profile_id, completed_at, base_points, bonus_points, child_profiles(name, avatar), videos(title)')
+      .select('child_profile_id, video_id, completed_at, base_points, bonus_points, child_profiles(name, avatar), videos(title)')
       .in('child_profile_id', profileIds)
       .order('completed_at', { ascending: false })
 
@@ -129,9 +138,26 @@ export default async function ParentPage() {
     }
   }
 
-  // Feed: recent activities + redemptions merged
+  // Watches sin quiz completado
+  const completedPairs = new Set(allActivities.map((a) => `${a.child_profile_id}:${a.video_id}`))
+
+  let watchRows: WatchRow[] = []
+  if (profileIds.length > 0) {
+    const { data: watches } = await supabase
+      .from('video_assignments')
+      .select('child_profile_id, video_id, watched_at, child_profiles(name, avatar), videos(title)')
+      .in('child_profile_id', profileIds)
+      .not('watched_at', 'is', null)
+      .order('watched_at', { ascending: false })
+      .limit(20)
+    watchRows = ((watches ?? []) as unknown as WatchRow[])
+      .filter((w) => !completedPairs.has(`${w.child_profile_id}:${w.video_id}`))
+  }
+
+  // Feed: recent activities + watches + redemptions merged
   type FeedItem =
     | { kind: 'activity'; id: string; date: string; childName: string; childAvatar: string; videoTitle: string; points: number }
+    | { kind: 'watch'; id: string; date: string; childName: string; childAvatar: string; videoTitle: string }
     | { kind: 'redemption'; id: string; date: string; childName: string; childAvatar: string; voucherTitle: string }
 
   const recentActs = allActivities.slice(0, 10)
@@ -154,6 +180,14 @@ export default async function ParentPage() {
       childAvatar: a.child_profiles?.avatar ?? '👤',
       videoTitle: a.videos?.title ?? 'Video sin título',
       points: (a.base_points ?? 0) + (a.bonus_points ?? 0),
+    })),
+    ...watchRows.map((w) => ({
+      kind: 'watch' as const,
+      id: `watch-${w.child_profile_id}-${w.video_id}`,
+      date: w.watched_at,
+      childName: w.child_profiles?.name ?? '',
+      childAvatar: w.child_profiles?.avatar ?? '👤',
+      videoTitle: w.videos?.title ?? 'Video sin título',
     })),
     ...((recentRedemptions ?? []) as any[]).map((r) => ({
       kind: 'redemption' as const,
@@ -236,6 +270,7 @@ export default async function ParentPage() {
               const lastActivity = lastActivityByProfile[profile.id] ?? null
               const assignedCount = videos.length
               const weeklyProgress = assignedCount > 0 ? Math.round((weeklyCount / assignedCount) * 100) : 0
+              const totalProgress = assignedCount > 0 ? Math.round((completedCount / assignedCount) * 100) : 0
               const canRedeem = cheapestVoucher !== null && profile.total_points >= cheapestVoucher
               const badge = activityBadge(lastActivity?.date ?? null)
               const motivation = motivationalMessage(weeklyCount, lastActivity?.date ?? null)
@@ -246,7 +281,7 @@ export default async function ParentPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-5 py-5">
 
                     {/* Avatar + name + badge */}
-                    <div className="flex items-center gap-3 sm:w-44 shrink-0">
+                    <div className="flex items-center gap-3 sm:w-36 shrink-0">
                       <span
                         className="flex items-center justify-center rounded-full text-3xl shrink-0"
                         style={{ width: 56, height: 56, background: 'var(--robi-accent)' }}
@@ -269,7 +304,7 @@ export default async function ParentPage() {
                     </div>
 
                     {/* Info columns */}
-                    <div className="flex-1 grid grid-cols-3 gap-3 sm:gap-4">
+                    <div className="flex-1 grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1.2fr)] gap-2 sm:gap-3">
                       {/* Última actividad */}
                       <div className="flex flex-col gap-0.5">
                         <p className="text-[11px] text-muted-foreground font-medium">Última actividad</p>
@@ -277,30 +312,30 @@ export default async function ParentPage() {
                           {lastActivity ? formatLastDate(lastActivity.date) : '—'}
                         </p>
                         <p className="text-[11px] text-muted-foreground">
-                          {completedCount > 0 ? `Completó ${completedCount} video${completedCount !== 1 ? 's' : ''}` : 'Sin actividad'}
+                          {completedCount > 0 ? `${completedCount} video${completedCount !== 1 ? 's' : ''} completado${completedCount !== 1 ? 's' : ''}` : 'Sin actividad'}
                         </p>
                       </div>
 
                       {/* Último video */}
                       <div className="flex flex-col gap-0.5">
                         <p className="text-[11px] text-muted-foreground font-medium">Último video</p>
-                        <p className="text-sm font-bold text-foreground line-clamp-2 leading-tight">
+                        <p className="text-sm font-bold text-foreground line-clamp-2 leading-snug">
                           {lastActivity?.videoTitle ?? '—'}
                         </p>
-                        <p className="text-[11px] text-muted-foreground">
-                          <Star size={10} className="inline text-primary mr-0.5" />
+                        <p className="text-[11px] text-muted-foreground flex items-center gap-0.5 mt-0.5">
+                          <Star size={10} className="text-primary shrink-0" />
                           {profile.total_points ?? 0} pts
                         </p>
                       </div>
 
                       {/* Progreso semanal */}
                       <div className="flex flex-col gap-1">
-                        <p className="text-[11px] text-muted-foreground font-medium">Progreso semanal</p>
-                        <p className="text-sm font-bold text-foreground">{weeklyProgress}%</p>
+                        <p className="text-[11px] text-muted-foreground font-medium">Progreso</p>
+                        <p className="text-sm font-bold text-foreground">{totalProgress}%</p>
                         <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                          <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${weeklyProgress}%` }} />
+                          <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${totalProgress}%` }} />
                         </div>
-                        <p className="text-[11px] text-muted-foreground">{weeklyCount} de {assignedCount} videos</p>
+                        <p className="text-[11px] text-muted-foreground">{completedCount} de {assignedCount} videos</p>
                       </div>
                     </div>
 
@@ -356,26 +391,45 @@ export default async function ParentPage() {
               const dateStr = new Date(item.date).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })
               if (item.kind === 'activity') {
                 return (
-                  <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3">
-                    <span className="text-xl shrink-0">{item.childAvatar}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate">{item.childName} completó un video</p>
-                      <p className="text-xs text-muted-foreground font-medium truncate">{item.videoTitle} · {dateStr}</p>
+                  <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3.5">
+                    <span className="text-2xl shrink-0">{item.childAvatar}</span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-sm font-bold text-foreground">{item.childName}</p>
+                        <span className="text-xs text-muted-foreground font-medium">✅ completó el quiz</span>
+                        <span className="text-xs text-muted-foreground">· {dateStr}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{item.videoTitle}</p>
                     </div>
-                    <span className="flex items-center gap-0.5 text-xs font-bold text-primary shrink-0">
-                      <Star size={12} /> +{item.points}
-                    </span>
+                  </div>
+                )
+              }
+              if (item.kind === 'watch') {
+                return (
+                  <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3.5">
+                    <span className="text-2xl shrink-0">{item.childAvatar}</span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-sm font-bold text-foreground">{item.childName}</p>
+                        <span className="text-xs text-muted-foreground font-medium">👀 vio un video</span>
+                        <span className="text-xs text-muted-foreground">· {dateStr}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{item.videoTitle}</p>
+                    </div>
                   </div>
                 )
               }
               return (
-                <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3">
-                  <span className="text-xl shrink-0">{item.childAvatar}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{item.childName} canjeó un premio</p>
-                    <p className="text-xs text-muted-foreground font-medium truncate">{item.voucherTitle} · {dateStr}</p>
+                <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3.5">
+                  <span className="text-2xl shrink-0">{item.childAvatar}</span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <p className="text-sm font-bold text-foreground">{item.childName}</p>
+                      <span className="text-xs text-muted-foreground font-medium">🎁 canjeó un premio</span>
+                      <span className="text-xs text-muted-foreground">· {dateStr}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">{item.voucherTitle}</p>
                   </div>
-                  <span className="text-lg shrink-0">🎁</span>
                 </div>
               )
             })}
