@@ -32,6 +32,7 @@ export default async function HomePage() {
     <HomeClient
       profiles={profiles as { id: string; name: string; avatar: string; total_points: number }[]}
       hasPin={hasPin}
+      userEmail={user.email ?? ''}
     />
   )
 }

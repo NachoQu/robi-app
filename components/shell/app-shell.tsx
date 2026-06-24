@@ -12,8 +12,9 @@ export type NavItem = { href: string; label: string; icon: LucideIcon; matchPath
 export function AppShell({
   nav,
   footer,
+  headerRight,
   children,
-}: { nav: NavItem[]; footer?: ReactNode; children: ReactNode }) {
+}: { nav: NavItem[]; footer?: ReactNode; headerRight?: ReactNode; children: ReactNode }) {
   const pathname = usePathname()
 
   function itemMatches({ href, matchPaths }: NavItem) {
@@ -44,7 +45,7 @@ export function AppShell({
               href={href}
               aria-current={isActive(href) ? 'page' : undefined}
               className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors',
+                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors duration-150',
                 isActive(href)
                   ? 'bg-primary/10 text-primary'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -60,7 +61,12 @@ export function AppShell({
 
       {/* Main */}
       <div className="lg:pl-60">
-        <main className="mx-auto w-full max-w-5xl px-4 py-6 pb-24 lg:pb-8">
+        {headerRight && (
+          <div className="flex justify-end px-4 py-4">
+            {headerRight}
+          </div>
+        )}
+        <main className="mx-auto w-full max-w-5xl px-4 pb-24 lg:pb-8" style={{ paddingTop: headerRight ? '0' : '1.5rem' }}>
           {children}
           {footer && <div className="mt-8 border-t border-border pt-6 lg:hidden">{footer}</div>}
         </main>

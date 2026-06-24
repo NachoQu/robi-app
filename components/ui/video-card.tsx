@@ -21,11 +21,11 @@ export function VideoCard({
 }) {
   return (
     <Link href={href} className={cn('group block', className)}>
-      <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border transition-shadow group-hover:shadow-md">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border transition-all duration-200 group-hover:shadow-lg group-hover:scale-[1.02]">
         <div className="relative aspect-video w-full overflow-hidden">
-          <Image src={thumbnailUrl} alt={title} fill className="object-cover" unoptimized />
-          <div className="absolute inset-0 flex items-center justify-center opacity-90">
-            <span className="flex size-11 items-center justify-center rounded-full bg-black/50">
+          <Image src={thumbnailUrl} alt={title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" unoptimized />
+          <div className="absolute inset-0 flex items-center justify-center opacity-80 transition-opacity duration-200 group-hover:opacity-100">
+            <span className="flex size-11 items-center justify-center rounded-full bg-black/50 transition-transform duration-200 group-hover:scale-110">
               <Play size={20} className="ml-0.5 text-white" fill="white" />
             </span>
           </div>

@@ -104,13 +104,19 @@ function SuccessState({
           </CardHeader>
           <CardContent className="px-6 pb-6 flex flex-col gap-4">
             {questions.map((q, idx) => (
-              <div key={idx} className="flex flex-col gap-2">
-                <p className="text-sm font-semibold text-foreground">
-                  {idx + 1}. {q.question_text}
+              <div key={idx} className="flex flex-col gap-3 rounded-2xl bg-muted/50 border border-border px-4 py-4">
+                <p className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
+                  Pregunta {idx + 1}
                 </p>
-                <div className="grid grid-cols-2 gap-1.5">
+                <p className="text-sm font-semibold text-foreground leading-snug">
+                  {q.question_text}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
                   {(q.options as string[]).map((opt, oi) => (
-                    <span key={oi} className="text-xs rounded-xl px-3 py-2 font-medium bg-muted text-foreground">
+                    <span
+                      key={oi}
+                      className="text-xs rounded-xl px-3 py-2.5 font-medium bg-background border border-border text-foreground leading-snug"
+                    >
                       {String.fromCharCode(65 + oi)}. {opt}
                     </span>
                   ))}

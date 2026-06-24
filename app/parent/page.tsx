@@ -182,19 +182,11 @@ export default async function ParentPage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Panel</h1>
-          <p className="text-sm text-muted-foreground font-medium mt-0.5">
-            Supervisá el aprendizaje y cargá nuevos videos.
-          </p>
-        </div>
-        <Link href="/parent/add-video">
-          <Button variant="primary" className="flex items-center gap-2">
-            <Plus size={18} />
-            Agregar video
-          </Button>
-        </Link>
+      <div>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Panel Adultos</h1>
+        <p className="text-sm text-muted-foreground font-medium mt-0.5">
+          Supervisá el aprendizaje y cargá nuevos videos.
+        </p>
       </div>
 
       {/* CTA primer video */}
@@ -217,7 +209,15 @@ export default async function ParentPage() {
 
       {/* Progreso por hijo */}
       <section>
-        <h2 className="mb-4 text-[22px] font-bold text-foreground">Progreso por hijo</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[22px] font-bold text-foreground">Progreso por hijo</h2>
+          <Link href="/parent/add-video">
+            <Button variant="primary" className="flex items-center gap-2">
+              <Plus size={18} />
+              Agregar video
+            </Button>
+          </Link>
+        </div>
 
         {childProfiles.length === 0 ? (
           <div className="rounded-2xl bg-card border border-border px-8 py-10 flex flex-col items-center gap-4 text-center">

@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import Image from 'next/image'
+import { Eye, EyeOff } from 'lucide-react'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { signIn } from '@/actions/auth'
 
@@ -14,6 +16,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -35,12 +38,15 @@ export default function LoginForm() {
         className="w-full max-w-md"
       >
         <div className="flex flex-col items-center gap-3 mb-6">
-          <motion.div
-            animate={{ y: [0, -6, 0, -3, 0] }}
-            transition={{ duration: 1.4, delay: 0.3, ease: 'easeInOut' }}
-          >
-            <RobiPlaceholder size={80} />
-          </motion.div>
+          <Link href="/" aria-label="Volver al inicio" className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
+            <motion.div
+              animate={{ y: [0, -6, 0, -3, 0] }}
+              transition={{ duration: 1.4, delay: 0.3, ease: 'easeInOut' }}
+            >
+              <RobiPlaceholder size={80} />
+            </motion.div>
+            <Image src="/robi-logo-text.png" alt="Robi" width={100} height={40} className="object-contain" />
+          </Link>
           <h1 className="text-3xl font-extrabold tracking-tight text-primary">
             ¡Bienvenido de vuelta!
           </h1>
@@ -76,16 +82,26 @@ export default function LoginForm() {
                 <label htmlFor="password" className="text-sm font-semibold text-foreground">
                   Contraseña
                 </label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Tu contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="h-12 rounded-xl text-base border-2 focus-visible:ring-0 focus-visible:border-primary"
-                  autoComplete="current-password"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Tu contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-12 rounded-xl text-base border-2 focus-visible:ring-0 focus-visible:border-primary pr-12"
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
 
               {error && (
