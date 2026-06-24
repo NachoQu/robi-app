@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Robi } from '@/components/robi/Robi'
+import Image from 'next/image'
 
 export type NavItem = { href: string; label: string; icon: LucideIcon; matchPaths?: string[] }
 
@@ -34,12 +34,8 @@ export function AppShell({
     <div className="min-h-screen bg-background">
       {/* Sidebar — desktop */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-border bg-sidebar px-4 py-6 lg:flex">
-        <Link href="/" className="mb-8 flex items-center gap-2 px-2">
-          <Robi size={36} />
-          <span className="flex flex-col leading-none">
-            <span className="text-xl font-bold text-primary">Robi</span>
-            <span className="text-[10px] font-semibold text-muted-foreground">Aprende. Juega. Gana.</span>
-          </span>
+        <Link href="/" className="mb-8 flex items-center px-2">
+          <Image src="/robi-logo.png" alt="Robi" width={100} height={40} className="h-10 w-auto" />
         </Link>
         <nav aria-label="Navegación principal" className="flex flex-1 flex-col gap-1">
           {nav.map(({ href, label, icon: Icon }) => (

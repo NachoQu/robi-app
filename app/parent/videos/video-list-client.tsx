@@ -236,13 +236,16 @@ function QuizModal({
             <p className="text-sm text-muted-foreground font-medium text-center py-6">No hay preguntas disponibles.</p>
           ) : (
             questions.map((q, idx) => (
-              <div key={idx} className="flex flex-col gap-2">
-                <p className="text-sm font-semibold text-foreground">
-                  {idx + 1}. {q.question_text}
+              <div key={idx} className="flex flex-col gap-2 rounded-2xl border border-border bg-muted/30 p-4">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Pregunta {idx + 1}
+                </span>
+                <p className="text-sm font-semibold text-foreground leading-snug">
+                  {q.question_text}
                 </p>
-                <div className="grid grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-2 gap-1.5 mt-1">
                   {(q.options as string[]).map((opt, oi) => (
-                    <span key={oi} className="text-xs rounded-xl px-3 py-2 font-medium bg-muted text-foreground">
+                    <span key={oi} className="text-xs rounded-xl px-3 py-2 font-medium bg-card border border-border text-foreground">
                       {String.fromCharCode(65 + oi)}. {opt}
                     </span>
                   ))}

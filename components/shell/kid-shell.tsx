@@ -22,8 +22,8 @@ export function KidShell({
   const nav: NavItem[] = [
     { href: '/', label: 'Home', icon: Home },
     { href: `/kid/${profileId}`, label: 'Mi Panel', icon: LayoutDashboard },
-    { href: `/kid/${profileId}/album`, label: 'Mi álbum', icon: BookOpen },
-    { href: `/kid/${profileId}/rewards`, label: 'Premios', icon: Gift },
+    { href: `/kid/${profileId}/album`, label: 'Mi Álbum', icon: BookOpen },
+    { href: `/kid/${profileId}/rewards`, label: 'Mis Premios', icon: Gift },
   ]
 
   const footer = (

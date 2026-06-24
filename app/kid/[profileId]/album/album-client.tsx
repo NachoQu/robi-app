@@ -1,8 +1,9 @@
 'use client'
 
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
-import { AchievementBadge } from '@/components/ui/achievement-badge'
+import { AchievementBadge, BADGE_ICONS } from '@/components/ui/achievement-badge'
 
 interface EarnedSlot {
   id: string
@@ -34,8 +35,6 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// Badge kinds that rotate per slot index
-const BADGE_KINDS: Array<'star' | 'shield' | 'gem'> = ['star', 'shield', 'gem']
 
 export default function AlbumClient({
   profileId,
@@ -56,18 +55,18 @@ export default function AlbumClient({
           transition={{ duration: 0.4 }}
           className="flex flex-col items-center gap-2 rounded-3xl px-8 py-5 w-full shadow-lg bg-card border border-border"
         >
-          <span
-            className="text-5xl select-none"
-            role="img"
-            aria-label={`Avatar de ${profileName}`}
-          >
-            {profileAvatar}
-          </span>
+          <Image
+            src="/album-icon.png"
+            alt="Mi Álbum"
+            width={64}
+            height={64}
+            className="select-none"
+          />
           <h1
             className="text-2xl font-extrabold tracking-tight"
             style={{ color: 'var(--robi-primary)' }}
           >
-            📚 Mi Álbum
+            Mi Álbum
           </h1>
 
           {/* Badge count pill */}
@@ -77,14 +76,8 @@ export default function AlbumClient({
             transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 18 }}
             className="flex items-center gap-1.5 text-base font-extrabold rounded-full px-5 py-2"
             style={{
-              background:
-                earnedCount === totalCount && totalCount > 0
-                  ? 'var(--robi-primary)'
-                  : 'color-mix(in oklch, var(--robi-accent) 20%, transparent)',
-              color:
-                earnedCount === totalCount && totalCount > 0
-                  ? 'white'
-                  : 'var(--foreground)',
+              background: '#FEF9C3',
+              color: 'var(--foreground)',
             }}
           >
             🏅 Tenés {earnedCount} de {totalCount} insignias
@@ -101,7 +94,7 @@ export default function AlbumClient({
             {earnedCount === 0
               ? '¡Mirá videos y completá quizzes para coleccionar insignias! 🎯'
               : earnedCount === totalCount && totalCount > 0
-              ? '¡Colección completa! ¡Sos un campeón! 🏆'
+              ? '¡Colección completa! ¡Sigue así!'
               : `¡Muy bien! Te faltan ${totalCount - earnedCount} insignia${totalCount - earnedCount === 1 ? '' : 's'} para completar el álbum. ✨`}
           </p>
         </div>
@@ -152,9 +145,9 @@ export default function AlbumClient({
                       }}
                     >
                       <AchievementBadge
-                        kind={BADGE_KINDS[i % BADGE_KINDS.length]}
+                        imageSrc={BADGE_ICONS[i % BADGE_ICONS.length]}
                         locked={false}
-                        size={56}
+                        size={108}
                       />
                     </motion.div>
 
@@ -162,23 +155,17 @@ export default function AlbumClient({
                       {slot.videoTitle}
                     </p>
 
-                    <span
-                      className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
-                      style={{
-                        background: 'var(--robi-primary)',
-                        color: 'white',
-                      }}
-                    >
+                    <p className="text-xs text-muted-foreground">
                       {formatDate(slot.earnedAt)}
-                    </span>
+                    </p>
                   </div>
                 ) : (
                   /* ── Empty slot ── locked */
                   <div className="rounded-3xl p-4 flex flex-col items-center gap-2 text-center border-2 border-dashed border-border bg-muted/40">
                     <AchievementBadge
-                      kind={BADGE_KINDS[i % BADGE_KINDS.length]}
+                      imageSrc={BADGE_ICONS[i % BADGE_ICONS.length]}
                       locked
-                      size={56}
+                      size={108}
                     />
 
                     <p className="text-xs font-bold leading-tight line-clamp-2 text-muted-foreground">

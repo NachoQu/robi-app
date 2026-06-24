@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Dialog,
@@ -65,6 +66,21 @@ const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
 }))
 
 const PRIZE_ICONS = ['🎁', '🏆', '🎉', '🎊', '🌟', '🎀', '🥳', '🎈']
+
+const TITLE_ICONS: Record<string, string> = {
+  '30 min más de pantalla': '/telefono-icon.png',
+  'Elegir la cena': '/cena-icon.png',
+  'Noche de pijamas en el living': '/pijamada-icon.png',
+  'Elegir la película del viernes': '/tv-icon.png',
+  'Una hora de juego con mamá/papá': '/estrella-icon.png',
+  'Traer un amigo a dormir': '/dormir-icon.png',
+}
+
+function getTitleIcon(title: string, fallback: string) {
+  const src = TITLE_ICONS[title]
+  if (src) return <Image src={src} alt={title} width={40} height={40} />
+  return <span className="text-2xl select-none">{fallback}</span>
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-AR', {
@@ -131,20 +147,27 @@ export default function RewardsClient({
           transition={{ duration: 0.4 }}
           className="flex flex-col items-center gap-2 rounded-3xl px-8 py-5 w-full shadow-lg bg-card border border-border"
         >
-          <span className="text-5xl select-none" role="img" aria-label={`Avatar de ${profileName}`}>
-            {profileAvatar}
-          </span>
-          <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--robi-coral)' }}>
-            🏆 Mis Premios
+          <Image
+            src="/premio-icon.png"
+            alt="Premio"
+            width={80}
+            height={80}
+            className="select-none"
+          />
+          <h1
+            className="text-2xl font-extrabold tracking-tight"
+            style={{ color: 'var(--robi-primary)' }}
+          >
+            Mis Premios
           </h1>
 
           <motion.span
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 18 }}
-            className="flex items-center gap-1.5 text-xl font-extrabold rounded-full px-5 py-2"
+            className="flex items-center gap-1.5 text-base font-extrabold rounded-full px-5 py-2"
             style={{
-              background: 'color-mix(in oklch, var(--robi-accent) 20%, transparent)',
+              background: '#FEF9C3',
               color: 'var(--foreground)',
             }}
           >
@@ -161,7 +184,7 @@ export default function RewardsClient({
           <p className="text-sm font-bold text-foreground">
             {vouchers.length === 0
               ? '¡Mamá o papá todavía no cargaron premios. ¡Pediselos! 🎁'
-              : '¡Canjeá tus puntos por premios geniales! 🎉'}
+              : '¡Canjeá tus puntos por premios geniales!'}
           </p>
         </div>
 
@@ -231,7 +254,7 @@ export default function RewardsClient({
                   transition={{ delay: 0.06 * i }}
                   className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3 shadow-sm"
                 >
-                  <span className="text-2xl select-none">🎁</span>
+                  {getTitleIcon(r.voucher_title, '🎁')}
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-foreground truncate">{r.voucher_title}</p>
                     <p className="text-xs text-muted-foreground">{formatDate(r.redeemed_at)}</p>
@@ -278,7 +301,22 @@ export default function RewardsClient({
                   <RewardCard
                     title={voucher.title}
                     points={voucher.points_cost}
-                    icon={PRIZE_ICONS[i % PRIZE_ICONS.length]}
+                    icon={
+                      <motion.div
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2 + (i % 3) * 0.4,
+                          ease: 'easeInOut',
+                          delay: i * 0.15,
+                        }}
+                      >
+                        {TITLE_ICONS[voucher.title]
+                          ? <Image src={TITLE_ICONS[voucher.title]} alt={voucher.title} width={108} height={108} />
+                          : PRIZE_ICONS[i % PRIZE_ICONS.length]
+                        }
+                      </motion.div>
+                    }
                     locked={!canRedeem}
                     missing={missing}
                     disabled={pending}

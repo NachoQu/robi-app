@@ -92,7 +92,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
   return (
     <div className="min-h-screen flex flex-col px-4 py-6 bg-background">
       {/* Back + title */}
-      <div className="w-full max-w-2xl mx-auto mb-4">
+      <div className="w-full max-w-4xl mx-auto mb-4">
         <Link
           href={`/kid/${profileId}`}
           className="text-sm font-bold flex items-center gap-1 mb-3"
@@ -105,19 +105,37 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
         </h1>
       </div>
 
-      {/* Player wrapper */}
-      <div className="w-full max-w-2xl mx-auto">
+      {/* Player wrapper — TV frame */}
+      <div className="w-full max-w-4xl mx-auto">
+        {/* TV outer bezel */}
         <div
-          className="relative w-full rounded-3xl overflow-hidden shadow-2xl bg-black"
-          style={{ aspectRatio: '16/9' }}
+          className="relative w-full rounded-2xl shadow-2xl"
+          style={{ background: '#1a1a1a', padding: '16px 16px 0 16px' }}
         >
-          <div id={playerContainerId} className="absolute inset-0 w-full h-full" />
+          {/* Screen */}
+          <div
+            className="relative w-full overflow-hidden"
+            style={{ aspectRatio: '16/9', background: '#000', borderRadius: '4px' }}
+          >
+            <div id={playerContainerId} className="absolute inset-0 w-full h-full" />
+          </div>
+
+          {/* TV bottom bar */}
+          <div
+            className="flex items-center justify-center"
+            style={{ height: '28px' }}
+          >
+            <div
+              className="rounded-full"
+              style={{ width: '8px', height: '8px', background: '#444' }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Robi cheer hint */}
       {!videoEnded && (
-        <div className="w-full max-w-2xl mx-auto mt-4">
+        <div className="w-full max-w-4xl mx-auto mt-4">
           <div className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-muted/60">
             <RobiPlaceholder size={40} />
             <p className="text-sm font-bold text-foreground">
@@ -136,7 +154,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 16 }}
             transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-            className="w-full max-w-2xl mx-auto mt-6 flex flex-col items-center gap-4"
+            className="w-full max-w-4xl mx-auto mt-6 flex flex-col items-center gap-4"
           >
             {previousActivity ? (
               /* Already completed — show previous score */
@@ -144,26 +162,34 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex items-center gap-3"
+                  transition={{ delay: 0.1 }}
+                  className="flex flex-col items-center gap-2"
                 >
-                  <RobiPlaceholder size={52} mood="celebrate" />
-                  <p className="text-xl font-extrabold text-foreground">
+                  <RobiPlaceholder size={72} mood="celebrate" />
+                  <p className="text-xl font-extrabold text-foreground text-center">
                     ¡Ya completaste esta actividad! ✅
                   </p>
                 </motion.div>
 
-                <div className="w-full rounded-3xl px-5 py-4 flex flex-col items-center gap-1 bg-secondary/20 border border-secondary/30">
-                  <p className="text-base font-bold text-muted-foreground">Tu puntaje anterior</p>
-                  <p className="text-3xl font-extrabold" style={{ color: 'var(--robi-primary)' }}>
-                    ⭐ {previousActivity.base_points + previousActivity.bonus_points} / 35 pts
-                  </p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.22 }}
+                  className="w-full max-w-xs mx-auto rounded-2xl px-4 py-3 flex flex-col items-center gap-0.5 bg-primary/5 border border-primary/10"
+                >
+                  <span className="text-xs font-semibold text-muted-foreground">Tu puntaje anterior</span>
+                  <span className="text-2xl font-extrabold leading-none text-foreground">
+                    ⭐ {previousActivity.base_points + previousActivity.bonus_points} / 35
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {Math.round(((previousActivity.base_points + previousActivity.bonus_points) / 35) * 100)}% completado
+                  </span>
+                </motion.div>
 
-                <motion.div className="w-full" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <motion.div className="w-full max-w-xs mx-auto" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                   <Button
-                    variant="secondary"
-                    className="w-full rounded-3xl py-5 text-xl font-extrabold tracking-wide h-auto"
+                    variant="default"
+                    className="w-full rounded-3xl py-3.5 text-lg font-extrabold tracking-wide h-auto"
                     onClick={() => router.push(`/kid/${profileId}`)}
                   >
                     Seguir aprendiendo →

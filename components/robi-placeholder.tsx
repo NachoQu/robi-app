@@ -1,15 +1,31 @@
-import { Robi, type RobiMood } from '@/components/robi/Robi'
+'use client'
+
+import Image from 'next/image'
+import { motion, useReducedMotion } from 'framer-motion'
 
 interface RobiPlaceholderProps {
   size?: number
   className?: string
-  mood?: RobiMood
+  mood?: string
 }
 
-/**
- * Shared Robi placeholder — now renders the real animated <Robi /> mascot.
- * All existing call-sites keep working; pass `mood` for context-specific animation.
- */
-export function RobiPlaceholder({ size = 80, className, mood = 'idle' }: RobiPlaceholderProps) {
-  return <Robi size={size} className={className} mood={mood} />
+export function RobiPlaceholder({ size = 80, className }: RobiPlaceholderProps) {
+  const reduced = useReducedMotion() ?? false
+
+  return (
+    <motion.div
+      className={className}
+      animate={reduced ? {} : { y: [0, -6, 0, -3, 0] }}
+      transition={{ duration: 3.2, ease: 'easeInOut', repeat: Infinity }}
+      style={{ width: size, height: size, flexShrink: 0 }}
+    >
+      <Image
+        src="/robi-default.png"
+        alt="Robi"
+        width={size}
+        height={size}
+        style={{ width: size, height: size, objectFit: 'contain' }}
+      />
+    </motion.div>
+  )
 }

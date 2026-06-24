@@ -386,7 +386,7 @@ export default function AddVideoPage() {
                     className={[
                       'flex items-start gap-3 cursor-pointer select-none rounded-2xl px-4 py-3 transition-colors',
                       checked
-                        ? 'bg-[var(--robi-secondary)]/15 border border-[var(--robi-secondary)]/40'
+                        ? 'bg-[var(--robi-primary)]/15 border border-[var(--robi-primary)]/40'
                         : 'bg-muted border border-border',
                     ].join(' ')}
                   >
@@ -394,7 +394,7 @@ export default function AddVideoPage() {
                       type="checkbox"
                       checked={checked}
                       onChange={(e) => setChecked(e.target.checked)}
-                      className="mt-0.5 w-5 h-5 accent-secondary shrink-0 cursor-pointer"
+                      className="mt-0.5 w-5 h-5 accent-[var(--robi-primary)] shrink-0 cursor-pointer"
                     />
                     <span className="text-sm font-semibold leading-snug text-foreground">
                       Revisé el video y es apto para mi hijo/a
@@ -423,7 +423,7 @@ export default function AddVideoPage() {
             >
               <RobiPlaceholder size={28} className="shrink-0 mt-0.5" />
               <div className="min-w-0">
-                <p className="text-xs font-bold" style={{ color: 'var(--robi-secondary)' }}>Consejo de Robi</p>
+                <p className="text-xs font-bold" style={{ color: 'var(--robi-primary)' }}>Consejo de Robi</p>
                 <p className="text-xs text-muted-foreground font-medium mt-0.5">Los videos cortos, de menos de 5 minutos, son más fáciles de terminar para los chicos.</p>
               </div>
             </div>

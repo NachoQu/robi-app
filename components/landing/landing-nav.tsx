@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { Robi } from '@/components/robi/Robi'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 const LINKS = [
-  { id: 'como-funciona', label: 'Cómo funciona' },
-  { id: 'por-que-funciona', label: 'Por qué funciona' },
+  { id: 'como-funciona', label: '¿Cómo funciona?' },
+  { id: 'por-que-funciona', label: '¿Por qué funciona?' },
   { id: 'beneficios', label: 'Beneficios' },
   { id: 'precios', label: 'Precios' },
   { id: 'faq', label: 'FAQ' },
@@ -20,12 +20,8 @@ export function LandingNav() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       <nav className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <Robi size={36} />
-          <span className="flex flex-col leading-none">
-            <span className="text-xl font-bold text-primary">Robi</span>
-            <span className="text-[10px] font-semibold text-muted-foreground">Aprende. Juega. Gana.</span>
-          </span>
+        <Link href="/" className="flex shrink-0 items-center">
+          <Image src="/robi-logo.png" alt="Robi" width={120} height={48} className="h-12 w-auto" priority />
         </Link>
 
         <div className="hidden items-center gap-1 lg:flex">

@@ -72,7 +72,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
     : 0
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto">
+    <div className="flex flex-col gap-6">
       <Link
         href="/parent"
         className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit"

@@ -164,7 +164,7 @@ export default function ResultPage() {
             transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 14 }}
             className="flex flex-col items-center gap-1"
           >
-            <AchievementBadge kind="star" size={96} />
+            <AchievementBadge imageSrc="/badge-icon-1.png" size={96} />
             <p className="text-lg font-extrabold text-primary">
               ¡Ganaste un badge!
             </p>
