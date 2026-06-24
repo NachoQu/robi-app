@@ -5,6 +5,7 @@ export function extractJson(text: string): any {
   const body = fenced ? fenced[1] : text
   const start = body.indexOf('{')
   const end = body.lastIndexOf('}')
+  if (start === -1 || end === -1 || end <= start) throw new Error('No JSON object found in AI response')
   return JSON.parse(body.slice(start, end + 1))
 }
 

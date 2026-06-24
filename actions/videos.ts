@@ -34,11 +34,18 @@ export async function processVideo(input: { url: string; childProfileId: string 
     if (oembed.ok) title = ((await oembed.json()) as { title?: string }).title ?? null
   } catch {}
 
-  const { data: video } = await supabase.from('videos')
-    .insert({ user_id: user.id, youtube_url: input.url, youtube_id: youtubeId, status: 'processing', title })
-    .select('id').single()
-  if (!video) return { ok: false, reason: 'No pudimos iniciar el procesamiento del video. Probá de nuevo.' }
-  const videoId = video.id
+  let videoId: string
+  if (existing) {
+    // Video existe pero fue rechazado — resetear para reintentar
+    await supabase.from('videos').update({ status: 'processing', reject_reason: null, title }).eq('id', existing.id)
+    videoId = existing.id
+  } else {
+    const { data: video } = await supabase.from('videos')
+      .insert({ user_id: user.id, youtube_url: input.url, youtube_id: youtubeId, status: 'processing', title })
+      .select('id').single()
+    if (!video) return { ok: false, reason: 'No pudimos iniciar el procesamiento del video. Probá de nuevo.' }
+    videoId = video.id
+  }
 
   const reject = async (reason: string) => {
     await supabase.from('videos').update({ status: 'rejected', reject_reason: reason }).eq('id', videoId)
