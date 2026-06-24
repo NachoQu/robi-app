@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -8,34 +8,75 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
 import { createProfile } from '@/actions/profiles'
+import { processVideo } from '@/actions/videos'
+import { parseYoutubeId } from '@/lib/youtube/parse-url'
 
 const AVATARS = ['🦊', '🐼', '🦄', '🚀', '🐯', '🐙', '🌟', '🦖', '🐬', '🦋', '🐸', '🦁']
 
+type Step = 'profile' | 'video' | 'video-loading' | 'video-success'
+
 export default function OnboardingForm() {
   const router = useRouter()
+
+  // Paso 1
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const [profileLoading, setProfileLoading] = useState(false)
+  const [profileId, setProfileId] = useState<string | null>(null)
 
-  async function handleSubmit(e: React.FormEvent) {
+  // Paso 2
+  const [url, setUrl] = useState('')
+  const [checked, setChecked] = useState(false)
+  const [videoError, setVideoError] = useState<string | null>(null)
+  const [videoTitle, setVideoTitle] = useState<string | null>(null)
+
+  const [step, setStep] = useState<Step>('profile')
+
+  const youtubeId = parseYoutubeId(url)
+  const thumbnail = youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : null
+
+  const [dots, setDots] = useState('.')
+  useEffect(() => {
+    if (step !== 'video-loading') return
+    const id = setInterval(() => setDots((d) => (d.length >= 3 ? '.' : d + '.')), 500)
+    return () => clearInterval(id)
+  }, [step])
+
+  async function handleProfileSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!avatar) {
-      setError('Elegí un avatar para tu hijo/a 🎨')
+      setProfileError('Elegí un avatar para tu hijo/a 🎨')
       return
     }
-    setError(null)
-    setLoading(true)
+    setProfileError(null)
+    setProfileLoading(true)
     const result = await createProfile({ name: name.trim(), avatar })
     if (!result.ok) {
-      setError(result.reason ?? 'Ocurrió un error. Intentá de nuevo.')
-      setLoading(false)
+      setProfileError(result.reason ?? 'Ocurrió un error. Intentá de nuevo.')
+      setProfileLoading(false)
       return
     }
-    setDone(true)
-    setLoading(false)
+    setProfileId(result.profileId!)
+    setProfileLoading(false)
+    setStep('video')
   }
+
+  async function handleVideoSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!youtubeId || !checked || !profileId) return
+    setVideoError(null)
+    setStep('video-loading')
+    const result = await processVideo({ url, childProfileId: profileId })
+    if (!result.ok) {
+      setVideoError(result.reason ?? 'No pudimos procesar el video. Probá con otro.')
+      setStep('video')
+      return
+    }
+    setVideoTitle(null)
+    setStep('video-success')
+  }
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-background">
@@ -46,15 +87,16 @@ export default function OnboardingForm() {
         className="w-full max-w-md"
       >
         <AnimatePresence mode="wait">
-          {!done ? (
+
+          {/* ── PASO 1: Crear perfil ── */}
+          {step === 'profile' && (
             <motion.div
-              key="form"
+              key="profile"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.35 }}
             >
-              {/* Header */}
               <div className="flex flex-col items-center gap-3 mb-6">
                 <motion.div
                   animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
@@ -70,16 +112,12 @@ export default function OnboardingForm() {
                 </p>
               </div>
 
-              {/* Card with form */}
               <Card className="rounded-3xl bg-card shadow-sm border border-border">
                 <CardHeader className="pb-2 pt-6 px-8">
-                  <h2 className="text-xl font-bold text-center text-foreground">
-                    Nuevo perfil
-                  </h2>
+                  <h2 className="text-xl font-bold text-center text-foreground">Nuevo perfil</h2>
                 </CardHeader>
                 <CardContent className="px-8 pb-8">
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                    {/* Name */}
+                  <form onSubmit={handleProfileSubmit} className="flex flex-col gap-5">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="name" className="text-sm font-semibold text-foreground">
                         Nombre del/la niño/a
@@ -97,11 +135,8 @@ export default function OnboardingForm() {
                       />
                     </div>
 
-                    {/* Avatar picker */}
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm font-semibold text-foreground">
-                        Elegí un avatar
-                      </span>
+                      <span className="text-sm font-semibold text-foreground">Elegí un avatar</span>
                       <div className="grid grid-cols-6 gap-2">
                         {AVATARS.map((emoji) => (
                           <motion.button
@@ -129,26 +164,24 @@ export default function OnboardingForm() {
                       )}
                     </div>
 
-                    {/* Error */}
-                    {error && (
+                    {profileError && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="rounded-xl px-4 py-3 text-sm font-medium bg-destructive/10 text-destructive border border-destructive/30"
                       >
-                        ⚠️ {error}
+                        ⚠️ {profileError}
                       </motion.div>
                     )}
 
-                    {/* Submit */}
                     <motion.div whileTap={{ scale: 0.97 }} className="mt-1">
                       <Button
                         type="submit"
                         variant="primary"
-                        disabled={loading}
+                        disabled={profileLoading}
                         className="w-full h-12 text-base font-bold"
                       >
-                        {loading ? '⏳ Creando perfil…' : '🎉 ¡Crear perfil!'}
+                        {profileLoading ? '⏳ Creando perfil…' : '🎉 ¡Crear perfil!'}
                       </Button>
                     </motion.div>
                   </form>
@@ -159,14 +192,139 @@ export default function OnboardingForm() {
                 🌟 Podés agregar más perfiles con el plan premium
               </p>
             </motion.div>
-          ) : (
+          )}
+
+          {/* ── PASO 2: Cargar video ── */}
+          {step === 'video' && (
+            <motion.div
+              key="video"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.35 }}
+            >
+              <div className="flex flex-col items-center gap-3 mb-6">
+                <RobiPlaceholder size={80} />
+                <h1 className="text-3xl font-extrabold tracking-tight text-center text-primary">
+                  ¡Cargá el primer video!
+                </h1>
+                <p className="text-base text-muted-foreground text-center font-medium">
+                  Pegá un link de YouTube para que {name} empiece a aprender 🎬
+                </p>
+              </div>
+
+              <Card className="rounded-3xl bg-card shadow-sm border border-border">
+                <CardContent className="px-8 py-8">
+                  <form onSubmit={handleVideoSubmit} className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="url" className="text-sm font-semibold text-foreground">
+                        Link de YouTube
+                      </label>
+                      <Input
+                        id="url"
+                        type="url"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className="h-12 rounded-xl text-base border-2 focus-visible:ring-0 focus-visible:border-primary"
+                        autoComplete="off"
+                      />
+                    </div>
+
+                    {thumbnail && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="rounded-xl overflow-hidden border border-border"
+                      >
+                        <img
+                          src={thumbnail}
+                          alt="Vista previa del video"
+                          className="w-full object-cover"
+                        />
+                      </motion.div>
+                    )}
+
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => setChecked(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 rounded accent-primary"
+                      />
+                      <span className="text-sm font-medium text-foreground leading-snug">
+                        Revisé el video y es apto para {name}
+                      </span>
+                    </label>
+
+                    {videoError && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="rounded-xl px-4 py-3 text-sm font-medium bg-destructive/10 text-destructive border border-destructive/30"
+                      >
+                        ⚠️ {videoError}
+                      </motion.div>
+                    )}
+
+                    <motion.div whileTap={{ scale: 0.97 }}>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={!youtubeId || !checked}
+                        className="w-full h-12 text-base font-bold"
+                      >
+                        🎬 Cargar video
+                      </Button>
+                    </motion.div>
+                  </form>
+
+                  <button
+                    onClick={() => router.push('/')}
+                    className="w-full text-center text-sm font-semibold text-muted-foreground hover:underline transition-all mt-4"
+                  >
+                    Saltar por ahora →
+                  </button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* ── LOADING ── */}
+          {step === 'video-loading' && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col items-center gap-6 py-12"
+            >
+              <motion.div
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <RobiPlaceholder size={96} mood="thinking" />
+              </motion.div>
+              <div className="flex flex-col items-center gap-2 text-center">
+                <h2 className="text-2xl font-extrabold text-foreground">
+                  Robi está preparando la actividad{dots}
+                </h2>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Estoy leyendo el video, revisando el contenido y armando las preguntas.
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── ÉXITO ── */}
+          {step === 'video-success' && (
             <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
-              {/* Success state */}
               <div className="flex flex-col items-center gap-4 mb-6">
                 <motion.div
                   animate={{ y: [0, -10, 0, -5, 0] }}
@@ -176,39 +334,47 @@ export default function OnboardingForm() {
                 </motion.div>
                 <div className="text-5xl">🎉</div>
                 <h1 className="text-3xl font-extrabold tracking-tight text-center text-primary">
-                  ¡Perfil creado!
+                  ¡El primer video está listo!
                 </h1>
                 <p className="text-base text-muted-foreground text-center font-medium">
-                  ¡Ahora cargá el primer video para que {name} empiece a aprender y ganar puntos con Robi!
+                  {name} ya puede ver el video y hacer su primera actividad con Robi
                 </p>
               </div>
 
-              <Card className="rounded-3xl bg-card shadow-sm border border-border">
-                <CardContent className="px-8 py-8 flex flex-col gap-4 items-center">
-                  <div className="w-full rounded-2xl px-5 py-4 text-center font-semibold text-base bg-primary/10 text-primary border border-primary/30">
-                    🎬 Cargá un video de YouTube para que {name} aprenda y gane puntos
-                  </div>
+              {thumbnail && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="rounded-2xl overflow-hidden border border-border mb-6 shadow-sm"
+                >
+                  <img src={thumbnail} alt="Video cargado" className="w-full object-cover" />
+                </motion.div>
+              )}
 
-                  <motion.div whileTap={{ scale: 0.97 }} className="w-full">
+              <Card className="rounded-3xl bg-card shadow-sm border border-border">
+                <CardContent className="px-8 py-8 flex flex-col gap-4">
+                  <motion.div whileTap={{ scale: 0.97 }}>
                     <Button
                       variant="primary"
-                      onClick={() => router.push('/parent/add-video')}
+                      onClick={() => router.push(`/kid/${profileId}`)}
                       className="w-full h-12 text-base font-bold"
                     >
-                      🎬 Cargar primer video
+                      ¡Que empiece a aprender! 🚀
                     </Button>
                   </motion.div>
 
                   <button
                     onClick={() => router.push('/')}
-                    className="text-sm font-semibold text-muted-foreground hover:underline transition-all"
+                    className="text-center text-sm font-semibold text-muted-foreground hover:underline transition-all"
                   >
-                    Saltar por ahora →
+                    Ir al inicio →
                   </button>
                 </CardContent>
               </Card>
             </motion.div>
           )}
+
         </AnimatePresence>
       </motion.div>
     </div>
