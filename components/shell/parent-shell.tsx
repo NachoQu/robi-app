@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { LayoutDashboard, Video, Gift, UserCircle, Home, LogOut, User, ChevronDown } from 'lucide-react'
+import { LayoutDashboard, Video, Gift, UserCircle, Home, LogOut, User, ChevronDown, HelpCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AppShell, type NavItem } from '@/components/shell/app-shell'
 import { signOut } from '@/actions/auth'
@@ -70,6 +70,7 @@ export function ParentShell({ children, userEmail }: { children: ReactNode; user
     },
     { href: '/parent/vouchers', label: 'Premios', icon: Gift },
     { href: '/parent/account', label: 'Cuenta', icon: UserCircle },
+    { href: '/parent/help', label: 'Ayuda', icon: HelpCircle, sidebarOnly: true },
   ]
 
   return (

@@ -41,7 +41,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
 
   if (!profile) notFound()
 
-  const [{ data: activities }, { data: redemptions }, { data: watches }, { count: totalAssigned }] = await Promise.all([
+  const [{ data: activities }, { data: redemptions }, { data: watches }, { count: totalAssigned }, { data: nextVouchers }] = await Promise.all([
     supabase
       .from('activities')
       .select('id, video_id, completed_at, bonus_points, videos(title)')
@@ -62,6 +62,13 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
       .from('video_assignments')
       .select('*', { count: 'exact', head: true })
       .eq('child_profile_id', id),
+    supabase
+      .from('vouchers')
+      .select('points_cost')
+      .eq('user_id', user.id)
+      .gt('points_cost', profile.total_points)
+      .order('points_cost', { ascending: true })
+      .limit(1),
   ])
 
   const rows = (activities ?? []) as unknown as {
@@ -115,9 +122,8 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
   const weeklyCount = rows.filter((r) => new Date(r.completed_at) >= weekStart).length
   const weeklyWatched = historial.filter((e) => new Date(e.date) >= weekStart).length
 
-  const avgCorrect = rows.length > 0
-    ? Math.round(rows.reduce((s, r) => s + correctAnswers(r.bonus_points), 0) / rows.length * 20)
-    : 0
+  const nextVoucherCost = (nextVouchers ?? [])[0]?.points_cost ?? null
+  const ptsToNextPrize = nextVoucherCost !== null ? nextVoucherCost - profile.total_points : null
 
 
   return (
@@ -152,20 +158,67 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-card border border-border px-4 py-4 flex flex-col items-center text-center">
-          <p className="text-xs text-muted-foreground font-medium">Videos vistos</p>
-          <p className="text-2xl font-extrabold text-foreground mt-1 leading-none">
-            {weeklyWatched}<span className="text-base font-semibold text-muted-foreground">/{totalAssigned ?? 0}</span>
+      <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 snap-x snap-mandatory">
+        {/* Videos vistos */}
+        <div className="snap-start shrink-0 w-[42vw] max-w-[160px] min-w-[130px] rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
+            style={{ background: 'color-mix(in oklch, #8b5cf6 15%, transparent)' }}>
+            📺
+          </div>
+          <div>
+            <p className="text-[11px] text-muted-foreground font-medium leading-tight">Videos vistos</p>
+            <p className="text-xl font-extrabold text-foreground leading-none mt-0.5">
+              {weeklyWatched}<span className="text-sm font-semibold text-muted-foreground">/{totalAssigned ?? 0}</span>
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">esta semana</p>
+          </div>
+          <p className="text-[10px] font-bold leading-tight"
+            style={{ color: weeklyWatched >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0 ? '#8b5cf6' : 'var(--robi-primary)' }}>
+            {weeklyWatched >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0
+              ? '¡Completó todos! 🎉'
+              : `Le falta${(totalAssigned ?? 0) - weeklyWatched === 1 ? '' : 'n'} ${(totalAssigned ?? 0) - weeklyWatched}`}
           </p>
-          <p className="text-xs text-muted-foreground font-medium mt-1">esta semana</p>
         </div>
-        <div className="rounded-2xl bg-card border border-border px-4 py-4 flex flex-col items-center text-center">
-          <p className="text-xs text-muted-foreground font-medium">Quizzes completados</p>
-          <p className="text-2xl font-extrabold text-foreground mt-1 leading-none">
-            {weeklyCount}<span className="text-base font-semibold text-muted-foreground">/{totalAssigned ?? 0}</span>
+
+        {/* Quizzes completados */}
+        <div className="snap-start shrink-0 w-[42vw] max-w-[160px] min-w-[130px] rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
+            style={{ background: 'color-mix(in oklch, var(--robi-primary) 15%, transparent)' }}>
+            ✅
+          </div>
+          <div>
+            <p className="text-[11px] text-muted-foreground font-medium leading-tight">Quizzes</p>
+            <p className="text-xl font-extrabold text-foreground leading-none mt-0.5">
+              {weeklyCount}<span className="text-sm font-semibold text-muted-foreground">/{totalAssigned ?? 0}</span>
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">esta semana</p>
+          </div>
+          <p className="text-[10px] font-bold leading-tight" style={{ color: 'var(--robi-primary)' }}>
+            {weeklyCount >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0
+              ? '¡Objetivo logrado! 🎉'
+              : `Le falta${(totalAssigned ?? 0) - weeklyCount === 1 ? '' : 'n'} ${(totalAssigned ?? 0) - weeklyCount}`}
           </p>
-          <p className="text-xs text-muted-foreground font-medium mt-1">esta semana</p>
+        </div>
+
+        {/* Puntos acumulados */}
+        <div className="snap-start shrink-0 w-[42vw] max-w-[160px] min-w-[130px] rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
+            style={{ background: 'color-mix(in oklch, #f59e0b 15%, transparent)' }}>
+            ⭐
+          </div>
+          <div>
+            <p className="text-[11px] text-muted-foreground font-medium leading-tight">Puntos</p>
+            <p className="text-xl font-extrabold text-foreground leading-none mt-0.5">
+              {profile.total_points}
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">acumulados</p>
+          </div>
+          <p className="text-[10px] font-bold leading-tight"
+            style={{ color: ptsToNextPrize !== null && ptsToNextPrize <= 5 ? '#f59e0b' : 'var(--robi-primary)' }}>
+            {ptsToNextPrize !== null && ptsToNextPrize <= 5
+              ? '¡Cerca del premio! 🎁'
+              : '¡Sigue sumando!'}
+          </p>
         </div>
       </div>
 
@@ -185,11 +238,10 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-[1fr_44px] gap-2 px-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Video</p>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground text-right">Aciertos</p>
-            </div>
+          <div className="relative flex flex-col">
+            {/* Línea vertical continua */}
+            <div className="absolute left-[7px] top-2 bottom-2 w-px" style={{ background: 'color-mix(in oklch, var(--robi-primary) 25%, transparent)' }} />
+
             {(() => {
               let lastDay = ''
               return historial.map((entry) => {
@@ -197,26 +249,38 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
                 const showLabel = day !== lastDay
                 lastDay = day
                 return (
-                  <div key={entry.kind + entry.id + entry.date}>
+                  <div key={entry.kind + entry.id + entry.date} className="flex flex-col">
                     {showLabel && (
-                      <div className="flex items-center gap-2 mt-1 mb-1">
-                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ background: 'color-mix(in oklch, var(--robi-primary) 12%, transparent)', color: 'var(--robi-primary)' }}>
+                      <div className="flex items-center gap-2 mt-2 mb-1.5 pl-5">
+                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full relative z-10" style={{ background: 'color-mix(in oklch, var(--robi-primary) 12%, transparent)', color: 'var(--robi-primary)' }}>
                           {formatDate(entry.date)}
                         </span>
                       </div>
                     )}
-                    <div className="grid grid-cols-[1fr_44px] gap-2 items-center rounded-2xl bg-card border border-border px-4 py-3">
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground truncate leading-snug">
-                          {entry.title ?? 'Video sin título'}
-                        </p>
-                        <p className="text-xs font-semibold text-muted-foreground mt-0.5">
-                          {entry.kind === 'quiz' ? '✅ Completó el quiz' : '👀 Vio el video'}
+                    <div className="flex items-start gap-3 mb-2">
+                      {/* Dot */}
+                      <div className="shrink-0 w-[15px] h-[15px] rounded-full border-2 mt-[14px] relative z-10"
+                        style={{
+                          borderColor: 'var(--robi-primary)',
+                          background: entry.kind === 'quiz'
+                            ? 'var(--robi-primary)'
+                            : 'color-mix(in oklch, var(--robi-primary) 20%, var(--background))',
+                        }}
+                      />
+                      {/* Card */}
+                      <div className="flex-1 grid grid-cols-[1fr_44px] gap-2 items-center rounded-2xl bg-card border border-border px-4 py-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-foreground truncate leading-snug">
+                            {entry.title ?? 'Video sin título'}
+                          </p>
+                          <p className="text-xs font-semibold text-muted-foreground mt-0.5">
+                            {entry.kind === 'quiz' ? '✅ Completó el quiz' : '👀 Vio el video'}
+                          </p>
+                        </div>
+                        <p className={`text-sm font-bold text-right ${entry.kind === 'quiz' ? answersColor(correctAnswers(entry.bonus_points)) : 'text-muted-foreground'}`}>
+                          {entry.kind === 'quiz' ? `${correctAnswers(entry.bonus_points)}/5` : '—'}
                         </p>
                       </div>
-                      <p className={`text-sm font-bold text-right ${entry.kind === 'quiz' ? answersColor(correctAnswers(entry.bonus_points)) : 'text-muted-foreground'}`}>
-                        {entry.kind === 'quiz' ? `${correctAnswers(entry.bonus_points)}/5` : '—'}
-                      </p>
                     </div>
                   </div>
                 )

@@ -7,7 +7,7 @@ import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
-export type NavItem = { href: string; label: string; icon: LucideIcon; matchPaths?: string[] }
+export type NavItem = { href: string; label: string; icon: LucideIcon; matchPaths?: string[]; sidebarOnly?: boolean }
 
 export function AppShell({
   nav,
@@ -74,7 +74,7 @@ export function AppShell({
 
       {/* Bottom nav — mobile */}
       <nav aria-label="Navegación inferior" className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border bg-card lg:hidden">
-        {nav.map(({ href, label, icon: Icon }) => (
+        {nav.filter((item) => !item.sidebarOnly).map(({ href, label, icon: Icon }) => (
           <Link
             key={label}
             href={href}
