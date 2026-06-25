@@ -57,7 +57,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
           <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <User size={14} className="text-primary" />
           </span>
-          <span className="hidden lg:inline text-sm font-semibold text-foreground truncate max-w-[140px]">{userEmail}</span>
+          <span className="hidden lg:inline text-sm font-semibold text-foreground">Panel de Adultos</span>
           <ChevronDown size={14} className="text-muted-foreground" />
         </button>
         {/* Desktop: hover tooltip */}
@@ -81,7 +81,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -8 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="absolute right-4 top-14 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[220px] overflow-hidden"
+                className="absolute right-4 top-14 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[160px] overflow-hidden"
               >
                 {/* Panel de adultos */}
                 <button
@@ -92,8 +92,8 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
                     <Lock size={15} className="text-primary" />
                   </span>
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-semibold text-foreground">Panel de Adultos</span>
-                    <span className="flex items-center gap-1 mt-0.5">
+                    <span className="text-sm font-semibold text-foreground">Ingresar</span>
+                    <span className="flex items-center gap-1">
                       <Shield size={10} className="text-muted-foreground" />
                       <span className="text-[10px] text-muted-foreground font-medium">
                         {currentHasPin ? 'Protegido por PIN' : 'Sin PIN activo'}
@@ -113,9 +113,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
                     <span className="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
                       <LogOut size={15} className="text-red-500 dark:text-red-400" />
                     </span>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-sm font-semibold text-foreground">Cerrar sesión</span>
-                    </div>
+                    <span className="text-sm font-semibold text-foreground">Cerrar sesión</span>
                   </button>
                 </form>
               </motion.div>

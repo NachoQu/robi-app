@@ -21,7 +21,7 @@ function UserDropdown({ userEmail }: { userEmail: string }) {
         <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <User size={14} className="text-primary" />
         </span>
-        <span className="hidden lg:inline text-sm font-semibold text-foreground">{userEmail}</span>
+        <span className="hidden lg:inline text-sm font-semibold text-foreground">Panel de Adultos</span>
         <ChevronDown size={14} className="text-muted-foreground" />
       </button>
 
@@ -34,7 +34,7 @@ function UserDropdown({ userEmail }: { userEmail: string }) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -8 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              className="absolute right-0 top-12 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[220px] overflow-hidden"
+              className="absolute right-0 top-12 z-50 bg-card border border-border rounded-2xl shadow-xl min-w-[160px] overflow-hidden"
             >
               <form action={signOut}>
                 <button
