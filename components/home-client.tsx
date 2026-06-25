@@ -33,7 +33,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
   const [currentHasPin, setCurrentHasPin] = useState(hasPin)
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
 
       {/* Top bar — full width */}
       <motion.div
@@ -56,7 +56,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
           <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <User size={14} className="text-primary" />
           </span>
-          <span className="text-sm font-semibold text-foreground">{userEmail}</span>
+          <span className="text-sm font-semibold text-foreground truncate max-w-[140px]">{userEmail}</span>
           <ChevronDown size={14} className="text-muted-foreground" />
         </button>
 

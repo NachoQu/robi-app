@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { MoreVertical, CheckCircle2, UserRound, X, BookOpen, Users, Pencil, Check, Trash2 } from 'lucide-react'
+import { MoreVertical, CheckCircle2, UserRound, X, BookOpen, Users, Pencil, Check, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { assignVideoToProfiles, updateVideoTitle, deleteRejectedVideo } from '@/actions/videos'
 import { Button } from '@/components/ui/button'
@@ -39,11 +39,7 @@ type Modal =
   | { kind: 'assign'; videoId: string; title: string; alreadyAssignedIds: string[] }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
+  return new Date(dateStr).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })
 }
 
 function VideoThumbnail({ youtubeId }: { youtubeId: string | null }) {
@@ -365,6 +361,8 @@ export function VideoListClient({
   const [modal, setModal] = useState<Modal>({ kind: 'none' })
   const [localAssignments, setLocalAssignments] = useState(assignmentsByVideo)
   const [deletedIds, setDeletedIds] = useState<string[]>([])
+  const [expanded, setExpanded] = useState(false)
+  const INITIAL_COUNT = 3
 
   if (videos.length === 0) {
     return (
@@ -391,21 +389,47 @@ export function VideoListClient({
     }))
   }
 
+  const visibleVideos = (() => {
+    const filtered = videos.filter((v) => !deletedIds.includes(v.id))
+    return expanded ? filtered : filtered.slice(0, INITIAL_COUNT)
+  })()
+  const totalVisible = videos.filter((v) => !deletedIds.includes(v.id)).length
+  const hasMore = totalVisible > INITIAL_COUNT
+
   return (
     <>
       <div className="flex flex-col gap-2">
-        {videos.filter((v) => !deletedIds.includes(v.id)).map((video) => {
+        {visibleVideos.map((video) => {
           const assigned = localAssignments[video.id] ?? []
 
           return (
-            <div key={video.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3">
+            <div key={video.id} className="flex gap-3 rounded-2xl bg-card border border-border px-4 py-3">
               <VideoThumbnail youtubeId={video.youtube_id} />
 
-              <div className="flex-1 min-w-0">
-                <EditableTitle videoId={video.id} initialTitle={video.title ?? 'Video sin título'} />
+              <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                {/* Título + kebab en la misma fila */}
+                <div className="flex items-start gap-1 min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <EditableTitle videoId={video.id} initialTitle={video.title ?? 'Video sin título'} />
+                  </div>
+                  <KebabMenu
+                    video={video}
+                    alreadyAssignedIds={(localAssignments[video.id] ?? []).map((p) => p.id)}
+                    onDelete={() => handleDelete(video.id)}
+                    onViewQuiz={() => setModal({ kind: 'quiz', videoId: video.id, title: video.title ?? 'Video sin título' })}
+                    onAssign={() => setModal({
+                      kind: 'assign',
+                      videoId: video.id,
+                      title: video.title ?? 'Video sin título',
+                      alreadyAssignedIds: (localAssignments[video.id] ?? []).map((p) => p.id),
+                    })}
+                  />
+                </div>
+
+                {/* Asignado a */}
                 {assigned.length > 0 && (
-                  <p className="text-xs text-muted-foreground font-medium mt-0.5 flex items-center gap-1 flex-wrap">
-                    Asignado a:{' '}
+                  <p className="text-xs text-muted-foreground font-medium flex items-center gap-1 flex-wrap">
+                    Para:{' '}
                     {assigned.map((p, i) => (
                       <span key={i} className="inline-flex items-center gap-0.5">
                         <span>{p.avatar}</span>
@@ -415,54 +439,52 @@ export function VideoListClient({
                     ))}
                   </p>
                 )}
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Agregado el {formatDate(video.created_at)}
-                </p>
-              </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {/* Status badge */}
-                {video.status === 'processing' && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
-                    ⏳ Procesando
-                  </span>
-                )}
-                {video.status === 'rejected' && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                    ✕ Rechazado
-                  </span>
-                )}
-                {video.status === 'ready' && assigned.length > 0 && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                    <CheckCircle2 size={12} /> Asignado
-                  </span>
-                )}
-                {video.status === 'ready' && assigned.length === 0 && (
-                  <Link
-                    href="/parent/add-video"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors border border-border"
-                  >
-                    <UserRound size={12} /> Sin asignar
-                  </Link>
-                )}
-
-                <KebabMenu
-                  video={video}
-                  alreadyAssignedIds={(localAssignments[video.id] ?? []).map((p) => p.id)}
-                  onDelete={() => handleDelete(video.id)}
-                  onViewQuiz={() => setModal({ kind: 'quiz', videoId: video.id, title: video.title ?? 'Video sin título' })}
-                  onAssign={() => setModal({
-                    kind: 'assign',
-                    videoId: video.id,
-                    title: video.title ?? 'Video sin título',
-                    alreadyAssignedIds: (localAssignments[video.id] ?? []).map((p) => p.id),
-                  })}
-                />
+                {/* Badge + fecha */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {video.status === 'processing' && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                      ⏳ Procesando
+                    </span>
+                  )}
+                  {video.status === 'rejected' && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                      ✕ Rechazado
+                    </span>
+                  )}
+                  {video.status === 'ready' && assigned.length > 0 && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                      <CheckCircle2 size={11} /> Asignado
+                    </span>
+                  )}
+                  {video.status === 'ready' && assigned.length === 0 && (
+                    <Link
+                      href="/parent/add-video"
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors border border-border"
+                    >
+                      <UserRound size={11} /> Sin asignar
+                    </Link>
+                  )}
+                  <span className="text-[11px] text-muted-foreground">{formatDate(video.created_at)}</span>
+                </div>
               </div>
             </div>
           )
         })}
       </div>
+
+      {hasMore && (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="flex items-center justify-center gap-1.5 w-full py-2.5 text-sm font-semibold text-primary hover:opacity-70 transition-opacity"
+        >
+          {expanded ? (
+            <><ChevronUp size={15} /> Ver menos</>
+          ) : (
+            <><ChevronDown size={15} /> Ver todos los videos ({totalVisible - INITIAL_COUNT} más)</>
+          )}
+        </button>
+      )}
 
       {modal.kind === 'quiz' && (
         <QuizModal

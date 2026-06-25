@@ -63,6 +63,15 @@ export default async function VideosPage() {
       {/* Plan card */}
       <PlanCard usedCount={usedCount} />
 
+      {/* Reminder */}
+      <div className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+        <span className="text-base shrink-0">🛡️</span>
+        <p className="text-xs text-muted-foreground font-medium leading-snug">
+          <span className="font-bold text-foreground">Revisá antes de cargar: </span>
+          mirá el video completo antes de asignarlo para asegurarte de que sea apto.
+        </p>
+      </div>
+
       {/* Add video shortcut */}
       <AddVideoShortcut />
 
@@ -70,7 +79,7 @@ export default async function VideosPage() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-bold text-foreground">
-            Mis videos ({usedCount}/{FREE_VIDEO_LIMIT})
+            Videos ({usedCount}/{FREE_VIDEO_LIMIT})
           </h2>
           <span className="text-xs font-semibold text-muted-foreground flex items-center gap-0.5">
             Más recientes <ChevronRight size={12} className="rotate-90" />
@@ -83,19 +92,6 @@ export default async function VideosPage() {
           allProfiles={allProfiles}
         />
       </section>
-
-      {/* Footer reminder */}
-      <div className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
-        <div className="flex items-center justify-center w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-800 shrink-0 text-lg">
-          🛡️
-        </div>
-        <div>
-          <p className="text-sm font-bold text-foreground">Revisá antes de cargar</p>
-          <p className="text-xs text-muted-foreground font-medium">
-            Te recomendamos ver el video completo antes de asignarlo para asegurarte de que sea apto para tus hijos.
-          </p>
-        </div>
-      </div>
     </div>
   )
 }

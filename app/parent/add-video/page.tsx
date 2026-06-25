@@ -74,18 +74,18 @@ function SuccessState({
       className="flex flex-col gap-4"
     >
       {/* Success card */}
-      <div className="rounded-3xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-6 py-8 flex flex-col items-center gap-4 text-center">
+      <div className="rounded-2xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-4 py-3 flex items-center gap-3">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+          className="shrink-0"
         >
-          <CheckCircle2 size={56} className="text-green-500 dark:text-green-400" strokeWidth={1.5} />
+          <CheckCircle2 size={28} className="text-green-500 dark:text-green-400" strokeWidth={1.5} />
         </motion.div>
         <div>
-          <h2 className="text-2xl font-extrabold text-green-800 dark:text-green-300">¡Listo!</h2>
-          <p className="text-sm font-medium text-green-700 dark:text-green-400 mt-1">
-            El video fue cargado y el quiz está listo.{' '}
+          <p className="text-sm font-extrabold text-green-800 dark:text-green-300">¡Listo! El quiz está listo.</p>
+          <p className="text-xs font-medium text-green-700 dark:text-green-400 mt-0.5">
             {multiChild ? 'Los niños ya pueden verlo.' : 'Tu hijo/a ya puede verlo y contestar las preguntas.'}
           </p>
         </div>
