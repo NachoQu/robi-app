@@ -147,7 +147,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-extrabold text-foreground">{profile.name}</h1>
           <p className="text-sm text-muted-foreground font-medium mt-0.5">
-            {rows.length} video{rows.length !== 1 ? 's' : ''} completado{rows.length !== 1 ? 's' : ''} · {profile.total_points} pts acumulados
+            ⭐ {profile.total_points} pts acumulados
           </p>
         </div>
         <EditProfileButton
@@ -248,7 +248,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
                       <div className="flex items-center mt-2 mb-1.5">
                         <span
                           className="text-xs font-semibold px-2.5 py-0.5 rounded-full relative z-10 -translate-x-1/2"
-                          style={{ marginLeft: '7px', background: 'color-mix(in oklch, var(--robi-primary) 12%, transparent)', color: 'var(--robi-primary)' }}
+                          style={{ marginLeft: '7px', background: 'color-mix(in oklch, var(--robi-primary) 18%, var(--background))', color: 'var(--robi-primary)' }}
                         >
                           {formatDate(entry.date)}
                         </span>
@@ -265,7 +265,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
                         }}
                       />
                       {/* Card */}
-                      <div className="flex-1 grid grid-cols-[1fr_44px] gap-2 items-center rounded-2xl bg-card border border-border pl-4 pr-5 py-3">
+                      <div className="flex-1 grid grid-cols-[1fr_56px] gap-2 items-center rounded-2xl bg-card border border-border pl-4 pr-6 py-3">
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-foreground truncate leading-snug">
                             {entry.title ?? 'Video sin título'}
