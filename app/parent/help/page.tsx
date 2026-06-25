@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronRight, ChevronDown, Search } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Article {
   icon: string
@@ -137,11 +138,21 @@ function ArticleCard({ article }: { article: Article }) {
           : <ChevronRight size={16} className="text-muted-foreground shrink-0" />
         }
       </button>
-      {open && (
-        <div className="px-4 pt-3 pb-4">
-          <p className="text-sm text-muted-foreground font-medium leading-relaxed">{article.content}</p>
-        </div>
-      )}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div className="px-4 pt-3 pb-4">
+              <p className="text-sm text-muted-foreground font-medium leading-relaxed">{article.content}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -162,7 +173,7 @@ export default function HelpPage() {
     : sections
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Ayuda</h1>
@@ -188,16 +199,18 @@ export default function HelpPage() {
           <p className="text-xs text-muted-foreground font-medium mt-1">Probá con otras palabras o contactá soporte.</p>
         </div>
       ) : (
-        filtered.map((section) => (
-          <section key={section.title} className="flex flex-col gap-2">
-            <h2 className="text-base font-bold text-foreground">{section.title}</h2>
-            <div className="rounded-2xl bg-card border border-border divide-y divide-border overflow-hidden">
-              {section.articles.map((article) => (
-                <ArticleCard key={article.title} article={article} />
-              ))}
-            </div>
-          </section>
-        ))
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filtered.map((section) => (
+            <section key={section.title} className="flex flex-col gap-2">
+              <h2 className="text-base font-bold text-foreground">{section.title}</h2>
+              <div className="rounded-2xl bg-card border border-border divide-y divide-border overflow-hidden">
+                {section.articles.map((article) => (
+                  <ArticleCard key={article.title} article={article} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       )}
 
       {/* ¿Necesitás más ayuda? */}

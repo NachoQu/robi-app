@@ -97,6 +97,16 @@ export default function OnboardingForm() {
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.35 }}
             >
+              {/* Step indicator */}
+              <div className="flex flex-col items-center gap-2 mb-4">
+                <p className="text-xs font-semibold text-muted-foreground">Paso 2 de 3</p>
+                <div className="flex gap-1.5">
+                  <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />
+                  <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />
+                  <div className="h-1.5 w-8 rounded-full bg-muted" />
+                </div>
+              </div>
+
               <div className="flex flex-col items-center gap-3 mb-6">
                 <motion.div
                   animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
@@ -108,7 +118,7 @@ export default function OnboardingForm() {
                   ¡Creemos el perfil de tu hijo/a!
                 </h1>
                 <p className="text-base text-muted-foreground text-center font-medium">
-                  Hola, soy Robi 🤖 Vamos a configurar tu primer perfil para empezar a aprender y ganar puntos
+                  Hola, soy Robi 🤖 Vamos a configurar el primer perfil para empezar a aprender y ganar puntos
                 </p>
               </div>
 
@@ -203,6 +213,16 @@ export default function OnboardingForm() {
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.35 }}
             >
+              {/* Step indicator */}
+              <div className="flex flex-col items-center gap-2 mb-4">
+                <p className="text-xs font-semibold text-muted-foreground">Paso 3 de 3</p>
+                <div className="flex gap-1.5">
+                  <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />
+                  <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />
+                  <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />
+                </div>
+              </div>
+
               <div className="flex flex-col items-center gap-3 mb-6">
                 <RobiPlaceholder size={80} />
                 <h1 className="text-3xl font-extrabold tracking-tight text-center text-primary">
@@ -332,7 +352,6 @@ export default function OnboardingForm() {
                 >
                   <RobiPlaceholder size={96} />
                 </motion.div>
-                <div className="text-5xl">🎉</div>
                 <h1 className="text-3xl font-extrabold tracking-tight text-center text-primary">
                   ¡El primer video está listo!
                 </h1>

@@ -48,6 +48,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
         </Link>
 
         {/* Adultos button */}
+        <div className="relative group">
         <button
           onClick={() => setMenuOpen((v) => !v)}
           className="flex items-center gap-2 rounded-full border border-border bg-card shadow-sm px-3 py-2 hover:bg-muted transition-colors active:scale-95"
@@ -59,6 +60,13 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
           <span className="hidden lg:inline text-sm font-semibold text-foreground truncate max-w-[140px]">{userEmail}</span>
           <ChevronDown size={14} className="text-muted-foreground" />
         </button>
+        <div className="absolute right-0 top-full mt-2 z-50 hidden group-hover:block">
+          <div className="flex items-start gap-2 bg-muted border border-border rounded-2xl px-4 py-2.5 max-w-[200px] shadow-sm">
+            <span className="text-sm select-none">💡</span>
+            <span className="text-xs text-muted-foreground font-medium">Acceso al Panel de Adultos. Recordá activar el PIN de protección.</span>
+          </div>
+        </div>
+        </div>
 
         {/* Dropdown */}
         <AnimatePresence>
@@ -83,7 +91,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
                     <Lock size={15} className="text-primary" />
                   </span>
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-semibold text-foreground">Panel de adultos</span>
+                    <span className="text-sm font-semibold text-foreground">Panel de Adultos</span>
                     <span className="flex items-center gap-1 mt-0.5">
                       <Shield size={10} className="text-muted-foreground" />
                       <span className="text-[10px] text-muted-foreground font-medium">
@@ -115,7 +123,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
         </AnimatePresence>
       </motion.div>
 
-      <div className="w-full max-w-lg mx-auto px-4 pb-8 flex flex-col flex-1">
+      <div className="w-full max-w-lg mx-auto px-4 pb-8 flex flex-col flex-1 lg:justify-center">
 
       {/* Header */}
       <motion.div
@@ -140,7 +148,7 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
 
       {/* Profile grid */}
       <div className="flex-1 flex flex-col items-center w-full gap-6">
-        <div className="grid grid-cols-2 gap-4 w-full sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-4 w-full">
           {profiles.map((profile, i) => (
             <motion.div
               key={profile.id}
@@ -198,20 +206,6 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
           </motion.div>
         </div>
 
-        {/* Hint pill — solo cuando no hay PIN */}
-        {!hasPin && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.6 }}
-            className="flex items-center gap-2.5 bg-muted border border-border rounded-full px-4 py-2.5 max-w-sm"
-          >
-            <span className="text-base select-none">💡</span>
-            <span className="text-xs text-muted-foreground font-medium">
-              Desde el panel de adultos podés gestionar videos, puntos y más.
-            </span>
-          </motion.div>
-        )}
       </div>
 
       {/* PIN Dialog */}

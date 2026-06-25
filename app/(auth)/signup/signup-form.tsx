@@ -37,6 +37,16 @@ export default function SignupForm() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="w-full max-w-md"
       >
+        {/* Step indicator */}
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <p className="text-xs font-semibold text-muted-foreground">Paso 1 de 3</p>
+          <div className="flex gap-1.5">
+            <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />
+            <div className="h-1.5 w-8 rounded-full bg-muted" />
+            <div className="h-1.5 w-8 rounded-full bg-muted" />
+          </div>
+        </div>
+
         <div className="flex flex-col items-center gap-3 mb-6">
           <Link href="/" aria-label="Volver al inicio" className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
             <motion.div
