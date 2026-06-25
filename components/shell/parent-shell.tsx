@@ -76,13 +76,15 @@ export function ParentShell({ children, userEmail }: { children: ReactNode; user
 
   const isSubPage = pathname.startsWith('/parent/kid/') || pathname === '/parent/help' || pathname === '/parent/add-video'
 
+  const backHref = fromVideos ? '/parent/videos' : pathname === '/parent/help' ? '/parent/account' : '/parent'
+
   const backLink = isSubPage ? (
     <Link
-      href="/parent"
-      className="text-sm font-semibold inline-flex items-center gap-1 hover:opacity-70 transition-opacity"
+      href={backHref}
+      className={`text-sm font-semibold inline-flex items-center gap-1 hover:opacity-70 transition-opacity${pathname === '/parent/help' ? ' lg:hidden' : ''}`}
       style={{ color: 'var(--robi-primary)' }}
     >
-      ← Volver al panel
+      ← Volver
     </Link>
   ) : undefined
 

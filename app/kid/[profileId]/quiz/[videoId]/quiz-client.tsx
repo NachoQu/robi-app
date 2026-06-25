@@ -207,9 +207,9 @@ export default function QuizPage() {
           onClick={() => router.push(`/kid/${profileId}/watch/${videoId}`)}
           className="text-sm font-bold flex items-center gap-1 mb-3"
           style={{ color: 'var(--robi-primary)' }}
-          aria-label="Volver al video"
+          aria-label="Volver al Video"
         >
-          ← Volver al video
+          ← Volver al Video
         </button>
 
         {/* Header row: progress + TTS toggle */}

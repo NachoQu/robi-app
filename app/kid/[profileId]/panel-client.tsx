@@ -43,7 +43,7 @@ export default function PanelClient({
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="mb-6 flex items-center justify-between gap-4 rounded-2xl bg-card px-6 py-5 shadow-sm border border-border"
+        className="mb-6 flex flex-col gap-4 rounded-2xl bg-card px-6 py-5 shadow-sm border border-border sm:flex-row sm:items-center sm:justify-between"
       >
         <div className="flex items-center gap-4">
           <span className="text-5xl select-none" role="img" aria-label={`Avatar de ${profileName}`}>
@@ -53,22 +53,22 @@ export default function PanelClient({
             <h1 className="text-[26px] font-bold leading-none text-foreground">
               ¡Hola, {profileName}!
             </h1>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-col gap-1.5">
               <motion.span
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 18 }}
-                className="rounded-full px-3 py-0.5 text-sm font-bold text-foreground"
+                className="rounded-full px-3 py-0.5 text-sm font-bold text-foreground w-fit"
                 style={{ background: '#FEF9C3' }}
               >
                 ⭐ {totalPoints.toLocaleString('es-AR')} pts
               </motion.span>
               {totalCount > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
                     {watchedCount} de {totalCount} videos vistos
                   </span>
-                  <div className="w-24">
+                  <div className="w-20">
                     <Progress value={progressValue} />
                   </div>
                 </div>
@@ -77,7 +77,7 @@ export default function PanelClient({
           </div>
         </div>
         <Link href={`/kid/${profileId}/rewards`} className="shrink-0">
-          <Button variant="primary" className="h-10 px-5 gap-2">
+          <Button variant="primary" className="h-10 px-5 gap-2 w-full sm:w-auto">
             <Gift size={18} />
             Ver premios
           </Button>

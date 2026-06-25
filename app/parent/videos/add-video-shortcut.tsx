@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Link, Video } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,15 @@ import { RobiPlaceholder } from '@/components/robi-placeholder'
 
 export function AddVideoShortcut() {
   const [url, setUrl] = useState('')
+  const [placeholder, setPlaceholder] = useState('Pegá el link de YouTube')
   const router = useRouter()
+
+  useEffect(() => {
+    const update = () => setPlaceholder(window.innerWidth >= 1024 ? 'Pegá el link de YouTube de YouTube aquí...' : 'Pegá el link de YouTube')
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   function handleAgregar() {
     const params = new URLSearchParams({ from: 'videos' })
@@ -31,7 +39,7 @@ export function AddVideoShortcut() {
           <Link size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
             type="url"
-            placeholder="Pegá el link de YouTube aquí..."
+            placeholder={placeholder}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAgregar()}
@@ -45,12 +53,12 @@ export function AddVideoShortcut() {
           onClick={handleAgregar}
         >
           <Plus size={15} strokeWidth={2.5} />
-          Agregar video
+          Agregar
         </Button>
       </div>
 
       <div
-        className="flex items-start gap-2.5 rounded-xl px-3 py-2.5"
+        className="hidden lg:flex items-start gap-2.5 rounded-xl px-3 py-2.5"
         style={{
           background: 'color-mix(in oklch, var(--robi-secondary) 10%, transparent)',
           border: '1px solid color-mix(in oklch, var(--robi-secondary) 20%, transparent)',

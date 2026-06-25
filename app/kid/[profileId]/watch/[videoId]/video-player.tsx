@@ -100,7 +100,7 @@ export function VideoPlayer({ youtubeId, title, profileId, videoId, previousActi
           className="text-sm font-bold flex items-center gap-1 mb-3"
           style={{ color: 'var(--robi-primary)' }}
         >
-          ← Volver a mis videos
+          ← Volver a Mis Videos
         </Link>
         <h1 className="text-xl font-extrabold leading-snug text-foreground">
           {title}

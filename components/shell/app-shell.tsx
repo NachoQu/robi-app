@@ -68,11 +68,17 @@ export function AppShell({
             <div>{headerRight}</div>
           </div>
         )}
-        <main className="mx-auto w-full max-w-5xl px-4 pb-24 lg:pb-8" style={{ paddingTop: (headerLeft || headerRight) ? '0' : '1.5rem' }}>
+        <main className="mx-auto w-full max-w-5xl px-4 lg:pb-8" style={{ paddingTop: (headerLeft || headerRight) ? '0' : '1.5rem', paddingBottom: footer ? '7rem' : '6rem' }}>
           {children}
-          {footer && <div className="mt-8 border-t border-border pt-6 lg:hidden">{footer}</div>}
         </main>
       </div>
+
+      {/* Footer fijo sobre el bottom nav — mobile */}
+      {footer && (
+        <div className="fixed inset-x-0 z-20 border-t border-border bg-card px-4 py-3 lg:hidden" style={{ bottom: '57px' }}>
+          {footer}
+        </div>
+      )}
 
       {/* Bottom nav — mobile */}
       <nav aria-label="Navegación inferior" className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border bg-card lg:hidden">

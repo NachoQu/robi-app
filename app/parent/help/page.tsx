@@ -138,7 +138,7 @@ function ArticleCard({ article }: { article: Article }) {
         }
       </button>
       {open && (
-        <div className="px-4 pt-1 pb-4">
+        <div className="px-4 pt-3 pb-4">
           <p className="text-sm text-muted-foreground font-medium leading-relaxed">{article.content}</p>
         </div>
       )}
@@ -211,11 +211,11 @@ export default function HelpPage() {
       )}
 
       {/* Tip footer */}
-      <div className="flex items-center gap-2 rounded-2xl px-4 py-3 border border-border bg-muted/40">
-        <span className="text-base shrink-0">💡</span>
+      <div className="flex items-center gap-2 rounded-2xl px-4 py-3 border border-pink-200 bg-pink-50 dark:bg-pink-900/20 dark:border-pink-800">
+        <span className="text-base shrink-0">❤️</span>
         <p className="text-xs font-medium text-muted-foreground">
           <span className="font-bold" style={{ color: 'var(--robi-primary)' }}>Tip: </span>
-          Repetir los videos y quizzes puede mejorar los resultados de aprendizaje.
+          Celebrar los logros, aunque sean pequeños, motiva a seguir aprendiendo.
         </p>
       </div>
     </div>
