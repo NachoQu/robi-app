@@ -128,14 +128,6 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        href="/parent"
-        className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit"
-        style={{ color: 'var(--robi-primary)' }}
-      >
-        ← Volver al panel
-      </Link>
-
       {/* Header */}
       <div className="flex items-center gap-4">
         <span

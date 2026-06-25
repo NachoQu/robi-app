@@ -36,14 +36,7 @@ export default async function VouchersPage() {
     <div className="flex flex-col gap-6">
       {/* Back link + title */}
       <div className="flex flex-col gap-1">
-        <Link
-          href="/parent"
-          className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit sm:hidden"
-          style={{ color: 'var(--robi-primary)' }}
-        >
-          ← Volver al panel
-        </Link>
-        <h1 className="text-2xl font-extrabold tracking-tight mt-2" style={{ color: 'var(--foreground)' }}>
+<h1 className="text-2xl font-extrabold tracking-tight mt-2" style={{ color: 'var(--foreground)' }}>
           Gestionar premios
         </h1>
         <p className="text-sm text-muted-foreground font-medium">

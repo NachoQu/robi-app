@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { LayoutDashboard, Video, Gift, UserCircle, Home, LogOut, User, ChevronDown, HelpCircle } from 'lucide-react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AppShell, type NavItem } from '@/components/shell/app-shell'
 import { signOut } from '@/actions/auth'
@@ -20,7 +21,7 @@ function UserDropdown({ userEmail }: { userEmail: string }) {
         <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <User size={14} className="text-primary" />
         </span>
-        <span className="text-sm font-semibold text-foreground">{userEmail}</span>
+        <span className="hidden lg:inline text-sm font-semibold text-foreground">{userEmail}</span>
         <ChevronDown size={14} className="text-muted-foreground" />
       </button>
 
@@ -73,8 +74,20 @@ export function ParentShell({ children, userEmail }: { children: ReactNode; user
     { href: '/parent/help', label: 'Ayuda', icon: HelpCircle, sidebarOnly: true },
   ]
 
+  const isSubPage = pathname.startsWith('/parent/kid/') || pathname === '/parent/help' || pathname === '/parent/add-video'
+
+  const backLink = isSubPage ? (
+    <Link
+      href="/parent"
+      className="text-sm font-semibold inline-flex items-center gap-1 hover:opacity-70 transition-opacity"
+      style={{ color: 'var(--robi-primary)' }}
+    >
+      ← Volver al panel
+    </Link>
+  ) : undefined
+
   return (
-    <AppShell nav={nav} headerRight={<UserDropdown userEmail={userEmail} />}>
+    <AppShell nav={nav} headerLeft={backLink} headerRight={<UserDropdown userEmail={userEmail} />}>
       {children}
     </AppShell>
   )

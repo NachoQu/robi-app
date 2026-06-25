@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -42,18 +42,6 @@ function extractYouTubeId(url: string): string | null {
   }
 }
 
-function BackButton() {
-  const router = useRouter()
-  return (
-    <button
-      onClick={() => router.back()}
-      className="text-sm font-semibold transition-opacity hover:opacity-70 inline-flex items-center gap-1 w-fit"
-      style={{ color: 'var(--robi-primary)' }}
-    >
-      ← Volver
-    </button>
-  )
-}
 
 function SuccessState({
   multiChild,
@@ -236,8 +224,6 @@ export default function AddVideoPage() {
 
   return (
     <div className="max-w-lg mx-auto flex flex-col gap-8">
-      <BackButton />
-
       <AnimatePresence mode="wait">
         {/* ─── LOADING STATE ─── */}
         {pageState === 'loading' && (

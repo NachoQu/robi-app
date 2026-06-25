@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { KeyRound, Mail, Lock, Check } from 'lucide-react'
+import { KeyRound, Mail, Lock, Check, HelpCircle } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { ManagePinDialog } from '@/components/manage-pin-dialog'
 import { sendPasswordResetEmail } from '@/actions/auth'
@@ -130,6 +131,26 @@ export function AccountClient({ email, hasPin: initialHasPin }: AccountClientPro
               </p>
             </div>
           </button>
+        </div>
+      </section>
+
+      {/* Soporte — solo mobile */}
+      <section className="flex flex-col gap-3 lg:hidden">
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest px-1">Soporte</h2>
+        <div className="rounded-2xl bg-card border border-border overflow-hidden">
+          <Link
+            href="/parent/help"
+            className="flex items-center gap-3 w-full px-5 py-4 hover:bg-muted transition-colors"
+          >
+            <span className="flex items-center justify-center rounded-xl w-9 h-9 shrink-0" style={{ background: 'color-mix(in oklch, var(--robi-primary) 12%, transparent)' }}>
+              <HelpCircle size={17} style={{ color: 'var(--robi-primary)' }} />
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-foreground">Ayuda</p>
+              <p className="text-xs text-muted-foreground font-medium mt-0.5">Preguntas frecuentes y soporte</p>
+            </div>
+            <span className="text-muted-foreground">›</span>
+          </Link>
         </div>
       </section>
 

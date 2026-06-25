@@ -12,9 +12,10 @@ export type NavItem = { href: string; label: string; icon: LucideIcon; matchPath
 export function AppShell({
   nav,
   footer,
+  headerLeft,
   headerRight,
   children,
-}: { nav: NavItem[]; footer?: ReactNode; headerRight?: ReactNode; children: ReactNode }) {
+}: { nav: NavItem[]; footer?: ReactNode; headerLeft?: ReactNode; headerRight?: ReactNode; children: ReactNode }) {
   const pathname = usePathname()
 
   function itemMatches({ href, matchPaths }: NavItem) {
@@ -61,12 +62,13 @@ export function AppShell({
 
       {/* Main */}
       <div className="lg:pl-60">
-        {headerRight && (
-          <div className="flex justify-end px-4 py-4">
-            {headerRight}
+        {(headerLeft || headerRight) && (
+          <div className="flex items-center justify-between px-4 py-4">
+            <div>{headerLeft}</div>
+            <div>{headerRight}</div>
           </div>
         )}
-        <main className="mx-auto w-full max-w-5xl px-4 pb-24 lg:pb-8" style={{ paddingTop: headerRight ? '0' : '1.5rem' }}>
+        <main className="mx-auto w-full max-w-5xl px-4 pb-24 lg:pb-8" style={{ paddingTop: (headerLeft || headerRight) ? '0' : '1.5rem' }}>
           {children}
           {footer && <div className="mt-8 border-t border-border pt-6 lg:hidden">{footer}</div>}
         </main>
