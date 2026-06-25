@@ -158,30 +158,27 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Stats */}
-      <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 snap-x snap-mandatory">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {/* Videos vistos */}
-        <div className="snap-start shrink-0 w-[42vw] max-w-[160px] min-w-[130px] rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2">
+        <div className="rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2 items-center text-center">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
             style={{ background: 'color-mix(in oklch, #8b5cf6 15%, transparent)' }}>
             📺
           </div>
           <div>
-            <p className="text-[11px] text-muted-foreground font-medium leading-tight">Videos vistos</p>
+            <p className="text-[11px] text-muted-foreground font-medium leading-tight">Videos</p>
             <p className="text-xl font-extrabold text-foreground leading-none mt-0.5">
               {weeklyWatched}<span className="text-sm font-semibold text-muted-foreground">/{totalAssigned ?? 0}</span>
             </p>
             <p className="text-[10px] text-muted-foreground mt-0.5">esta semana</p>
           </div>
-          <p className="text-[10px] font-bold leading-tight"
-            style={{ color: weeklyWatched >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0 ? '#8b5cf6' : 'var(--robi-primary)' }}>
-            {weeklyWatched >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0
-              ? '¡Completó todos! 🎉'
-              : `Le falta${(totalAssigned ?? 0) - weeklyWatched === 1 ? '' : 'n'} ${(totalAssigned ?? 0) - weeklyWatched}`}
-          </p>
+          {weeklyWatched >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0 && (
+            <p className="text-[10px] font-bold leading-tight" style={{ color: '#8b5cf6' }}>¡Completó todos! 🎉</p>
+          )}
         </div>
 
         {/* Quizzes completados */}
-        <div className="snap-start shrink-0 w-[42vw] max-w-[160px] min-w-[130px] rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2">
+        <div className="rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2 items-center text-center">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
             style={{ background: 'color-mix(in oklch, var(--robi-primary) 15%, transparent)' }}>
             ✅
@@ -193,15 +190,13 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
             </p>
             <p className="text-[10px] text-muted-foreground mt-0.5">esta semana</p>
           </div>
-          <p className="text-[10px] font-bold leading-tight" style={{ color: 'var(--robi-primary)' }}>
-            {weeklyCount >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0
-              ? '¡Objetivo logrado! 🎉'
-              : `Le falta${(totalAssigned ?? 0) - weeklyCount === 1 ? '' : 'n'} ${(totalAssigned ?? 0) - weeklyCount}`}
-          </p>
+          {weeklyCount >= (totalAssigned ?? 0) && (totalAssigned ?? 0) > 0 && (
+            <p className="text-[10px] font-bold leading-tight" style={{ color: 'var(--robi-primary)' }}>¡Objetivo logrado! 🎉</p>
+          )}
         </div>
 
         {/* Puntos acumulados */}
-        <div className="snap-start shrink-0 w-[42vw] max-w-[160px] min-w-[130px] rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2">
+        <div className="rounded-2xl bg-card border border-border px-3 py-3 flex flex-col gap-2 items-center text-center">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
             style={{ background: 'color-mix(in oklch, #f59e0b 15%, transparent)' }}>
             ⭐
@@ -213,12 +208,9 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
             </p>
             <p className="text-[10px] text-muted-foreground mt-0.5">acumulados</p>
           </div>
-          <p className="text-[10px] font-bold leading-tight"
-            style={{ color: ptsToNextPrize !== null && ptsToNextPrize <= 5 ? '#f59e0b' : 'var(--robi-primary)' }}>
-            {ptsToNextPrize !== null && ptsToNextPrize <= 5
-              ? '¡Cerca del premio! 🎁'
-              : '¡Sigue sumando!'}
-          </p>
+          {ptsToNextPrize !== null && ptsToNextPrize <= 5 && (
+            <p className="text-[10px] font-bold leading-tight" style={{ color: '#f59e0b' }}>¡Cerca del premio! 🎁</p>
+          )}
         </div>
       </div>
 
@@ -257,9 +249,9 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
                         </span>
                       </div>
                     )}
-                    <div className="flex items-start gap-3 mb-2">
+                    <div className="flex items-center gap-3 mb-2">
                       {/* Dot */}
-                      <div className="shrink-0 w-[15px] h-[15px] rounded-full border-2 mt-[14px] relative z-10"
+                      <div className="shrink-0 w-[15px] h-[15px] rounded-full border-2 relative z-10"
                         style={{
                           borderColor: 'var(--robi-primary)',
                           background: entry.kind === 'quiz'
@@ -268,7 +260,7 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
                         }}
                       />
                       {/* Card */}
-                      <div className="flex-1 grid grid-cols-[1fr_44px] gap-2 items-center rounded-2xl bg-card border border-border px-4 py-3">
+                      <div className="flex-1 grid grid-cols-[1fr_44px] gap-2 items-center rounded-2xl bg-card border border-border pl-4 pr-5 py-3">
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-foreground truncate leading-snug">
                             {entry.title ?? 'Video sin título'}
