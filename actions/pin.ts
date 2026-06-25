@@ -45,6 +45,22 @@ export async function updatePin(newPin: string) {
   return { ok: !error }
 }
 
+export async function getDisplayName(): Promise<string | null> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  const { data } = await supabase.from('parent_settings').select('display_name').eq('user_id', user.id).maybeSingle()
+  return data?.display_name ?? null
+}
+
+export async function updateDisplayName(displayName: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false }
+  const { error } = await supabase.from('parent_settings').upsert({ user_id: user.id, display_name: displayName.trim() || null })
+  return { ok: !error }
+}
+
 export async function removePin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

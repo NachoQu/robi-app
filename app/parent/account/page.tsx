@@ -9,7 +9,7 @@ export default async function AccountPage() {
 
   const { data: settings } = await supabase
     .from('parent_settings')
-    .select('pin_hash')
+    .select('pin_hash, display_name')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -23,6 +23,7 @@ export default async function AccountPage() {
       <AccountClient
         email={user.email ?? ''}
         hasPin={!!(settings?.pin_hash)}
+        displayName={settings?.display_name ?? ''}
       />
     </div>
   )

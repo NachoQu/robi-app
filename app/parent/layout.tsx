@@ -21,5 +21,11 @@ export default async function ParentLayout({ children }: { children: React.React
     if (settings?.pin_hash) redirect('/')
   }
 
-  return <ParentShell userEmail={user.email ?? ''}>{children}</ParentShell>
+  const { data: settings2 } = await supabase
+    .from('parent_settings')
+    .select('display_name')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  return <ParentShell userEmail={user.email ?? ''} displayName={settings2?.display_name ?? null}>{children}</ParentShell>
 }

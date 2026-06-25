@@ -1,21 +1,40 @@
 'use client'
 
 import { useState } from 'react'
-import { KeyRound, Mail, Lock, Check, HelpCircle } from 'lucide-react'
+import { KeyRound, Mail, Lock, Check, HelpCircle, UserRound, Pencil } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { ManagePinDialog } from '@/components/manage-pin-dialog'
 import { sendPasswordResetEmail } from '@/actions/auth'
+import { updateDisplayName } from '@/actions/pin'
 
 interface AccountClientProps {
   email: string
   hasPin: boolean
+  displayName: string
 }
 
-export function AccountClient({ email, hasPin: initialHasPin }: AccountClientProps) {
+export function AccountClient({ email, hasPin: initialHasPin, displayName: initialDisplayName }: AccountClientProps) {
   const [pinDialogOpen, setPinDialogOpen] = useState(false)
   const [hasPin, setHasPin] = useState(initialHasPin)
   const [sendingReset, setSendingReset] = useState(false)
+  const [displayName, setDisplayName] = useState(initialDisplayName)
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput] = useState(initialDisplayName)
+  const [savingName, setSavingName] = useState(false)
+
+  async function handleSaveName() {
+    setSavingName(true)
+    const result = await updateDisplayName(nameInput)
+    setSavingName(false)
+    if (result.ok) {
+      setDisplayName(nameInput.trim())
+      setEditingName(false)
+      toast.success('Nombre actualizado.')
+    } else {
+      toast.error('No pudimos guardar el nombre. Intentá de nuevo.')
+    }
+  }
 
   async function handlePasswordReset() {
     setSendingReset(true)
@@ -107,6 +126,43 @@ export function AccountClient({ email, hasPin: initialHasPin }: AccountClientPro
       <section className="flex flex-col gap-3">
         <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest px-1">Mi cuenta</h2>
         <div className="rounded-2xl bg-card border border-border overflow-hidden">
+
+          {/* Nombre del adulto */}
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
+            <span className="flex items-center justify-center rounded-xl w-9 h-9 shrink-0" style={{ background: 'color-mix(in oklch, var(--robi-primary) 12%, transparent)' }}>
+              <UserRound size={17} style={{ color: 'var(--robi-primary)' }} />
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-foreground">Nombre del adulto</p>
+              {editingName ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <input
+                    autoFocus
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') setEditingName(false) }}
+                    maxLength={32}
+                    placeholder="Tu nombre o apodo"
+                    className="flex-1 text-xs bg-muted rounded-lg px-2 py-1.5 border border-border outline-none focus:border-primary font-medium"
+                  />
+                  <button onClick={handleSaveName} disabled={savingName} className="text-xs font-bold px-3 py-1.5 rounded-lg text-white shrink-0" style={{ background: 'var(--robi-primary)' }}>
+                    {savingName ? '…' : 'Guardar'}
+                  </button>
+                  <button onClick={() => { setEditingName(false); setNameInput(displayName) }} className="text-xs font-semibold text-muted-foreground px-2 py-1.5">
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">{displayName || 'Sin nombre configurado'}</p>
+              )}
+            </div>
+            {!editingName && (
+              <button onClick={() => { setEditingName(true); setNameInput(displayName) }} className="text-muted-foreground hover:text-foreground transition-colors shrink-0">
+                <Pencil size={15} />
+              </button>
+            )}
+          </div>
+
           <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
             <span className="flex items-center justify-center rounded-xl w-9 h-9 shrink-0 bg-blue-50 dark:bg-blue-900/20">
               <Mail size={17} className="text-blue-600 dark:text-blue-400" />

@@ -98,7 +98,7 @@ export default function OnboardingForm() {
               transition={{ duration: 0.35 }}
             >
               {/* Step indicator */}
-              <div className="flex flex-col items-center gap-2 mb-4">
+              <div className="flex flex-col items-center gap-2 mb-8">
                 <p className="text-xs font-semibold text-muted-foreground">Paso 2 de 3</p>
                 <div className="flex gap-1.5">
                   <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />
@@ -214,7 +214,7 @@ export default function OnboardingForm() {
               transition={{ duration: 0.35 }}
             >
               {/* Step indicator */}
-              <div className="flex flex-col items-center gap-2 mb-4">
+              <div className="flex flex-col items-center gap-2 mb-8">
                 <p className="text-xs font-semibold text-muted-foreground">Paso 3 de 3</p>
                 <div className="flex gap-1.5">
                   <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />

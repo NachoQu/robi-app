@@ -30,7 +30,7 @@ export default function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 pt-4 pb-16 bg-background">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
@@ -38,7 +38,7 @@ export default function SignupForm() {
         className="w-full max-w-md"
       >
         {/* Step indicator */}
-        <div className="flex flex-col items-center gap-2 mb-4">
+        <div className="flex flex-col items-center gap-2 mb-8">
           <p className="text-xs font-semibold text-muted-foreground">Paso 1 de 3</p>
           <div className="flex gap-1.5">
             <div className="h-1.5 w-8 rounded-full" style={{ background: 'var(--robi-primary)' }} />

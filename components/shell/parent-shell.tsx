@@ -55,7 +55,7 @@ function UserDropdown({ userEmail }: { userEmail: string }) {
   )
 }
 
-export function ParentShell({ children, userEmail }: { children: ReactNode; userEmail: string }) {
+export function ParentShell({ children, userEmail, displayName }: { children: ReactNode; userEmail: string; displayName?: string | null }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const fromVideos = pathname === '/parent/add-video' && searchParams.get('from') === 'videos'
@@ -89,7 +89,7 @@ export function ParentShell({ children, userEmail }: { children: ReactNode; user
   ) : undefined
 
   return (
-    <AppShell nav={nav} headerLeft={backLink} headerRight={<UserDropdown userEmail={userEmail} />}>
+    <AppShell nav={nav} headerLeft={backLink} headerRight={<UserDropdown userEmail={displayName ?? userEmail} />}>
       {children}
     </AppShell>
   )
