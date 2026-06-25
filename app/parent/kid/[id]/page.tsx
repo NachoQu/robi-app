@@ -153,55 +153,73 @@ export default async function KidDetailPage({ params }: { params: Promise<{ id: 
       <div className="grid grid-cols-2 gap-3">
 
         {/* Videos */}
-        <div className="rounded-2xl bg-card border border-border p-4 flex flex-col gap-3 items-center text-center">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0"
-            style={{ background: 'color-mix(in oklch, #8b5cf6 15%, transparent)' }}>📺</div>
-          <p className="text-sm font-bold text-foreground">Videos</p>
-          <p className="text-4xl font-extrabold text-foreground leading-none">
-            {weeklyWatched}<span className="text-2xl font-semibold text-muted-foreground"> /{totalAssigned ?? 0}</span>
-          </p>
-          <div className="h-2 rounded-full overflow-hidden w-full" style={{ background: 'color-mix(in oklch, #8b5cf6 15%, transparent)' }}>
+        <div className="rounded-2xl bg-card border border-border p-4 flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+              style={{ background: 'color-mix(in oklch, #8b5cf6 15%, transparent)' }}>📺</div>
+            <div>
+              <p className="text-sm font-bold text-foreground">Videos</p>
+              <p className="text-xs text-muted-foreground font-medium">completados</p>
+            </div>
+          </div>
+          <div className="flex items-baseline justify-center gap-1.5">
+            <p className="text-5xl font-extrabold text-foreground leading-none">{weeklyWatched}</p>
+            <span className="text-xl font-semibold text-muted-foreground">/{totalAssigned ?? 0}</span>
+          </div>
+          <div className="h-3 rounded-full overflow-hidden w-full" style={{ background: 'color-mix(in oklch, #8b5cf6 15%, transparent)' }}>
             <div className="h-full rounded-full transition-all"
               style={{ width: `${(totalAssigned ?? 0) > 0 ? Math.min(100, (weeklyWatched / (totalAssigned ?? 1)) * 100) : 0}%`, background: '#8b5cf6' }} />
           </div>
           {(totalAssigned ?? 0) > 0 && (
-            <div className="hidden lg:block rounded-xl px-3 py-2.5 w-full"
+            <div className="rounded-xl px-3 py-2.5 w-full flex items-center gap-2"
               style={{ background: 'color-mix(in oklch, #8b5cf6 10%, transparent)' }}>
-              <p className="text-xs font-bold" style={{ color: '#8b5cf6' }}>
-                {weeklyWatched >= (totalAssigned ?? 0) ? '¡Completó todos los videos! 🎉' : '¡Va por buen camino!'}
-              </p>
-              {weeklyWatched < (totalAssigned ?? 0) && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Le falta{(totalAssigned ?? 0) - weeklyWatched === 1 ? '' : 'n'} {(totalAssigned ?? 0) - weeklyWatched} por completar.
+              <span className="text-base">🎉</span>
+              <div>
+                <p className="text-xs font-bold" style={{ color: '#8b5cf6' }}>
+                  {weeklyWatched >= (totalAssigned ?? 0) ? '¡Completó todos los videos!' : '¡Va por buen camino!'}
                 </p>
-              )}
+                {weeklyWatched < (totalAssigned ?? 0) && (
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Le falta{(totalAssigned ?? 0) - weeklyWatched === 1 ? '' : 'n'} {(totalAssigned ?? 0) - weeklyWatched} por completar.
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </div>
 
         {/* Quizzes */}
-        <div className="rounded-2xl bg-card border border-border p-4 flex flex-col gap-3 items-center text-center">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0"
-            style={{ background: 'color-mix(in oklch, var(--robi-primary) 15%, transparent)' }}>✅</div>
-          <p className="text-sm font-bold text-foreground">Quizzes</p>
-          <p className="text-4xl font-extrabold text-foreground leading-none">
-            {weeklyCount}<span className="text-2xl font-semibold text-muted-foreground"> /{totalAssigned ?? 0}</span>
-          </p>
-          <div className="h-2 rounded-full overflow-hidden w-full" style={{ background: 'color-mix(in oklch, var(--robi-primary) 15%, transparent)' }}>
+        <div className="rounded-2xl bg-card border border-border p-4 flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+              style={{ background: 'color-mix(in oklch, var(--robi-primary) 15%, transparent)' }}>✅</div>
+            <div>
+              <p className="text-sm font-bold text-foreground">Quizzes</p>
+              <p className="text-xs text-muted-foreground font-medium">completados</p>
+            </div>
+          </div>
+          <div className="flex items-baseline justify-center gap-1.5">
+            <p className="text-5xl font-extrabold text-foreground leading-none">{weeklyCount}</p>
+            <span className="text-xl font-semibold text-muted-foreground">/{totalAssigned ?? 0}</span>
+          </div>
+          <div className="h-3 rounded-full overflow-hidden w-full" style={{ background: 'color-mix(in oklch, var(--robi-primary) 15%, transparent)' }}>
             <div className="h-full rounded-full transition-all"
               style={{ width: `${(totalAssigned ?? 0) > 0 ? Math.min(100, (weeklyCount / (totalAssigned ?? 1)) * 100) : 0}%`, background: 'var(--robi-primary)' }} />
           </div>
           {(totalAssigned ?? 0) > 0 && (
-            <div className="hidden lg:block rounded-xl px-3 py-2.5 w-full"
+            <div className="rounded-xl px-3 py-2.5 w-full flex items-center gap-2"
               style={{ background: 'color-mix(in oklch, var(--robi-primary) 10%, transparent)' }}>
-              <p className="text-xs font-bold" style={{ color: 'var(--robi-primary)' }}>
-                {weeklyCount >= (totalAssigned ?? 0) ? '¡Completó todos los quizzes! 🎉' : '¡Va por buen camino!'}
-              </p>
-              {weeklyCount < (totalAssigned ?? 0) && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Le falta{(totalAssigned ?? 0) - weeklyCount === 1 ? '' : 'n'} {(totalAssigned ?? 0) - weeklyCount} quiz{(totalAssigned ?? 0) - weeklyCount === 1 ? '' : 'zes'} por completar.
+              <span className="text-base">🎉</span>
+              <div>
+                <p className="text-xs font-bold" style={{ color: 'var(--robi-primary)' }}>
+                  {weeklyCount >= (totalAssigned ?? 0) ? '¡Completó todos los quizzes!' : '¡Va por buen camino!'}
                 </p>
-              )}
+                {weeklyCount < (totalAssigned ?? 0) && (
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Le falta{(totalAssigned ?? 0) - weeklyCount === 1 ? '' : 'n'} {(totalAssigned ?? 0) - weeklyCount} quiz{(totalAssigned ?? 0) - weeklyCount === 1 ? '' : 'zes'} por completar.
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </div>

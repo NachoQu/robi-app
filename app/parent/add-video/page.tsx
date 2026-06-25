@@ -120,8 +120,8 @@ function SuccessState({
           Cargar otro video
         </Button>
         <Link href="/parent/videos" className="w-full">
-          <Button variant="outline" size="lg" className="w-full text-base font-semibold">
-            Ver biblioteca
+          <Button size="lg" className="w-full text-base font-semibold border-2" style={{ borderColor: 'var(--robi-primary)', color: 'var(--robi-primary)', background: 'color-mix(in oklch, var(--robi-primary) 8%, transparent)' }}>
+            Volver a la Biblioteca
           </Button>
         </Link>
       </div>

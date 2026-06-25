@@ -183,7 +183,7 @@ export default function ResultPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-base font-bold text-muted-foreground">Puntos base</span>
+              <span className="text-base font-bold text-muted-foreground">Puntos por participar</span>
               <span className="text-base font-extrabold text-foreground">
                 +{result.base}
               </span>
