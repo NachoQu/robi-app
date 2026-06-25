@@ -3,6 +3,7 @@ import { Star, Plus, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
+import { FeedList } from './feed-list'
 
 interface ChildProfile {
   id: string
@@ -155,10 +156,6 @@ export default async function ParentPage() {
   }
 
   // Feed: recent activities + watches + redemptions merged
-  type FeedItem =
-    | { kind: 'activity'; id: string; date: string; childName: string; childAvatar: string; videoTitle: string; points: number }
-    | { kind: 'watch'; id: string; date: string; childName: string; childAvatar: string; videoTitle: string }
-    | { kind: 'redemption'; id: string; date: string; childName: string; childAvatar: string; voucherTitle: string }
 
   const recentActs = allActivities.slice(0, 10)
 
@@ -171,7 +168,7 @@ export default async function ParentPage() {
         .limit(10)
     : { data: [] }
 
-  const feed: FeedItem[] = [
+  const feed: import('./feed-list').FeedItem[] = [
     ...recentActs.map((a) => ({
       kind: 'activity' as const,
       id: `act-${a.child_profile_id}-${a.completed_at}`,
@@ -197,7 +194,7 @@ export default async function ParentPage() {
       childAvatar: r.child_profiles?.avatar ?? '👤',
       voucherTitle: r.vouchers?.title ?? 'Premio',
     })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 8)
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 20)
 
   // Cheapest active voucher
   const { data: activeVouchers } = await supabase
@@ -386,54 +383,7 @@ export default async function ParentPage() {
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            {feed.map((item) => {
-              const dateStr = new Date(item.date).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })
-              if (item.kind === 'activity') {
-                return (
-                  <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3.5">
-                    <span className="text-2xl shrink-0">{item.childAvatar}</span>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <p className="text-sm font-bold text-foreground">{item.childName}</p>
-                        <span className="text-xs text-muted-foreground font-medium">✅ completó el quiz</span>
-                        <span className="text-xs text-muted-foreground">· {dateStr}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">{item.videoTitle}</p>
-                    </div>
-                  </div>
-                )
-              }
-              if (item.kind === 'watch') {
-                return (
-                  <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3.5">
-                    <span className="text-2xl shrink-0">{item.childAvatar}</span>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <p className="text-sm font-bold text-foreground">{item.childName}</p>
-                        <span className="text-xs text-muted-foreground font-medium">👀 vio un video</span>
-                        <span className="text-xs text-muted-foreground">· {dateStr}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">{item.videoTitle}</p>
-                    </div>
-                  </div>
-                )
-              }
-              return (
-                <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-card border border-border px-4 py-3.5">
-                  <span className="text-2xl shrink-0">{item.childAvatar}</span>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <p className="text-sm font-bold text-foreground">{item.childName}</p>
-                      <span className="text-xs text-muted-foreground font-medium">🎁 canjeó un premio</span>
-                      <span className="text-xs text-muted-foreground">· {dateStr}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{item.voucherTitle}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          <FeedList items={feed} />
         )}
       </section>
     </div>

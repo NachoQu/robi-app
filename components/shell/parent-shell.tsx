@@ -61,7 +61,7 @@ export function ParentShell({ children, userEmail }: { children: ReactNode; user
 
   const nav: NavItem[] = [
     { href: '/', label: 'Home', icon: Home },
-    { href: '/parent', label: 'Panel Adultos', icon: LayoutDashboard },
+    { href: '/parent', label: 'Panel', icon: LayoutDashboard },
     {
       href: '/parent/videos',
       label: 'Biblioteca',

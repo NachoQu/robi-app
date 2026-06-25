@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Link } from 'lucide-react'
+import { Plus, Link, Video } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { RobiPlaceholder } from '@/components/robi-placeholder'
@@ -21,7 +21,7 @@ export function AddVideoShortcut() {
     <div className="rounded-2xl bg-card border border-border px-5 py-4 flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <span className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-primary text-primary shrink-0">
-          <Plus size={16} strokeWidth={2.5} />
+          <Video size={16} strokeWidth={2.5} />
         </span>
         <h2 className="text-base font-bold text-foreground">Agregar nuevo video</h2>
       </div>
