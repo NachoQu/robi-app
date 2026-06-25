@@ -60,7 +60,8 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
           <span className="hidden lg:inline text-sm font-semibold text-foreground truncate max-w-[140px]">{userEmail}</span>
           <ChevronDown size={14} className="text-muted-foreground" />
         </button>
-        <div className="absolute right-0 top-full mt-2 z-50 hidden group-hover:block">
+        {/* Desktop: hover tooltip */}
+        <div className="absolute right-0 top-full mt-2 z-50 hidden group-hover:lg:block">
           <div className="flex items-start gap-2 bg-muted border border-border rounded-2xl px-4 py-2.5 max-w-[200px] shadow-sm">
             <span className="text-sm select-none">💡</span>
             <span className="text-xs text-muted-foreground font-medium">Acceso al Panel de Adultos. Recordá activar el PIN de protección.</span>
@@ -204,6 +205,18 @@ export function HomeClient({ profiles, hasPin, userEmail }: HomeClientProps) {
               </Card>
             </button>
           </motion.div>
+        </div>
+
+        {/* Mobile hint */}
+        <div className="flex items-start gap-2 bg-muted border border-border rounded-2xl px-4 py-2.5 lg:hidden mt-auto">
+          <span className="text-sm select-none">💡</span>
+          <span className="text-xs text-muted-foreground font-medium">
+            Tocá el ícono{' '}
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full align-middle mx-0.5 shrink-0" style={{ background: 'color-mix(in oklch, var(--robi-primary) 60%, white)' }}>
+              <User size={11} color="white" />
+            </span>
+            {' '}para acceder al Panel de Adultos. Recordá activar el PIN de protección.
+          </span>
         </div>
 
       </div>
